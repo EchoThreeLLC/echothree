@@ -85,29 +85,36 @@ public class ContactListLogic
     public boolean hasContactListAccess(final Party party, final ContactList contactList) {
         var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
         var partyType = party.getLastDetail().getPartyType();
+        var partyTypeName = partyType.getPartyTypeName();
         var contactListGroup = contactList.getLastDetail().getContactListGroup();
 
-        var hasAccess = contactListControl.partyTypeContactListGroupExists(partyType, contactListGroup)
-                || contactListControl.countPartyTypeContactListGroupsByContactListGroup(contactListGroup) == 0;
+        // Employees may do anything they want with lists.
+        var hasAccess = partyTypeName.equals(PartyConstants.PartyType_EMPLOYEE);
 
+        // If the Contact List Group that the Contact List is in has been explicitly given access to the Party Type,
+        // then allow access.
+        if(!hasAccess)
+            hasAccess = contactListControl.partyTypeContactListGroupExists(partyType, contactListGroup);
+
+        // If access hasn't been granted, allow access if the Party Type has been explicitly given access to the
+        // Contact List, or if the Contact List has no further restrictions.
         if(!hasAccess)
             hasAccess = contactListControl.partyTypeContactListExists(partyType, contactList)
                     || contactListControl.countPartyTypeContactListsByContactList(contactList) == 0;
 
-        if(!hasAccess) {
-            var partyTypeName = partyType.getPartyTypeName();
+        // Customers have some special checks based on Customer Type, if access still has no yet been granted.
+        if(!hasAccess && partyTypeName.equals(PartyConstants.PartyType_CUSTOMER)) {
+            var customerControl = (CustomerControl)Session.getModelController(CustomerControl.class);
+            var customerType = customerControl.getCustomer(party).getCustomerType();
 
-            if(partyTypeName.equals(PartyConstants.PartyType_CUSTOMER)) {
-                var customerControl = (CustomerControl)Session.getModelController(CustomerControl.class);
-                var customerType = customerControl.getCustomer(party).getCustomerType();
+            // If the Contact List is in has been explicitly given access to the Party Type, then allow access.
+            hasAccess = contactListControl.customerTypeContactListGroupExists(customerType, contactListGroup);
 
-                hasAccess = contactListControl.customerTypeContactListGroupExists(customerType, contactListGroup)
-                        || contactListControl.countCustomerTypeContactListGroupsByContactListGroup(contactListGroup) == 0;
-
-                if(!hasAccess)
-                    hasAccess = contactListControl.customerTypeContactListExists(customerType, contactList)
-                            || contactListControl.countCustomerTypeContactListsByContactList(contactList) == 0;
-            }
+            // If access hasn't been granted, allow access if the Customer Type has been explicitly given access to the
+            // Contact List, or if the Contact List has no further restrictions.
+            if(!hasAccess)
+                hasAccess = contactListControl.customerTypeContactListExists(customerType, contactList)
+                        || contactListControl.countCustomerTypeContactListsByContactList(contactList) == 0;
         }
 
         return hasAccess;
