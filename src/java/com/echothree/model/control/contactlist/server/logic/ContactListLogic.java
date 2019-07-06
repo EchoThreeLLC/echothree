@@ -81,11 +81,36 @@ public class ContactListLogic
         
         return contactListContactMechanismPurpose;
     }
-    
-    public boolean isPartyOnContactList(final Party party, final ContactList contactList) {
+
+    public boolean hasContactListAccess(final Party party, final ContactList contactList) {
         var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
-        
-        return contactListControl.getPartyContactList(party, contactList) != null;
+        var partyType = party.getLastDetail().getPartyType();
+        var contactListGroup = contactList.getLastDetail().getContactListGroup();
+
+        var hasAccess = contactListControl.partyTypeContactListGroupExists(partyType, contactListGroup)
+                || contactListControl.countPartyTypeContactListGroupsByContactListGroup(contactListGroup) == 0;
+
+        if(!hasAccess)
+            hasAccess = contactListControl.partyTypeContactListExists(partyType, contactList)
+                    || contactListControl.countPartyTypeContactListsByContactList(contactList) == 0;
+
+        if(!hasAccess) {
+            var partyTypeName = partyType.getPartyTypeName();
+
+            if(partyTypeName.equals(PartyConstants.PartyType_CUSTOMER)) {
+                var customerControl = (CustomerControl)Session.getModelController(CustomerControl.class);
+                var customerType = customerControl.getCustomer(party).getCustomerType();
+
+                hasAccess = contactListControl.customerTypeContactListGroupExists(customerType, contactListGroup)
+                        || contactListControl.countCustomerTypeContactListGroupsByContactListGroup(contactListGroup) == 0;
+
+                if(!hasAccess)
+                    hasAccess = contactListControl.customerTypeContactListExists(customerType, contactList)
+                            || contactListControl.countCustomerTypeContactListsByContactList(contactList) == 0;
+            }
+        }
+
+        return hasAccess;
     }
     
     public void addContactListToParty(final ExecutionErrorAccumulator eea, final Party party, final ContactList contactList,

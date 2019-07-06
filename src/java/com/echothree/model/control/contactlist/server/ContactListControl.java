@@ -2758,12 +2758,12 @@ public class ContactListControl
                 customerType, contactListGroup, Session.MAX_TIME) == 1;
     }
 
-    public long countCustomerTypeContactListGroupsByCustomerType(CustomerType customerType) {
+    public long countCustomerTypeContactListGroupsByContactListGroup(ContactListGroup contactListGroup) {
         return session.queryForLong(
                 "SELECT COUNT(*) "
                 + "FROM customertypecontactlistgroups "
-                + "WHERE cutyclstgrp_cuty_customertypeid = ? AND cutyclstgrp_thrutime = ?",
-                customerType, Session.MAX_TIME);
+                + "WHERE cutyclstgrp_clstgrp_contactlistgroupid = ? AND cutyclstgrp_thrutime = ?",
+                contactListGroup, Session.MAX_TIME);
     }
 
     private static final Map<EntityPermission, String> getCustomerTypeContactListGroupQueries;
@@ -2952,7 +2952,7 @@ public class ContactListControl
                 customerType, contactList, Session.MAX_TIME) == 1;
     }
 
-    public long countCustomerTypeContactListsByCustomerType(ContactList contactList) {
+    public long countCustomerTypeContactListsByContactList(ContactList contactList) {
         return session.queryForLong(
                 "SELECT COUNT(*) "
                 + "FROM customertypecontactlists "
