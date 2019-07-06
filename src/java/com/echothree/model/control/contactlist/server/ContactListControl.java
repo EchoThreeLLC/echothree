@@ -51,7 +51,6 @@ import com.echothree.model.control.contactlist.server.transfer.PartyTypeContactL
 import com.echothree.model.control.core.common.EventTypes;
 import com.echothree.model.control.letter.server.LetterControl;
 import com.echothree.model.control.contactlist.common.workflow.PartyContactListStatusConstants;
-import com.echothree.model.control.workflow.server.WorkflowControl;
 import com.echothree.model.data.chain.common.pk.ChainPK;
 import com.echothree.model.data.chain.server.entity.Chain;
 import com.echothree.model.data.contact.common.pk.ContactMechanismPurposePK;
@@ -2362,6 +2361,22 @@ public class ContactListControl
         return partyTypeContactListGroup;
     }
     
+    public boolean partyTypeContactListGroupExists(PartyType partyType, ContactListGroup contactListGroup) {
+        return session.queryForInteger(
+                "SELECT COUNT(*) " +
+                "FROM partytypecontactlistgroups " +
+                "WHERE ptypclstgrp_ptyp_partytypeid = ? AND ptypclstgrp_clstgrp_contactlistgroupid = ? AND ptypclstgrp_thrutime = ?",
+                partyType, contactListGroup, Session.MAX_TIME) == 1;
+    }
+
+    public long countPartyTypeContactListGroupsByContactListGroup(ContactListGroup contactListGroup) {
+        return session.queryForLong(
+                "SELECT COUNT(*) "
+                + "FROM partytypecontactlistgroups "
+                + "WHERE ptypclstgrp_clstgrp_contactlistgroupid = ? AND ptypclstgrp_thrutime = ?",
+                contactListGroup, Session.MAX_TIME);
+    }
+
     private static final Map<EntityPermission, String> getPartyTypeContactListGroupQueries;
 
     static {
@@ -2540,6 +2555,22 @@ public class ContactListControl
         return partyTypeContactList;
     }
     
+    public boolean partyTypeContactListExists(PartyType partyType, ContactList contactList) {
+        return session.queryForInteger(
+                "SELECT COUNT(*) " +
+                "FROM partytypecontactlists " +
+                "WHERE ptypclst_ptyp_partytypeid = ? AND ptypclst_clst_contactlistid = ? AND ptypclst_thrutime = ?",
+                partyType, contactList, Session.MAX_TIME) == 1;
+    }
+
+    public long countPartyTypeContactListsByContactList(ContactList contactList) {
+        return session.queryForLong(
+                "SELECT COUNT(*) "
+                + "FROM partytypecontactlists "
+                + "WHERE ptypclst_clst_contactlistid = ? AND ptypclst_thrutime = ?",
+                contactList, Session.MAX_TIME);
+    }
+
     private static final Map<EntityPermission, String> getPartyTypeContactListQueries;
 
     static {
@@ -2719,6 +2750,22 @@ public class ContactListControl
         return customerTypeContactListGroup;
     }
 
+    public boolean customerTypeContactListGroupExists(CustomerType customerType, ContactListGroup contactListGroup) {
+        return session.queryForInteger(
+                "SELECT COUNT(*) " +
+                "FROM customertypecontactlistgroups " +
+                "WHERE cutyclstgrp_cuty_customertypeid = ? AND cutyclstgrp_clstgrp_contactlistgroupid = ? AND cutyclstgrp_thrutime = ?",
+                customerType, contactListGroup, Session.MAX_TIME) == 1;
+    }
+
+    public long countCustomerTypeContactListGroupsByCustomerType(CustomerType customerType) {
+        return session.queryForLong(
+                "SELECT COUNT(*) "
+                + "FROM customertypecontactlistgroups "
+                + "WHERE cutyclstgrp_cuty_customertypeid = ? AND cutyclstgrp_thrutime = ?",
+                customerType, Session.MAX_TIME);
+    }
+
     private static final Map<EntityPermission, String> getCustomerTypeContactListGroupQueries;
 
     static {
@@ -2895,6 +2942,22 @@ public class ContactListControl
         sendEventUsingNames(contactList.getPrimaryKey(), EventTypes.MODIFY.name(), customerTypeContactList.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
 
         return customerTypeContactList;
+    }
+
+    public boolean customerTypeContactListExists(CustomerType customerType, ContactList contactList) {
+        return session.queryForInteger(
+                "SELECT COUNT(*) " +
+                "FROM customertypecontactlists " +
+                "WHERE cutyclst_cuty_customertypeid = ? AND cutyclst_clst_contactlistid = ? AND cutyclst_thrutime = ?",
+                customerType, contactList, Session.MAX_TIME) == 1;
+    }
+
+    public long countCustomerTypeContactListsByCustomerType(ContactList contactList) {
+        return session.queryForLong(
+                "SELECT COUNT(*) "
+                + "FROM customertypecontactlists "
+                + "WHERE cutyclst_cuty_customertypeid = ? AND cutyclst_thrutime = ?",
+                contactList, Session.MAX_TIME);
     }
 
     private static final Map<EntityPermission, String> getCustomerTypeContactListQueries;
