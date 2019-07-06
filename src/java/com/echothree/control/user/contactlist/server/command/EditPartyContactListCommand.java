@@ -37,6 +37,7 @@ import com.echothree.model.data.contactlist.server.value.PartyContactListDetailV
 import com.echothree.model.data.party.common.pk.PartyPK;
 import com.echothree.model.data.party.server.entity.Party;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.SecurityResult;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
@@ -60,19 +61,28 @@ public class EditPartyContactListCommand
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
                 new PartyTypeDefinition(PartyConstants.PartyType_UTILITY, null),
+                new PartyTypeDefinition(PartyConstants.PartyType_CUSTOMER, null),
+                new PartyTypeDefinition(PartyConstants.PartyType_VENDOR, null),
                 new PartyTypeDefinition(PartyConstants.PartyType_EMPLOYEE, Collections.unmodifiableList(Arrays.asList(
                         new SecurityRoleDefinition(SecurityRoleGroups.PartyContactList.name(), SecurityRoles.Edit.name())
                         )))
                 )));
 
         SPEC_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
-                new FieldDefinition("PartyName", FieldType.ENTITY_NAME, true, null, null),
+                new FieldDefinition("PartyName", FieldType.ENTITY_NAME, false, null, null),
                 new FieldDefinition("ContactListName", FieldType.ENTITY_NAME, true, null, null)
                 ));
 
         EDIT_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
                 new FieldDefinition("PreferredContactMechanismPurposeName", FieldType.ENTITY_NAME, false, null, null)
                 ));
+    }
+
+    @Override
+    protected SecurityResult security() {
+        var securityResult = super.security();
+
+        return securityResult != null ? securityResult : selfOnly(spec);
     }
 
     /** Creates a new instance of EditPartyContactListCommand */
@@ -96,8 +106,8 @@ public class EditPartyContactListCommand
     public PartyContactList getEntity(EditPartyContactListResult result) {
         var partyControl = (PartyControl)Session.getModelController(PartyControl.class);
         PartyContactList partyContactList = null;
-        String partyName = spec.getPartyName();
-        Party party = partyControl.getPartyByName(partyName);
+        var partyName = spec.getPartyName();
+        var party = partyName == null ? getParty() : partyControl.getPartyByName(partyName);
         
         if(party != null) {
             var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);

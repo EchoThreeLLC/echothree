@@ -27,6 +27,7 @@ import com.echothree.model.data.contactlist.server.entity.ContactList;
 import com.echothree.model.data.contactlist.server.entity.PartyContactList;
 import com.echothree.model.data.party.server.entity.Party;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.SecurityResult;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
@@ -49,13 +50,15 @@ public class DeletePartyContactListCommand
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
                 new PartyTypeDefinition(PartyConstants.PartyType_UTILITY, null),
+                new PartyTypeDefinition(PartyConstants.PartyType_CUSTOMER, null),
+                new PartyTypeDefinition(PartyConstants.PartyType_VENDOR, null),
                 new PartyTypeDefinition(PartyConstants.PartyType_EMPLOYEE, Collections.unmodifiableList(Arrays.asList(
                         new SecurityRoleDefinition(SecurityRoleGroups.PartyContactList.name(), SecurityRoles.Delete.name())
                         )))
                 )));
 
         FORM_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
-                new FieldDefinition("PartyName", FieldType.ENTITY_NAME, true, null, null),
+                new FieldDefinition("PartyName", FieldType.ENTITY_NAME, false, null, null),
                 new FieldDefinition("ContactListName", FieldType.ENTITY_NAME, true, null, null)
                 ));
     }
@@ -66,10 +69,17 @@ public class DeletePartyContactListCommand
     }
     
     @Override
+    protected SecurityResult security() {
+        var securityResult = super.security();
+
+        return securityResult != null ? securityResult : selfOnly(form);
+    }
+
+    @Override
     protected BaseResult execute() {
         var partyControl = (PartyControl)Session.getModelController(PartyControl.class);
-        String partyName = form.getPartyName();
-        Party party = partyControl.getPartyByName(partyName);
+        var partyName = form.getPartyName();
+        var party = partyName == null ? getParty() : partyControl.getPartyByName(partyName);
         
         if(party != null) {
             var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
