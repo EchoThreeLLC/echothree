@@ -75,7 +75,7 @@ public class EditPartyContactListCommand
                 ));
     }
 
-    /** Creates a new instance of EditContactListCommand */
+    /** Creates a new instance of EditPartyContactListCommand */
     public EditPartyContactListCommand(UserVisitPK userVisitPK, EditPartyContactListForm form) {
         super(userVisitPK, form, COMMAND_SECURITY_DEFINITION, SPEC_FIELD_DEFINITIONS, EDIT_FIELD_DEFINITIONS);
     }
