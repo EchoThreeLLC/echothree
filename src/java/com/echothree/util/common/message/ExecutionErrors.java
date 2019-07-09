@@ -226,6 +226,7 @@ public enum ExecutionErrors {
     UnknownCompanyName,
     UnknownComponentVendorName,
     UnknownContactMechanismPurposeName,
+    UnknownPreferredContactMechanismPurposeName,
     UnknownContactMechanismTypeName,
     UnknownContactMechanismType,
     UnknownContentCatalogDescription,
