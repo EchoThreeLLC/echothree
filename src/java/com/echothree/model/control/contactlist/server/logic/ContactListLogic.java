@@ -18,30 +18,25 @@ package com.echothree.model.control.contactlist.server.logic;
 
 import com.echothree.model.control.contactlist.common.exception.UnknownContactListContactMechanismPurposeException;
 import com.echothree.model.control.contactlist.common.exception.UnknownContactListNameException;
+import com.echothree.model.control.contactlist.common.workflow.PartyContactListStatusConstants;
 import com.echothree.model.control.contactlist.server.ContactListControl;
 import com.echothree.model.control.core.server.CoreControl;
 import com.echothree.model.control.customer.server.CustomerControl;
 import com.echothree.model.control.party.common.PartyConstants;
 import com.echothree.model.control.party.server.logic.PartyLogic;
-import com.echothree.model.control.contactlist.common.workflow.PartyContactListStatusConstants;
 import com.echothree.model.control.workflow.server.WorkflowControl;
 import com.echothree.model.data.contact.server.entity.ContactMechanismPurpose;
 import com.echothree.model.data.contactlist.server.entity.ContactList;
 import com.echothree.model.data.contactlist.server.entity.ContactListContactMechanismPurpose;
 import com.echothree.model.data.contactlist.server.entity.PartyContactList;
-import com.echothree.model.data.core.server.entity.EntityInstance;
 import com.echothree.model.data.customer.server.entity.CustomerType;
 import com.echothree.model.data.party.server.entity.Party;
-import com.echothree.model.data.party.server.entity.PartyType;
-import com.echothree.model.data.workflow.server.entity.WorkflowEntityStatus;
-import com.echothree.model.data.workflow.server.entity.WorkflowEntrance;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.persistence.BasePK;
 import com.echothree.util.server.control.BaseLogic;
 import com.echothree.util.server.message.ExecutionErrorAccumulator;
 import com.echothree.util.server.persistence.Session;
 import java.util.HashSet;
-import java.util.Set;
 
 public class ContactListLogic
     extends BaseLogic {
@@ -82,9 +77,9 @@ public class ContactListLogic
         return contactListContactMechanismPurpose;
     }
 
-    public boolean hasContactListAccess(final Party party, final ContactList contactList) {
+    public boolean hasContactListAccess(final Party executingParty, final ContactList contactList) {
         var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
-        var partyType = party.getLastDetail().getPartyType();
+        var partyType = executingParty.getLastDetail().getPartyType();
         var partyTypeName = partyType.getPartyTypeName();
         var contactListGroup = contactList.getLastDetail().getContactListGroup();
 
@@ -93,19 +88,21 @@ public class ContactListLogic
 
         // If the Contact List Group that the Contact List is in has been explicitly given access to the Party Type,
         // then allow access.
-        if(!hasAccess)
+        if(!hasAccess) {
             hasAccess = contactListControl.partyTypeContactListGroupExists(partyType, contactListGroup);
+        }
 
         // If access hasn't been granted, allow access if the Party Type has been explicitly given access to the
         // Contact List, or if the Contact List has no further restrictions.
-        if(!hasAccess)
+        if(!hasAccess) {
             hasAccess = contactListControl.partyTypeContactListExists(partyType, contactList)
                     || contactListControl.countPartyTypeContactListsByContactList(contactList) == 0;
+        }
 
         // Customers have some special checks based on Customer Type, if access still has no yet been granted.
         if(!hasAccess && partyTypeName.equals(PartyConstants.PartyType_CUSTOMER)) {
             var customerControl = (CustomerControl)Session.getModelController(CustomerControl.class);
-            var customerType = customerControl.getCustomer(party).getCustomerType();
+            var customerType = customerControl.getCustomer(executingParty).getCustomerType();
 
             // If the Contact List is in has been explicitly given access to the Party Type, then allow access.
             hasAccess = contactListControl.customerTypeContactListGroupExists(customerType, contactListGroup);
