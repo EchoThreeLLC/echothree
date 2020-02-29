@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,37 +18,38 @@ package com.echothree.control.user.geo.server.command;
 
 import com.echothree.control.user.geo.common.form.GetStatesForm;
 import com.echothree.control.user.geo.common.result.GeoResultFactory;
-import com.echothree.control.user.geo.common.result.GetStatesResult;
 import com.echothree.model.control.geo.server.GeoControl;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.geo.server.entity.GeoCode;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
-import com.echothree.model.data.user.server.entity.UserVisit;
+import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
-import com.echothree.util.server.control.BaseSimpleCommand;
+import com.echothree.util.server.control.BaseMultipleEntitiesCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
 import com.echothree.util.server.control.SecurityRoleDefinition;
 import com.echothree.util.server.persistence.Session;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 public class GetStatesCommand
-        extends BaseSimpleCommand<GetStatesForm> {
+        extends BaseMultipleEntitiesCommand<GeoCode, GetStatesForm> {
     
     private final static CommandSecurityDefinition COMMAND_SECURITY_DEFINITION;
     private final static List<FieldDefinition> FORM_FIELD_DEFINITIONS;
     
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyConstants.PartyType_UTILITY, null),
-                new PartyTypeDefinition(PartyConstants.PartyType_EMPLOYEE, Collections.unmodifiableList(Arrays.asList(
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.CUSTOMER.name(), null),
+                new PartyTypeDefinition(PartyTypes.VENDOR.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
                         new SecurityRoleDefinition(SecurityRoleGroups.State.name(), SecurityRoles.List.name())
                         )))
                 )));
@@ -62,24 +63,40 @@ public class GetStatesCommand
     public GetStatesCommand(UserVisitPK userVisitPK, GetStatesForm form) {
         super(userVisitPK, form, COMMAND_SECURITY_DEFINITION, FORM_FIELD_DEFINITIONS, true);
     }
-    
+
+    GeoCode countryGeoCode;
+
     @Override
-    protected BaseResult execute() {
+    protected Collection<GeoCode> getEntities() {
         var geoControl = (GeoControl)Session.getModelController(GeoControl.class);
-        GetStatesResult result = GeoResultFactory.getGetStatesResult();
-        String countryName = form.getCountryName();
-        GeoCode countryGeoCode = geoControl.getCountryByAlias(countryName);
-        
+        var countryName = form.getCountryName();
+        Collection<GeoCode> stateGeoCodes = null;
+
+        countryGeoCode = geoControl.getCountryByAlias(countryName);
+
         if(countryGeoCode != null) {
-            UserVisit userVisit = getUserVisit();
-            
-            result.setCountry(geoControl.getCountryTransfer(userVisit, countryGeoCode));
-            result.setStates(geoControl.getStateTransfersByCountry(userVisit, countryGeoCode));
+            stateGeoCodes = geoControl.getStatesByCountry(countryGeoCode);
         } else {
             addExecutionError(ExecutionErrors.UnknownCountryName.name(), countryName);
         }
-        
+
+        return stateGeoCodes;
+    }
+
+    @Override
+    protected BaseResult getTransfers(Collection<GeoCode> entities) {
+        var result = GeoResultFactory.getGetStatesResult();
+
+        if(entities != null) {
+            var geoControl = (GeoControl)Session.getModelController(GeoControl.class);
+            var userVisit = getUserVisit();
+
+            result.setCountry(geoControl.getCountryTransfer(userVisit, countryGeoCode));
+            result.setStates(geoControl.getStateTransfers(userVisit, entities));
+
+        }
+
         return result;
     }
-    
+
 }

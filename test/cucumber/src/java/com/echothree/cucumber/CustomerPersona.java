@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,16 +16,6 @@
 
 package com.echothree.cucumber;
 
-import com.echothree.model.data.user.common.pk.UserVisitPK;
-import com.echothree.util.common.command.CommandResult;
+public class CustomerPersona extends BasePersona {
 
-public class CustomerPersona {
-    public String persona;
-    public UserVisitPK userVisitPK;
-    public CommandResult commandResult;
-
-    public String lastEmailAddressContactMechanismName;
-    public String lastPostalAddressContactMechanismName;
-    public String lastTelephoneContactMechanismName;
-    public String lastWebAddressContactMechanismName;
 }

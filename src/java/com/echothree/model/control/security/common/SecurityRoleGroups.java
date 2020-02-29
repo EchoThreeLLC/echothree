@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -109,6 +109,7 @@ public enum SecurityRoleGroups {
     EntityAttributeEntityType,
     EntityAttributeGroup,
     EntityListItem,
+    EntityInstance,
     EntityIntegerRange,
     EntityLongRange,
     EntityType,
@@ -243,6 +244,7 @@ public enum SecurityRoleGroups {
     PurchaseInvoice,
     PurchaseInvoiceLine,
     PurchaseInvoiceStatus,
+    PurchaseOrder,
     QueuedLetter,
     QueueType,
     RelatedItem,
@@ -327,13 +329,13 @@ public enum SecurityRoleGroups {
     VendorItemCost,
     VendorStatus,
     VendorType,
+    Wishlist,
     WorkEffortType,
     WorkEffortScope,
     Workflow,
     WorkflowDestination,
-    WorkflowDestinationStep,
+    WorkflowEntityStatus,
     WorkflowEntrance,
-    WorkflowEntranceStep,
     WorkflowStep,
     WorkRequirementType,
     WorkRequirementScope,

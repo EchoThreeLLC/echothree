@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import com.echothree.control.user.employee.common.result.GetEmployeeResult;
 import com.echothree.control.user.party.common.PartyUtil;
 import com.echothree.control.user.party.common.form.GetPartyTypeForm;
 import com.echothree.control.user.party.common.result.GetPartyTypeResult;
-import com.echothree.model.control.party.common.PartyConstants;
 import com.echothree.model.control.party.common.PartyOptions;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.common.transfer.PartyTypePasswordStringPolicyTransfer;
 import com.echothree.model.control.party.common.transfer.PartyTypeTransfer;
 import com.echothree.ui.web.main.framework.AttributeConstants;
@@ -34,7 +34,6 @@ import com.echothree.ui.web.main.framework.MainBaseAction;
 import com.echothree.ui.web.main.framework.ParameterConstants;
 import com.echothree.util.common.command.CommandResult;
 import com.echothree.util.common.command.ExecutionResult;
-import static com.echothree.view.client.web.struts.BaseAction.getUserVisitPK;
 import com.echothree.view.client.web.struts.sprout.annotation.SproutAction;
 import com.echothree.view.client.web.struts.sprout.annotation.SproutForward;
 import com.echothree.view.client.web.struts.sprout.annotation.SproutProperty;
@@ -112,7 +111,7 @@ public class PasswordAction
         if(forwardKey == null) {
             GetPartyTypeForm commandForm = PartyUtil.getHome().getGetPartyTypeForm();
             
-            commandForm.setPartyTypeName(PartyConstants.PartyType_EMPLOYEE);
+            commandForm.setPartyTypeName(PartyTypes.EMPLOYEE.name());
             
             Set<String> options = new HashSet<>();
             options.add(PartyOptions.PartyTypeIncludePasswordStringPolicy);

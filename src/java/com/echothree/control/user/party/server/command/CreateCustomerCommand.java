@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import com.echothree.model.control.contact.server.logic.ContactEmailAddressLogic
 import com.echothree.model.control.contactlist.server.logic.ContactListLogic;
 import com.echothree.model.control.customer.server.CustomerControl;
 import com.echothree.model.control.offer.server.OfferControl;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.party.server.logic.PartyChainLogic;
 import com.echothree.model.control.returnpolicy.common.ReturnPolicyConstants;
@@ -89,8 +89,8 @@ public class CreateCustomerCommand
     
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyConstants.PartyType_UTILITY, null),
-                new PartyTypeDefinition(PartyConstants.PartyType_EMPLOYEE, Collections.unmodifiableList(Arrays.asList(
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
                         new SecurityRoleDefinition(SecurityRoleGroups.Customer.name(), SecurityRoles.Create.name())
                         )))
                 )));
@@ -251,7 +251,7 @@ public class CreateCustomerCommand
                                                 if(preferredCurrencyIsoName == null || (preferredCurrency != null)) {
                                                     var workflowControl = (WorkflowControl)Session.getModelController(WorkflowControl.class);
                                                     Soundex soundex = new Soundex();
-                                                    PartyType partyType = partyControl.getPartyTypeByName(PartyConstants.PartyType_CUSTOMER);
+                                                    PartyType partyType = partyControl.getPartyTypeByName(PartyTypes.CUSTOMER.name());
                                                     BasePK createdBy = getPartyPK();
                                                     String personalTitleId = form.getPersonalTitleId();
                                                     PersonalTitle personalTitle = personalTitleId == null ? null : partyControl.convertPersonalTitleIdToEntity(personalTitleId,

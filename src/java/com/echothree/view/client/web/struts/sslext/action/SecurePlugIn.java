@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -101,11 +101,6 @@ public class SecurePlugIn implements SecurePlugInInterface {
     private Log sLog = LogFactory.getLog(SecurePlugIn.class);
     
     /**
-     * The application configuration for our owning sub-application.
-     */
-    private ModuleConfig config = null;
-    
-    /**
      * The {@link ActionServlet} owning this application.
      */
     private ActionServlet servlet = null;
@@ -155,7 +150,6 @@ public class SecurePlugIn implements SecurePlugInInterface {
     @Override
     public void init(ActionServlet servlet, ModuleConfig config)
     throws ServletException {
-        this.config = config;
         this.servlet = servlet;
         
         initMappings();

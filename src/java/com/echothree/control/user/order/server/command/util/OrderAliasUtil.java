@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@
 package com.echothree.control.user.order.server.command.util;
 
 import com.echothree.control.user.order.common.spec.OrderTypeSpec;
-import com.echothree.model.control.order.common.OrderConstants;
+import com.echothree.model.control.order.common.OrderTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
-import com.echothree.model.control.security.common.SecurityRoles;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +40,7 @@ public class OrderAliasUtil {
 
     static {
         securityRoleGroupNameByOrderTypeName = new HashMap<>();
-        securityRoleGroupNameByOrderTypeName.put(OrderConstants.OrderType_SALES_ORDER, SecurityRoleGroups.SalesOrderAlias.name());
+        securityRoleGroupNameByOrderTypeName.put(OrderTypes.SALES_ORDER.name(), SecurityRoleGroups.SalesOrderAlias.name());
     }
 
     public String getSecurityRoleGroupNameByOrderTypeName(String orderTypeName) {

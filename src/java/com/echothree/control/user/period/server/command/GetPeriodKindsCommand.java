@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.echothree.control.user.period.server.command;
 import com.echothree.control.user.period.common.form.GetPeriodKindsForm;
 import com.echothree.control.user.period.common.result.GetPeriodKindsResult;
 import com.echothree.control.user.period.common.result.PeriodResultFactory;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.period.server.PeriodControl;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
@@ -43,8 +43,8 @@ public class GetPeriodKindsCommand
     
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyConstants.PartyType_UTILITY, null),
-                new PartyTypeDefinition(PartyConstants.PartyType_EMPLOYEE, Collections.unmodifiableList(Arrays.asList(
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
                     new SecurityRoleDefinition(SecurityRoleGroups.PeriodKind.name(), SecurityRoles.List.name())
                     )))
                 )));

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@ package com.echothree.control.user.authentication.server;
 import com.echothree.control.user.authentication.common.AuthenticationRemote;
 import com.echothree.control.user.authentication.common.form.*;
 import com.echothree.control.user.authentication.server.command.*;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyNames;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.user.server.UserControl;
 import com.echothree.model.data.party.server.entity.Party;
@@ -29,8 +30,7 @@ import com.echothree.model.data.user.server.entity.UserVisit;
 import com.echothree.util.common.exception.PersistenceDatabaseException;
 import com.echothree.util.common.command.CommandResult;
 import com.echothree.util.server.persistence.Session;
-import com.echothree.util.server.persistence.ThreadCaches;
-import com.echothree.util.server.persistence.ThreadSession;
+import com.echothree.util.server.persistence.ThreadUtils;
 import javax.ejb.Stateless;
 
 @Stateless
@@ -58,19 +58,21 @@ public class AuthenticationBean
     
     @Override
     public UserVisitPK getDataLoaderUserVisit() {
+        var preservedState = ThreadUtils.preserveState();
+
         UserVisitPK userVisitPK = null;
         
         try {
             var userControl = (UserControl)Session.getModelController(UserControl.class);
             UserVisit userVisit = userControl.createUserVisit(null, null, null, null, null, null, null, null);
             var partyControl = (PartyControl)Session.getModelController(PartyControl.class);
-            Party party = partyControl.getPartyByName(PartyConstants.PartyName_DATA_LOADER);
+            Party party = partyControl.getPartyByName(PartyNames.DATA_LOADER.name());
             
             if(party == null) {
-                PartyType partyType = partyControl.getPartyTypeByName(PartyConstants.PartyType_UTILITY);
+                PartyType partyType = partyControl.getPartyTypeByName(PartyTypes.UTILITY.name());
                 
                 if(partyType != null) {
-                    party = partyControl.createParty(PartyConstants.PartyName_DATA_LOADER, partyType, null, null, null, null, null);
+                    party = partyControl.createParty(PartyNames.DATA_LOADER.name(), partyType, null, null, null, null, null);
                 }
             }
             
@@ -83,10 +85,11 @@ public class AuthenticationBean
         } catch (PersistenceDatabaseException pde) {
             throw pde;
         } finally {
-            ThreadSession.closeSession();
-            ThreadCaches.closeCaches();
+            ThreadUtils.close();
         }
-        
+
+        ThreadUtils.restoreState(preservedState);
+
         return userVisitPK;
     }
     

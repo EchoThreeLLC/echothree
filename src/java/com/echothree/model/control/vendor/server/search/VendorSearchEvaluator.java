@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package com.echothree.model.control.vendor.server.search;
 
 import com.echothree.model.control.index.common.IndexConstants;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.search.server.search.EntityInstancePKHolder;
 import com.echothree.model.control.party.server.search.PartySearchEvaluator;
 import com.echothree.model.control.vendor.server.VendorControl;
@@ -38,7 +38,7 @@ public class VendorSearchEvaluator
     /** Creates a new instance of VendorSearchEvaluator */
     public VendorSearchEvaluator(UserVisit userVisit, SearchType searchType, SearchDefaultOperator searchDefaultOperator, SearchSortOrder searchSortOrder,
             SearchSortDirection searchSortDirection) {
-        super(userVisit, searchType, searchDefaultOperator, searchSortOrder, searchSortDirection, PartyConstants.PartyType_VENDOR, IndexConstants.Index_VENDOR);
+        super(userVisit, searchType, searchDefaultOperator, searchSortOrder, searchSortDirection, PartyTypes.VENDOR.name(), IndexConstants.Index_VENDOR);
     }
     
     public String getVendorName() {

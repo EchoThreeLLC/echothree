@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import com.echothree.model.control.batch.server.BatchControl;
 import com.echothree.model.control.chain.server.ChainControl;
 import com.echothree.model.control.comment.server.CommentControl;
 import com.echothree.model.control.core.common.ComponentVendors;
+import com.echothree.model.control.core.common.EntityAttributeTypes;
 import com.echothree.model.control.core.common.EntityTypes;
 import com.echothree.model.control.core.common.EventTypes;
-import com.echothree.model.control.core.common.EntityAttributeTypes;
 import com.echothree.model.control.core.common.choice.AppearanceChoicesBean;
 import com.echothree.model.control.core.common.choice.ApplicationChoicesBean;
 import com.echothree.model.control.core.common.choice.ApplicationEditorChoicesBean;
@@ -128,6 +128,11 @@ import com.echothree.model.control.core.common.transfer.TextDecorationDescriptio
 import com.echothree.model.control.core.common.transfer.TextDecorationTransfer;
 import com.echothree.model.control.core.common.transfer.TextTransformationDescriptionTransfer;
 import com.echothree.model.control.core.common.transfer.TextTransformationTransfer;
+import static com.echothree.model.control.core.common.workflow.BaseEncryptionKeyStatusConstants.WorkflowDestination_BASE_ENCRYPTION_KEY_STATUS_ACTIVE_TO_INACTIVE;
+import static com.echothree.model.control.core.common.workflow.BaseEncryptionKeyStatusConstants.WorkflowStep_BASE_ENCRYPTION_KEY_STATUS_ACTIVE;
+import static com.echothree.model.control.core.common.workflow.BaseEncryptionKeyStatusConstants.Workflow_BASE_ENCRYPTION_KEY_STATUS;
+import static com.echothree.model.control.core.common.workflow.EventGroupStatusConstants.WorkflowStep_EVENT_GROUP_STATUS_ACTIVE;
+import static com.echothree.model.control.core.common.workflow.EventGroupStatusConstants.Workflow_EVENT_GROUP_STATUS;
 import com.echothree.model.control.core.server.transfer.AppearanceDescriptionTransferCache;
 import com.echothree.model.control.core.server.transfer.AppearanceTextDecorationTransferCache;
 import com.echothree.model.control.core.server.transfer.AppearanceTextTransformationTransferCache;
@@ -148,7 +153,6 @@ import com.echothree.model.control.core.server.transfer.CommandMessageTranslatio
 import com.echothree.model.control.core.server.transfer.CommandMessageTypeDescriptionTransferCache;
 import com.echothree.model.control.core.server.transfer.CommandMessageTypeTransferCache;
 import com.echothree.model.control.core.server.transfer.CommandTransferCache;
-import com.echothree.model.control.core.server.transfer.ComponentVendorTransferCache;
 import com.echothree.model.control.core.server.transfer.CoreTransferCaches;
 import com.echothree.model.control.core.server.transfer.EditorDescriptionTransferCache;
 import com.echothree.model.control.core.server.transfer.EditorTransferCache;
@@ -203,15 +207,10 @@ import com.echothree.model.control.rating.server.RatingControl;
 import com.echothree.model.control.scale.server.ScaleControl;
 import com.echothree.model.control.search.server.SearchControl;
 import com.echothree.model.control.security.server.SecurityControl;
-import com.echothree.model.control.sequence.common.SequenceConstants;
+import com.echothree.model.control.sequence.common.SequenceTypes;
 import com.echothree.model.control.sequence.server.SequenceControl;
 import com.echothree.model.control.tag.server.TagControl;
 import com.echothree.model.control.workeffort.server.WorkEffortControl;
-import static com.echothree.model.control.core.common.workflow.BaseEncryptionKeyStatusConstants.WorkflowDestination_BASE_ENCRYPTION_KEY_STATUS_ACTIVE_TO_INACTIVE;
-import static com.echothree.model.control.core.common.workflow.BaseEncryptionKeyStatusConstants.WorkflowStep_BASE_ENCRYPTION_KEY_STATUS_ACTIVE;
-import static com.echothree.model.control.core.common.workflow.BaseEncryptionKeyStatusConstants.Workflow_BASE_ENCRYPTION_KEY_STATUS;
-import static com.echothree.model.control.core.common.workflow.EventGroupStatusConstants.WorkflowStep_EVENT_GROUP_STATUS_ACTIVE;
-import static com.echothree.model.control.core.common.workflow.EventGroupStatusConstants.Workflow_EVENT_GROUP_STATUS;
 import com.echothree.model.control.workflow.server.WorkflowControl;
 import com.echothree.model.data.chain.server.entity.ChainInstance;
 import com.echothree.model.data.core.common.pk.AppearancePK;
@@ -228,6 +227,7 @@ import com.echothree.model.data.core.common.pk.EditorPK;
 import com.echothree.model.data.core.common.pk.EntityAttributeGroupPK;
 import com.echothree.model.data.core.common.pk.EntityAttributePK;
 import com.echothree.model.data.core.common.pk.EntityAttributeTypePK;
+import com.echothree.model.data.core.common.pk.EntityInstancePK;
 import com.echothree.model.data.core.common.pk.EntityIntegerRangePK;
 import com.echothree.model.data.core.common.pk.EntityListItemPK;
 import com.echothree.model.data.core.common.pk.EntityLongRangePK;
@@ -578,6 +578,7 @@ import com.echothree.model.data.party.common.pk.LanguagePK;
 import com.echothree.model.data.party.common.pk.PartyPK;
 import com.echothree.model.data.party.server.entity.Language;
 import com.echothree.model.data.party.server.entity.Party;
+import com.echothree.model.data.party.server.factory.PartyFactory;
 import com.echothree.model.data.sequence.common.pk.SequencePK;
 import com.echothree.model.data.sequence.server.entity.Sequence;
 import com.echothree.model.data.sequence.server.entity.SequenceType;
@@ -658,8 +659,24 @@ public class CoreControl
         
         return componentVendor;
     }
-    
-    private ComponentVendor getComponentVendorByName(String componentVendorName, EntityPermission entityPermission) {
+
+    /** Assume that the entityInstance passed to this function is a ECHOTHREE.ComponentVendor */
+    public ComponentVendor getComponentVendorByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
+        var pk = new ComponentVendorPK(entityInstance.getEntityUniqueId());
+        var componentVendor = ComponentVendorFactory.getInstance().getEntityFromPK(entityPermission, pk);
+
+        return componentVendor;
+    }
+
+    public ComponentVendor getComponentVendorByEntityInstance(EntityInstance entityInstance) {
+        return getComponentVendorByEntityInstance(entityInstance, EntityPermission.READ_ONLY);
+    }
+
+    public ComponentVendor getComponentVendorByEntityInstanceForUpdate(EntityInstance entityInstance) {
+        return getComponentVendorByEntityInstance(entityInstance, EntityPermission.READ_WRITE);
+    }
+
+    public ComponentVendor getComponentVendorByName(String componentVendorName, EntityPermission entityPermission) {
         ComponentVendor componentVendor = null;
         
         try {
@@ -695,7 +712,7 @@ public class CoreControl
     public ComponentVendor getComponentVendorByNameForUpdate(String componentVendorName) {
         return getComponentVendorByName(componentVendorName, EntityPermission.READ_WRITE);
     }
-    
+
     public ComponentVendorDetailValue getComponentVendorDetailValueForUpdate(ComponentVendor componentVendor) {
         return componentVendor == null? null: componentVendor.getLastDetailForUpdate().getComponentVendorDetailValue().clone();
     }
@@ -733,19 +750,22 @@ public class CoreControl
     public ComponentVendorTransfer getComponentVendorTransfer(UserVisit userVisit, ComponentVendor componentVendor) {
         return getCoreTransferCaches(userVisit).getComponentVendorTransferCache().getComponentVendorTransfer(componentVendor);
     }
-    
-    public List<ComponentVendorTransfer> getComponentVendorTransfers(UserVisit userVisit) {
-        List<ComponentVendor> componentVendors = getComponentVendors();
-        List<ComponentVendorTransfer> componentVendorTransfers = new ArrayList<>(componentVendors.size());
-        ComponentVendorTransferCache componentVendorTransferCache = getCoreTransferCaches(userVisit).getComponentVendorTransferCache();
-        
+
+    public List<ComponentVendorTransfer> getComponentVendorTransfers(UserVisit userVisit, Collection<ComponentVendor> componentVendors) {
+        var componentVendorTransfers = new ArrayList<ComponentVendorTransfer>(componentVendors.size());
+        var componentVendorTransferCache = getCoreTransferCaches(userVisit).getComponentVendorTransferCache();
+
         componentVendors.stream().forEach((componentVendor) -> {
             componentVendorTransfers.add(componentVendorTransferCache.getComponentVendorTransfer(componentVendor));
         });
-        
+
         return componentVendorTransfers;
     }
-    
+
+    public List<ComponentVendorTransfer> getComponentVendorTransfers(UserVisit userVisit) {
+        return getComponentVendorTransfers(userVisit, getComponentVendors());
+    }
+
     public void updateComponentVendorFromValue(ComponentVendorDetailValue componentVendorDetailValue, BasePK updatedBy) {
         if(componentVendorDetailValue.hasBeenModified()) {
             ComponentVendor componentVendor = ComponentVendorFactory.getInstance().getEntityFromPK(EntityPermission.READ_WRITE,
@@ -800,13 +820,21 @@ public class CoreControl
         
         return entityType;
     }
-    
+
     /** Assume that the entityInstance passed to this function is a ECHOTHREE.EntityType */
-    public EntityType getEntityTypeByEntityInstance(EntityInstance entityInstance) {
-        EntityTypePK pk = new EntityTypePK(entityInstance.getEntityUniqueId());
-        EntityType entityType = EntityTypeFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, pk);
-        
+    public EntityType getEntityTypeByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
+        var pk = new EntityTypePK(entityInstance.getEntityUniqueId());
+        var entityType = EntityTypeFactory.getInstance().getEntityFromPK(entityPermission, pk);
+
         return entityType;
+    }
+
+    public EntityType getEntityTypeByEntityInstance(EntityInstance entityInstance) {
+        return getEntityTypeByEntityInstance(entityInstance, EntityPermission.READ_ONLY);
+    }
+
+    public EntityType getEntityTypeByEntityInstanceForUpdate(EntityInstance entityInstance) {
+        return getEntityTypeByEntityInstance(entityInstance, EntityPermission.READ_WRITE);
     }
     
     public long countEntityTypes() {
@@ -824,7 +852,7 @@ public class CoreControl
                 componentVendor);
     }
 
-    private EntityType getEntityTypeByName(ComponentVendor componentVendor, String entityTypeName, EntityPermission entityPermission) {
+    public EntityType getEntityTypeByName(ComponentVendor componentVendor, String entityTypeName, EntityPermission entityPermission) {
         EntityType entityType = null;
         
         try {
@@ -951,7 +979,7 @@ public class CoreControl
         return getCoreTransferCaches(userVisit).getEntityTypeTransferCache().getEntityTypeTransfer(entityType);
     }
     
-    private List<EntityTypeTransfer> getEntityTypeTransfers(UserVisit userVisit, List<EntityType> entityTypes) {
+    public List<EntityTypeTransfer> getEntityTypeTransfers(UserVisit userVisit, Collection<EntityType> entityTypes) {
         List<EntityTypeTransfer> entityTypeTransfers = new ArrayList<>(entityTypes.size());
         EntityTypeTransferCache entityTypeTransferCache = getCoreTransferCaches(userVisit).getEntityTypeTransferCache();
         
@@ -2372,7 +2400,21 @@ public class CoreControl
         
         return result;
     }
-    
+
+    public long countEntityInstances() {
+        return session.queryForLong(
+                "SELECT COUNT(*) " +
+                "FROM entityinstances");
+    }
+
+    public long countEntityInstancesByEntityType(EntityType entityType) {
+        return session.queryForLong(
+                "SELECT COUNT(*) " +
+                "FROM entityinstances " +
+                "WHERE eni_ent_entitytypeid = ?",
+                entityType);
+    }
+
     public List<EntityInstance> getEntityInstancesByEntityType(EntityType entityType) {
         List<EntityInstance> entityInstances = null;
         
@@ -2626,21 +2668,26 @@ public class CoreControl
         return getEntityInstanceTransfer(userVisit, getEntityInstanceByBasePK(baseEntity.getPrimaryKey()), includeEntityAppearance, includeNames, includeKey,
                 includeGuid, includeUlid);
     }
-    
-    public List<EntityInstanceTransfer> getEntityInstanceTransfersByEntityType(UserVisit userVisit, EntityType entityType, boolean includeEntityAppearance,
-            boolean includeNames, boolean includeKey, boolean includeGuid, boolean includeUlid) {
-        List<EntityInstance> entityInstances = getEntityInstancesByEntityType(entityType);
-        List<EntityInstanceTransfer> entityInstanceTransfers = new ArrayList<>(entityInstances.size());
-            EntityInstanceTransferCache entityInstanceTransferCache = getCoreTransferCaches(userVisit).getEntityInstanceTransferCache();
-            
-            entityInstances.stream().forEach((entityInstance) -> {
-                entityInstanceTransfers.add(entityInstanceTransferCache.getEntityInstanceTransfer(entityInstance, includeEntityAppearance, includeNames,
-                        includeKey, includeGuid, includeUlid));
+
+    public List<EntityInstanceTransfer> getEntityInstanceTransfers(UserVisit userVisit, Collection<EntityInstance> entityInstances,
+            boolean includeEntityAppearance, boolean includeNames, boolean includeKey, boolean includeGuid, boolean includeUlid) {
+        var entityInstanceTransfers = new ArrayList<EntityInstanceTransfer>(entityInstances.size());
+        var entityInstanceTransferCache = getCoreTransferCaches(userVisit).getEntityInstanceTransferCache();
+
+        entityInstances.stream().forEach((entityInstance) -> {
+            entityInstanceTransfers.add(entityInstanceTransferCache.getEntityInstanceTransfer(entityInstance, includeEntityAppearance, includeNames,
+                    includeKey, includeGuid, includeUlid));
         });
-        
+
         return entityInstanceTransfers;
     }
-    
+
+    public List<EntityInstanceTransfer> getEntityInstanceTransfersByEntityType(UserVisit userVisit, EntityType entityType,
+            boolean includeEntityAppearance, boolean includeNames, boolean includeKey, boolean includeGuid, boolean includeUlid) {
+        return getEntityInstanceTransfers(userVisit, getEntityInstancesByEntityType(entityType), includeEntityAppearance,
+                includeNames, includeKey, includeGuid, includeUlid);
+    }
+
     /** Gets an EntityInstance for BasePK, creating it if necessary. Overrides function from BaseModelControl.
      * Some errors from this function are normal during the initial load of data into the database.
      */
@@ -2762,7 +2809,11 @@ public class CoreControl
     public EntityInstance getEntityInstanceByEntityRefForUpdate(String entityRef) {
         return getEntityInstanceByEntityRef(entityRef, EntityPermission.READ_WRITE);
     }
-    
+
+    public EntityInstance getEntityInstanceByPK(EntityInstancePK entityInstancePK) {
+        return EntityInstanceFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, entityInstancePK);
+    }
+
     /** This function is a little odd. It doesn't actually delete the Entity Instance, rather, it cleans up all the
      * entities scattered through several components that depend on them.
      */
@@ -3342,7 +3393,7 @@ public class CoreControl
             WorkflowEntrance workflowEntrance = workflowControl.getDefaultWorkflowEntrance(workflow);
             
             if(workflowEntrance != null && (workflowControl.countWorkflowEntranceStepsByWorkflowEntrance(workflowEntrance) > 0)) {
-                Sequence sequence = sequenceControl.getDefaultSequenceUsingNames(SequenceConstants.SequenceType_EVENT_GROUP);
+                Sequence sequence = sequenceControl.getDefaultSequenceUsingNames(SequenceTypes.EVENT_GROUP.name());
                 String eventGroupName = sequenceControl.getNextSequenceValue(sequence);
                 
                 eventGroup = createEventGroup(eventGroupName, createdBy);
@@ -12301,7 +12352,7 @@ public class CoreControl
         
         if(!eea.hasExecutionErrors()) {
             var sequenceControl = (SequenceControl)Session.getModelController(SequenceControl.class);
-            Sequence sequence = sequenceControl.getDefaultSequenceUsingNames(SequenceConstants.SequenceType_BASE_ENCRYPTION_KEY);
+            Sequence sequence = sequenceControl.getDefaultSequenceUsingNames(SequenceTypes.BASE_ENCRYPTION_KEY.name());
             String baseEncryptionKeyName = sequenceControl.getNextSequenceValue(sequence);
             String sha1Hash = Sha1Utils.getInstance().encode(baseKey1, baseKey2);
             baseEncryptionKey = createBaseEncryptionKey(baseEncryptionKeyName, sha1Hash, createdBy);
@@ -12598,7 +12649,7 @@ public class CoreControl
     public EventSubscriber createEventSubscriber(EntityInstance entityInstance, String description, Integer sortOrder,
             BasePK createdBy) {
         var sequenceControl = (SequenceControl)Session.getModelController(SequenceControl.class);
-        SequenceType sequenceType = sequenceControl.getSequenceTypeByName(SequenceConstants.SequenceType_EVENT_SUBSCRIBER);
+        SequenceType sequenceType = sequenceControl.getSequenceTypeByName(SequenceTypes.EVENT_SUBSCRIBER.name());
         Sequence sequence = sequenceControl.getDefaultSequence(sequenceType);
         String eventSubscriberName = sequenceControl.getNextSequenceValue(sequence);
         

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import com.echothree.model.control.associate.server.transfer.AssociateReferralTr
 import com.echothree.model.control.associate.server.transfer.AssociateTransferCache;
 import com.echothree.model.control.associate.server.transfer.AssociateTransferCaches;
 import com.echothree.model.control.core.common.EventTypes;
-import com.echothree.model.control.sequence.common.SequenceConstants;
+import com.echothree.model.control.sequence.common.SequenceTypes;
 import com.echothree.model.control.sequence.server.SequenceControl;
 import com.echothree.model.data.associate.common.pk.AssociatePK;
 import com.echothree.model.data.associate.common.pk.AssociatePartyContactMechanismPK;
@@ -1111,7 +1111,7 @@ public class AssociateControl
     public AssociateReferral createAssociateReferral(Associate associate, AssociatePartyContactMechanism associatePartyContactMechanism,
             EntityInstance targetEntityInstance, Long associateReferralTime, BasePK createdBy) {
         var sequenceControl = (SequenceControl)Session.getModelController(SequenceControl.class);
-        Sequence sequence = sequenceControl.getDefaultSequenceUsingNames(SequenceConstants.SequenceType_ASSOCIATE_REFERRAL);
+        Sequence sequence = sequenceControl.getDefaultSequenceUsingNames(SequenceTypes.ASSOCIATE_REFERRAL.name());
         String associateReferralName = sequenceControl.getNextSequenceValue(sequence);
 
         return createAssociateReferral(associateReferralName, associate, associatePartyContactMechanism, targetEntityInstance, associateReferralTime,

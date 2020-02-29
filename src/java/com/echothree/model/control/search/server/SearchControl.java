@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.echothree.model.control.search.server;
 
-
 import com.echothree.model.control.batch.server.BatchControl;
 import com.echothree.model.control.contact.server.ContactControl;
 import com.echothree.model.control.content.server.ContentControl;
@@ -27,6 +26,7 @@ import com.echothree.model.control.employee.server.EmployeeControl;
 import com.echothree.model.control.forum.server.ForumControl;
 import com.echothree.model.control.item.server.ItemControl;
 import com.echothree.model.control.offer.server.OfferControl;
+import com.echothree.model.control.sales.common.workflow.SalesOrderStatusConstants;
 import com.echothree.model.control.sales.server.SalesControl;
 import com.echothree.model.control.search.common.SearchOptions;
 import com.echothree.model.control.search.common.choice.SearchCheckSpellingActionTypeChoicesBean;
@@ -71,6 +71,9 @@ import com.echothree.model.control.search.common.transfer.SecurityRoleResultTran
 import com.echothree.model.control.search.common.transfer.UseResultTransfer;
 import com.echothree.model.control.search.common.transfer.UseTypeResultTransfer;
 import com.echothree.model.control.search.common.transfer.VendorResultTransfer;
+import com.echothree.model.control.search.server.graphql.CustomerResultObject;
+import com.echothree.model.control.search.server.graphql.ItemResultObject;
+import com.echothree.model.control.search.server.graphql.VendorResultObject;
 import com.echothree.model.control.search.server.transfer.SearchCheckSpellingActionTypeDescriptionTransferCache;
 import com.echothree.model.control.search.server.transfer.SearchCheckSpellingActionTypeTransferCache;
 import com.echothree.model.control.search.server.transfer.SearchDefaultOperatorDescriptionTransferCache;
@@ -87,10 +90,7 @@ import com.echothree.model.control.search.server.transfer.SearchUseTypeDescripti
 import com.echothree.model.control.search.server.transfer.SearchUseTypeTransferCache;
 import com.echothree.model.control.security.server.SecurityControl;
 import com.echothree.model.control.vendor.server.VendorControl;
-import com.echothree.model.control.sales.common.workflow.SalesOrderStatusConstants;
-import com.echothree.model.control.search.server.graphql.CustomerResultObject;
 import com.echothree.model.control.workflow.common.transfer.WorkflowEntityStatusTransfer;
-import com.echothree.model.control.workflow.server.WorkflowControl;
 import com.echothree.model.data.batch.common.pk.BatchPK;
 import com.echothree.model.data.batch.server.entity.Batch;
 import com.echothree.model.data.contact.common.pk.ContactMechanismPK;
@@ -102,6 +102,7 @@ import com.echothree.model.data.content.server.entity.ContentCatalogDetail;
 import com.echothree.model.data.content.server.entity.ContentCategory;
 import com.echothree.model.data.content.server.entity.ContentCategoryDetail;
 import com.echothree.model.data.content.server.factory.ContentCategoryFactory;
+import com.echothree.model.data.core.common.pk.EntityInstancePK;
 import com.echothree.model.data.core.common.pk.EntityListItemPK;
 import com.echothree.model.data.core.common.pk.EntityTypePK;
 import com.echothree.model.data.core.server.entity.EntityAttributeDetail;
@@ -120,12 +121,10 @@ import com.echothree.model.data.forum.server.entity.ForumMessage;
 import com.echothree.model.data.forum.server.factory.ForumMessageFactory;
 import com.echothree.model.data.index.server.entity.Index;
 import com.echothree.model.data.index.server.entity.IndexField;
-import com.echothree.model.data.index.server.entity.IndexType;
 import com.echothree.model.data.item.common.pk.HarmonizedTariffScheduleCodePK;
 import com.echothree.model.data.item.common.pk.ItemPK;
 import com.echothree.model.data.item.server.entity.HarmonizedTariffScheduleCode;
 import com.echothree.model.data.item.server.entity.HarmonizedTariffScheduleCodeDetail;
-import com.echothree.model.data.item.server.entity.Item;
 import com.echothree.model.data.item.server.factory.HarmonizedTariffScheduleCodeFactory;
 import com.echothree.model.data.item.server.factory.ItemFactory;
 import com.echothree.model.data.offer.common.pk.OfferPK;
@@ -2603,36 +2602,6 @@ public class SearchControl
         return getSearchKinds(EntityPermission.READ_WRITE);
     }
 
-    private static final Map<EntityPermission, String> getSearchKindsByIndexTypeQueries;
-
-    static {
-        Map<EntityPermission, String> queryMap = new HashMap<>(2);
-
-        queryMap.put(EntityPermission.READ_ONLY,
-                "SELECT _ALL_ "
-                + "FROM searchkinds, searchkinddetails "
-                + "WHERE srchk_activedetailid = srchkdt_searchkinddetailid "
-                + "ORDER BY srchkdt_sortorder, srchkdt_searchkindname");
-        queryMap.put(EntityPermission.READ_WRITE,
-                "SELECT _ALL_ "
-                + "FROM searchkinds, searchkinddetails "
-                + "WHERE srchk_activedetailid = srchkdt_searchkinddetailid "
-                + "FOR UPDATE");
-        getSearchKindsByIndexTypeQueries = Collections.unmodifiableMap(queryMap);
-    }
-
-    private List<SearchKind> getSearchKindsByIndexType(IndexType indexType, EntityPermission entityPermission) {
-        return SearchKindFactory.getInstance().getEntitiesFromQuery(entityPermission, getSearchKindsByIndexTypeQueries);
-    }
-
-    public List<SearchKind> getSearchKindsByIndexType(IndexType indexType) {
-        return getSearchKindsByIndexType(indexType, EntityPermission.READ_ONLY);
-    }
-
-    public List<SearchKind> getSearchKindsByIndexTypeForUpdate(IndexType indexType) {
-        return getSearchKindsByIndexType(indexType, EntityPermission.READ_WRITE);
-    }
-
     public SearchKindChoicesBean getSearchKindChoices(String defaultSearchKindChoice, Language language, boolean allowNullChoice) {
         List<SearchKind> searchKinds = getSearchKinds();
         int size = searchKinds.size();
@@ -2772,10 +2741,6 @@ public class SearchControl
         deleteSearchKinds(searchKinds, true, deletedBy);
     }
 
-    public void deleteSearchKindsByIndexType(IndexType indexType, BasePK deletedBy) {
-        deleteSearchKinds(getSearchKindsByIndexTypeForUpdate(indexType), deletedBy);
-    }
-    
     // --------------------------------------------------------------------------------
     //   Search Kind Descriptions
     // --------------------------------------------------------------------------------
@@ -4958,25 +4923,113 @@ public class SearchControl
     public void deleteSearchResultActionsByEntityInstance(EntityInstance entityInstance, BasePK deletedBy) {
         deleteSearchResultActions(getSearchResultActionsByEntityInstanceForUpdate(entityInstance), deletedBy);
     }
-    
+
+    // --------------------------------------------------------------------------------
+    //   Common Search Result Utils
+    // --------------------------------------------------------------------------------
+
+    private final int ENI_ENTITYINSTANCEID_COLUMN_INDEX = 1;
+    private final int ENI_ENTITYUNIQUEID_COLUMN_INDEX = 2;
+
+    private ResultSet getUserVisitSearchResultSet(final UserVisitSearch userVisitSearch) {
+        var search = userVisitSearch.getSearch();
+        var cachedSearch = search.getCachedSearch();
+        ResultSet rs;
+
+        try {
+            if(cachedSearch == null) {
+                var ps = SearchResultFactory.getInstance().prepareStatement(
+                        "SELECT eni_entityinstanceid, eni_entityuniqueid " +
+                                "FROM searchresults, entityinstances " +
+                                "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
+                                "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
+                                "_LIMIT_");
+
+                ps.setLong(1, userVisitSearch.getSearch().getPrimaryKey().getEntityId());
+
+                rs = ps.executeQuery();
+            } else {
+                var cachedExecutedSearch = getCachedExecutedSearch(cachedSearch);
+
+                session.copyLimit(SearchResultConstants.ENTITY_TYPE_NAME, CachedExecutedSearchResultConstants.ENTITY_TYPE_NAME);
+
+                PreparedStatement ps = CachedExecutedSearchResultFactory.getInstance().prepareStatement(
+                        "SELECT eni_entityinstanceid, eni_entityuniqueid "
+                                + "FROM cachedexecutedsearchresults, entityinstances "
+                                + "WHERE cxsrchr_cxsrch_cachedexecutedsearchid = ? AND cxsrchr_eni_entityinstanceid = eni_entityinstanceid "
+                                + "ORDER BY cxsrchr_sortorder, cxsrchr_eni_entityinstanceid "
+                                + "_LIMIT_");
+
+                ps.setLong(1, cachedExecutedSearch.getPrimaryKey().getEntityId());
+
+                rs = ps.executeQuery();
+            }
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return rs;
+    }
+
+    // Takes into account if it's a Search or CachedSearch.
+    private int countSearchResults(final UserVisitSearch userVisitSearch) {
+        var search = userVisitSearch.getSearch();
+        var cachedSearch = search.getCachedSearch();
+        int count;
+
+        if(cachedSearch == null) {
+            count = countSearchResults(search);
+        } else {
+            var cachedExecutedSearch = getCachedExecutedSearch(cachedSearch);
+
+            count = countCachedExecutedSearchResults(cachedExecutedSearch);
+        }
+
+        return count;
+    }
+
+    public List<EntityInstance> getUserVisitSearchEntityInstances(final UserVisitSearch userVisitSearch) {
+        var entityInstances = new ArrayList<EntityInstance>(countSearchResults(userVisitSearch));
+
+        // If this is a CachedSearch, then the Limits supplied by the user need to be copied
+        // from SearchResults to CachedExecutedSearchResults.
+        if(userVisitSearch.getSearch().getCachedSearch() != null) {
+            session.copyLimit(SearchResultConstants.ENTITY_TYPE_NAME, CachedExecutedSearchResultConstants.ENTITY_TYPE_NAME);
+        }
+
+        try (var rs = getUserVisitSearchResultSet(userVisitSearch)) {
+            var coreControl = getCoreControl();
+
+            while(rs.next()) {
+                var entityInstance = coreControl.getEntityInstanceByPK(new EntityInstancePK(rs.getLong(ENI_ENTITYINSTANCEID_COLUMN_INDEX)));
+
+                entityInstances.add(entityInstance);
+            }
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return entityInstances;
+    }
+
     // --------------------------------------------------------------------------------
     //   Customer Searches
     // --------------------------------------------------------------------------------
-    
+
     public List<CustomerResultTransfer> getCustomerResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        List<CustomerResultTransfer> customerResultTransfers = new ArrayList<>();
-        boolean includeCustomer = false;
+        var customerResultTransfers = new ArrayList<CustomerResultTransfer>();
+        var includeCustomer = false;
         
-        Set<String> options = session.getOptions();
+        var options = session.getOptions();
         if(options != null) {
             includeCustomer = options.contains(SearchOptions.CustomerResultIncludeCustomer);
         }
         
-        try (ResultSet rs = getCustomerResults(userVisit, userVisitSearch)) {
+        try (ResultSet rs = getUserVisitSearchResultSet(userVisitSearch)) {
             var customerControl = (CustomerControl)Session.getModelController(CustomerControl.class);
 
             while(rs.next()) {
-                Party party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(1)));
+                var party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
 
                 customerResultTransfers.add(new CustomerResultTransfer(party.getLastDetail().getPartyName(),
                         includeCustomer ? customerControl.getCustomerTransfer(userVisit, party) : null));
@@ -4987,45 +5040,23 @@ public class SearchControl
         
         return customerResultTransfers;
     }
-    
-    public List<CustomerResultObject> getCustomerResultObjects(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        List<CustomerResultObject> customerResultObjects = new ArrayList<>();
-        
-        try (ResultSet rs = getCustomerResults(userVisit, userVisitSearch)) {
+
+    public List<CustomerResultObject> getCustomerResultObjects(UserVisitSearch userVisitSearch) {
+        var customerResultObjects = new ArrayList<CustomerResultObject>();
+
+        try (var rs = getUserVisitSearchResultSet(userVisitSearch)) {
             while(rs.next()) {
-                Party party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(1)));
+                var party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
 
                 customerResultObjects.add(new CustomerResultObject(party));
             }
         } catch (SQLException se) {
             throw new PersistenceDatabaseException(se);
         }
-        
+
         return customerResultObjects;
     }
-    
-    public ResultSet getCustomerResults(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        ResultSet rs = null;
-        
-        try {
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-            
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-            
-            rs = ps.executeQuery();
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return rs;
-    }
-    
+
     // --------------------------------------------------------------------------------
     //   Employee Searches
     // --------------------------------------------------------------------------------
@@ -5115,77 +5146,51 @@ public class SearchControl
     // --------------------------------------------------------------------------------
     
     public List<ItemResultTransfer> getItemResultTransfers(UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        CachedSearch cachedSearch = search.getCachedSearch();
-        List<ItemResultTransfer> itemResultTransfers;
-        boolean includeItem = false;
-        
-        Set<String> options = session.getOptions();
+        List<ItemResultTransfer> itemResultTransfers = new ArrayList<>(countSearchResults(userVisitSearch));;
+        var includeItem = false;
+
+        // ItemTransfer objects are not included unless specifically requested;
+        var options = session.getOptions();
         if(options != null) {
             includeItem = options.contains(SearchOptions.ItemResultIncludeItem);
         }
-        
-        if(cachedSearch == null) {
-            itemResultTransfers = new ArrayList<>(countSearchResults(search));
 
-            try {
-                var itemControl = (ItemControl)Session.getModelController(ItemControl.class);
-                PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                        "SELECT eni_entityuniqueid "
-                        + "FROM searchresults, entityinstances "
-                        + "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid "
-                        + "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid "
-                        + "_LIMIT_");
-
-                ps.setLong(1, search.getPrimaryKey().getEntityId());
-
-                try (ResultSet rs = ps.executeQuery()) {
-                    while(rs.next()) {
-                        Item item = ItemFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new ItemPK(Long.valueOf(rs.getLong(1))));
-
-                        itemResultTransfers.add(new ItemResultTransfer(item.getLastDetail().getItemName(),
-                                includeItem ? itemControl.getItemTransfer(userVisitSearch.getUserVisit(), item) : null));
-                    }
-                } catch (SQLException se) {
-                    throw new PersistenceDatabaseException(se);
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } else {
-            CachedExecutedSearch cachedExecutedSearch = getCachedExecutedSearch(cachedSearch);
-            
-            itemResultTransfers = new ArrayList<>(countCachedExecutedSearchResults(cachedExecutedSearch));
-            
+        if(userVisitSearch.getSearch().getCachedSearch() != null) {
             session.copyLimit(SearchResultConstants.ENTITY_TYPE_NAME, CachedExecutedSearchResultConstants.ENTITY_TYPE_NAME);
-            
-            try {
-                var itemControl = (ItemControl)Session.getModelController(ItemControl.class);
-                PreparedStatement ps = CachedExecutedSearchResultFactory.getInstance().prepareStatement(
-                        "SELECT eni_entityuniqueid "
-                        + "FROM cachedexecutedsearchresults, entityinstances "
-                        + "WHERE cxsrchr_cxsrch_cachedexecutedsearchid = ? AND cxsrchr_eni_entityinstanceid = eni_entityinstanceid "
-                        + "ORDER BY cxsrchr_sortorder, cxsrchr_eni_entityinstanceid "
-                        + "_LIMIT_");
-
-                ps.setLong(1, cachedExecutedSearch.getPrimaryKey().getEntityId());
-
-                try (ResultSet rs = ps.executeQuery()) {
-                    while(rs.next()) {
-                        Item item = ItemFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new ItemPK(Long.valueOf(rs.getLong(1))));
-
-                        itemResultTransfers.add(new ItemResultTransfer(item.getLastDetail().getItemName(),
-                                includeItem ? itemControl.getItemTransfer(userVisitSearch.getUserVisit(), item) : null));
-                    }
-                } catch (SQLException se) {
-                    throw new PersistenceDatabaseException(se);
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
         }
-        
+
+        try (ResultSet rs = getUserVisitSearchResultSet(userVisitSearch)) {
+            var itemControl = (ItemControl)Session.getModelController(ItemControl.class);
+
+            while(rs.next()) {
+                var item = ItemFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new ItemPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
+
+                itemResultTransfers.add(new ItemResultTransfer(item.getLastDetail().getItemName(),
+                        includeItem ? itemControl.getItemTransfer(userVisitSearch.getUserVisit(), item) : null));
+            }
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
         return itemResultTransfers;
+    }
+
+    public List<ItemResultObject> getItemResultObjects(UserVisitSearch userVisitSearch) {
+        var itemResultObjects = new ArrayList<ItemResultObject>();
+
+        try (var rs = getUserVisitSearchResultSet(userVisitSearch)) {
+            var itemControl = (ItemControl)Session.getModelController(ItemControl.class);
+
+            while(rs.next()) {
+                var item = itemControl.getItemByPK(new ItemPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
+
+                itemResultObjects.add(new ItemResultObject(item));
+            }
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return itemResultObjects;
     }
     
     // --------------------------------------------------------------------------------
@@ -5193,41 +5198,44 @@ public class SearchControl
     // --------------------------------------------------------------------------------
 
     public List<VendorResultTransfer> getVendorResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<VendorResultTransfer> vendorResultTransfers = new ArrayList<>();
-        boolean includeVendor = false;
-        
-        Set<String> options = session.getOptions();
+        var vendorResultTransfers = new ArrayList<VendorResultTransfer>();
+        var includeVendor = false;
+
+        var options = session.getOptions();
         if(options != null) {
             includeVendor = options.contains(SearchOptions.VendorResultIncludeVendor);
         }
 
-        try {
+        try (ResultSet rs = getUserVisitSearchResultSet(userVisitSearch)) {
             var vendorControl = (VendorControl)Session.getModelController(VendorControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
 
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
+            while(rs.next()) {
+                var party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
 
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    Party party = getPartyControl().getPartyByPK(new PartyPK(Long.valueOf(rs.getLong(1))));
-
-                    vendorResultTransfers.add(new VendorResultTransfer(party.getLastDetail().getPartyName(),
-                            includeVendor ? vendorControl.getVendorTransfer(userVisit, party) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
+                vendorResultTransfers.add(new VendorResultTransfer(party.getLastDetail().getPartyName(),
+                        includeVendor ? vendorControl.getVendorTransfer(userVisit, party) : null));
             }
         } catch (SQLException se) {
             throw new PersistenceDatabaseException(se);
         }
 
         return vendorResultTransfers;
+    }
+
+    public List<VendorResultObject> getVendorResultObjects(UserVisitSearch userVisitSearch) {
+        var vendorResultObjects = new ArrayList<VendorResultObject>();
+
+        try (var rs = getUserVisitSearchResultSet(userVisitSearch)) {
+            while(rs.next()) {
+                var party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
+
+                vendorResultObjects.add(new VendorResultObject(party));
+            }
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return vendorResultObjects;
     }
 
     // --------------------------------------------------------------------------------

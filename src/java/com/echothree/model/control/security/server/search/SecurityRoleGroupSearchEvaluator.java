@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public class SecurityRoleGroupSearchEvaluator
             };
         } else if(searchSortOrderName.equals(SearchConstants.SearchSortOrder_DESCRIPTION)) {
             sortFields = new SortField[]{new SortField(IndexConstants.IndexField_Description + IndexConstants.IndexFieldVariationSeparator + IndexConstants.IndexFieldVariation_Sortable, SortField.Type.STRING, reverse)};
-        } else if(searchSortOrderName.equals(SearchConstants.SearchSortOrder_SECRUITY_ROLE_GROUP_NAME)) {
+        } else if(searchSortOrderName.equals(SearchConstants.SearchSortOrder_SECURITY_ROLE_GROUP_NAME)) {
             sortFields = new SortField[]{new SortField(IndexConstants.IndexField_SecurityRoleGroupName + IndexConstants.IndexFieldVariationSeparator + IndexConstants.IndexFieldVariation_Sortable, SortField.Type.STRING, reverse)};
         } else if(searchSortOrderName.equals(SearchConstants.SearchSortOrder_CREATED_TIME)) {
             sortFields = new SortField[]{new SortField(IndexConstants.IndexField_CreatedTime, SortField.Type.LONG, reverse)};

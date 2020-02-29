@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -653,7 +653,6 @@ public class OfferControl
     }
     
     private List<Offer> getOffers(EntityPermission entityPermission) {
-        List<Offer> offers = null;
         PreparedStatement ps = OfferFactory.getInstance().prepareStatement(
                 "SELECT _ALL_ "
                 + "FROM offers, offerdetails "
@@ -661,11 +660,8 @@ public class OfferControl
                 + "ORDER BY ofrdt_sortorder, ofrdt_offername "
                 + "_LIMIT_");
 
-        offers = OfferFactory.getInstance().getEntitiesFromQuery(entityPermission, ps);
-        
-        return offers;
+        return OfferFactory.getInstance().getEntitiesFromQuery(entityPermission, ps);
     }
-    
     
     public List<Offer> getOffers() {
         return getOffers(EntityPermission.READ_ONLY);

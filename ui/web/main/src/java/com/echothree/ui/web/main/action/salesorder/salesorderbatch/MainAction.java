@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class MainAction
         GetSalesOrderBatchResultsForm commandForm = SearchUtil.getHome().getGetSalesOrderBatchResultsForm();
         String batchName = null;
         
-        commandForm.setSearchTypeName(SearchConstants.SearchType_SALES_ORDER_BATCH_MAINTAINENCE);
+        commandForm.setSearchTypeName(SearchConstants.SearchType_SALES_ORDER_BATCH_MAINTENANCE);
         
         CommandResult commandResult = SearchUtil.getHome().getSalesOrderBatchResults(getUserVisitPK(request), commandForm);
         ExecutionResult executionResult = commandResult.getExecutionResult();
@@ -91,7 +91,7 @@ public class MainAction
             if(wasPost(request)) {
                 SearchSalesOrderBatchesForm commandForm = SearchUtil.getHome().getSearchSalesOrderBatchesForm();
 
-                commandForm.setSearchTypeName(SearchConstants.SearchType_SALES_ORDER_BATCH_MAINTAINENCE);
+                commandForm.setSearchTypeName(SearchConstants.SearchType_SALES_ORDER_BATCH_MAINTENANCE);
                 commandForm.setBatchName(actionForm.getBatchName());
                 commandForm.setCurrencyIsoName(actionForm.getCurrencyChoice());
                 commandForm.setPaymentMethodName(actionForm.getPaymentMethodChoice());

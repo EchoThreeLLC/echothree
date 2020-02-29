@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package com.echothree.control.user.core.server.command;
 
 import com.echothree.model.control.core.server.CoreControl;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.data.core.server.entity.EntityInstance;
 import com.echothree.model.data.core.server.entity.EntityType;
 import com.echothree.model.data.core.server.entity.Event;
@@ -45,7 +45,7 @@ public class ProcessQueuedEventsCommand
     
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyConstants.PartyType_UTILITY, null)
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null)
                 )));
     }
     
@@ -57,7 +57,6 @@ public class ProcessQueuedEventsCommand
     @Override
     protected BaseResult execute() {
         var coreControl = getCoreControl();
-        long queuedEventsProcessed = 0;
         long remainingTime = (long) 2 * 60 * 1000; // 2 minutes
         List<QueuedEvent> queuedEvents = coreControl.getQueuedEventsForUpdate();
 
@@ -98,7 +97,6 @@ public class ProcessQueuedEventsCommand
 
                 coreControl.removeQueuedEvent(queuedEvent);
 
-                queuedEventsProcessed++;
                 remainingTime -= System.currentTimeMillis() - startTime;
                 if(remainingTime < 0) {
                     break;

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -63,8 +63,8 @@ import com.echothree.ui.cli.amazon.batch.order.content.AmazonOrderLine;
 import com.echothree.ui.cli.amazon.batch.order.content.AmazonOrderShipmentGroup;
 import com.echothree.ui.cli.amazon.batch.order.content.AmazonOrders;
 import com.echothree.util.client.string.NameCleaner;
-import com.echothree.util.client.string.NameCleaner.NameResult;
 import com.echothree.util.common.string.ContactPostalAddressUtils;
+import com.echothree.util.common.string.NameResult;
 import com.echothree.util.common.string.StringUtils;
 import com.echothree.util.common.command.CommandResult;
 import com.echothree.util.common.command.ExecutionResult;

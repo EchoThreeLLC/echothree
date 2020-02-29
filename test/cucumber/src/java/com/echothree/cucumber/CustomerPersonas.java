@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,12 +16,7 @@
 
 package com.echothree.cucumber;
 
-import com.echothree.control.user.authentication.common.AuthenticationService;
-import com.echothree.control.user.authentication.common.AuthenticationUtil;
-import com.echothree.control.user.authentication.common.form.GetUserVisitForm;
-import com.echothree.control.user.authentication.common.result.GetUserVisitResult;
-import com.echothree.model.data.user.common.pk.UserVisitPK;
-import com.echothree.util.common.command.CommandResult;
+import com.echothree.cucumber.authentication.UserVisits;
 import javax.naming.NamingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,33 +30,24 @@ public class CustomerPersonas {
     private static Map<String, CustomerPersona> customerPersonas = new HashMap<>();
     public static CustomerPersona lastCustomerPersona;
     
-    private static UserVisitPK getUserVisitPK()
-            throws NamingException {
-        AuthenticationService authenticationService = AuthenticationUtil.getHome();
-        GetUserVisitForm getUserVisitForm = authenticationService.getGetUserVisitForm();
-        CommandResult commandResult = authenticationService.getUserVisit(getUserVisitForm);
-        GetUserVisitResult getUserVisitResult = (GetUserVisitResult)commandResult.getExecutionResult().getResult();
-        
-        return getUserVisitResult.getUserVisitPK();
-    }
-
     public static Set<Map.Entry<String, CustomerPersona>> getCustomerPersonas() {
         return customerPersonas.entrySet();
     }
 
     public static CustomerPersona getCustomerPersona(String persona)
             throws NamingException {
-        CustomerPersona customerPersona = customerPersonas.get(persona);
+        var customerPersona = customerPersonas.get(persona);
 
         if(customerPersona == null) {
             customerPersona = new CustomerPersona();
             customerPersona.persona = persona;
-            customerPersona.userVisitPK = getUserVisitPK();
+            customerPersona.userVisitPK = UserVisits.getUserVisitPK();
 
             customerPersonas.put(persona, customerPersona);
         }
 
         lastCustomerPersona = customerPersona;
+
         return customerPersona;
     }
 }

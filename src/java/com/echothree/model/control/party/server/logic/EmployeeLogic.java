@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 package com.echothree.model.control.party.server.logic;
 
 import com.echothree.model.control.core.server.CoreControl;
+import com.echothree.model.control.employee.common.workflow.EmployeeStatusConstants;
 import com.echothree.model.control.employee.server.EmployeeControl;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.common.exception.CannotSpecifyEmployeeNameAndPartyNameException;
 import com.echothree.model.control.party.common.exception.MustSpecifyEmployeeNameOrPartyNameException;
 import com.echothree.model.control.party.common.exception.UnknownEmployeeNameException;
@@ -27,8 +28,8 @@ import com.echothree.model.control.party.common.exception.UnknownPartyNameExcept
 import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.user.server.logic.UserKeyLogic;
 import com.echothree.model.control.user.server.logic.UserSessionLogic;
-import com.echothree.model.control.employee.common.workflow.EmployeeStatusConstants;
 import com.echothree.model.control.workflow.server.WorkflowControl;
+import com.echothree.model.control.workflow.server.logic.WorkflowDestinationLogic;
 import com.echothree.model.control.workflow.server.logic.WorkflowLogic;
 import com.echothree.model.data.core.server.entity.EntityInstance;
 import com.echothree.model.data.employee.server.entity.PartyEmployee;
@@ -77,7 +78,7 @@ public class EmployeeLogic
                 Party party = partyControl.getPartyByName(partyName);
 
                 if(party != null) {
-                    PartyLogic.getInstance().checkPartyType(eea, party, PartyConstants.PartyType_EMPLOYEE);
+                    PartyLogic.getInstance().checkPartyType(eea, party, PartyTypes.EMPLOYEE.name());
 
                     partyEmployee = employeeControl.getPartyEmployee(party);
                 } else {
@@ -98,24 +99,24 @@ public class EmployeeLogic
     public void setEmployeeStatus(final Session session, ExecutionErrorAccumulator eea, Party party, String employeeStatusChoice, PartyPK modifiedBy) {
         var coreControl = (CoreControl)Session.getModelController(CoreControl.class);
         var workflowControl = (WorkflowControl)Session.getModelController(WorkflowControl.class);
-        WorkflowLogic workflowLogic = WorkflowLogic.getInstance();
-        Workflow workflow = workflowLogic.getWorkflowByName(eea, EmployeeStatusConstants.Workflow_EMPLOYEE_STATUS);
+        Workflow workflow = WorkflowLogic.getInstance().getWorkflowByName(eea, EmployeeStatusConstants.Workflow_EMPLOYEE_STATUS);
         EntityInstance entityInstance = coreControl.getEntityInstanceByBasePK(party.getPrimaryKey());
         WorkflowEntityStatus workflowEntityStatus = workflowControl.getWorkflowEntityStatusByEntityInstanceForUpdate(workflow, entityInstance);
         WorkflowDestination workflowDestination = employeeStatusChoice == null ? null : workflowControl.getWorkflowDestinationByName(workflowEntityStatus.getWorkflowStep(), employeeStatusChoice);
 
         if(workflowDestination != null || employeeStatusChoice == null) {
+            var workflowDestinationLogic = WorkflowDestinationLogic.getInstance();
             String currentWorkflowStepName = workflowEntityStatus.getWorkflowStep().getLastDetail().getWorkflowStepName();
-            Map<String, Set<String>> map = workflowLogic.getWorkflowDestinationsAsMap(workflowDestination);
+            Map<String, Set<String>> map = workflowDestinationLogic.getWorkflowDestinationsAsMap(workflowDestination);
             Long triggerTime = null;
 
             if(currentWorkflowStepName.equals(EmployeeStatusConstants.WorkflowStep_ACTIVE)) {
-                if(workflowLogic.workflowDestinationMapContainsStep(map, EmployeeStatusConstants.Workflow_EMPLOYEE_STATUS, EmployeeStatusConstants.WorkflowStep_INACTIVE)) {
+                if(workflowDestinationLogic.workflowDestinationMapContainsStep(map, EmployeeStatusConstants.Workflow_EMPLOYEE_STATUS, EmployeeStatusConstants.WorkflowStep_INACTIVE)) {
                     UserKeyLogic.getInstance().clearUserKeysByParty(party);
                     UserSessionLogic.getInstance().deleteUserSessionsByParty(party);
                 }
             } else if(currentWorkflowStepName.equals(EmployeeStatusConstants.WorkflowStep_INACTIVE)) {
-                if(workflowLogic.workflowDestinationMapContainsStep(map, EmployeeStatusConstants.Workflow_EMPLOYEE_STATUS, EmployeeStatusConstants.WorkflowStep_ACTIVE)) {
+                if(workflowDestinationLogic.workflowDestinationMapContainsStep(map, EmployeeStatusConstants.Workflow_EMPLOYEE_STATUS, EmployeeStatusConstants.WorkflowStep_ACTIVE)) {
                     // Nothing at this time.
                 }
             }

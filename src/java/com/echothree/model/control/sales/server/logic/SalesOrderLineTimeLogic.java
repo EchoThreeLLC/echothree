@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class SalesOrderLineTimeLogic
     }
     
     public void createOrderLineTime(final ExecutionErrorAccumulator eea, final String orderName, final String orderLineSequence, final String orderTimeTypeName, final Long time, final BasePK createdBy) {
-        OrderLine orderLine = SalesOrderLogic.getInstance().getOrderLineByName(eea, orderName, orderLineSequence);
+        OrderLine orderLine = SalesOrderLineLogic.getInstance().getOrderLineByName(eea, orderName, orderLineSequence);
         
         if(eea == null || !eea.hasExecutionErrors()) {
             createOrderLineTime(eea, orderLine, orderTimeTypeName, time, createdBy);
@@ -55,7 +55,7 @@ public class SalesOrderLineTimeLogic
     }
 
     public void updateOrderLineTime(final ExecutionErrorAccumulator eea, final String orderName, final String orderLineSequence, final String orderTimeTypeName, final Long time, final BasePK updatedBy) {
-        OrderLine orderLine = SalesOrderLogic.getInstance().getOrderLineByName(eea, orderName, orderLineSequence);
+        OrderLine orderLine = SalesOrderLineLogic.getInstance().getOrderLineByName(eea, orderName, orderLineSequence);
         
         if(eea == null || !eea.hasExecutionErrors()) {
             updateOrderLineTime(eea, orderLine, orderTimeTypeName, time, updatedBy);
@@ -69,7 +69,7 @@ public class SalesOrderLineTimeLogic
     }
 
     public OrderLineTimeTransfer getOrderLineTimeTransfer(final ExecutionErrorAccumulator eea, final UserVisit userVisit, final String orderName, final String orderLineSequence, final String orderTimeTypeName) {
-        OrderLine orderLine = SalesOrderLogic.getInstance().getOrderLineByName(eea, orderName, orderLineSequence);
+        OrderLine orderLine = SalesOrderLineLogic.getInstance().getOrderLineByName(eea, orderName, orderLineSequence);
         OrderLineTimeTransfer result = null;
         
         if(eea == null || !eea.hasExecutionErrors()) {
@@ -84,13 +84,13 @@ public class SalesOrderLineTimeLogic
     }
 
     public List<OrderLineTimeTransfer> getOrderLineTimeTransfersByOrder(final ExecutionErrorAccumulator eea, final UserVisit userVisit, final String orderName, final String orderLineSequence) {
-        OrderLine orderLine = SalesOrderLogic.getInstance().getOrderLineByName(eea, orderName, orderLineSequence);
+        OrderLine orderLine = SalesOrderLineLogic.getInstance().getOrderLineByName(eea, orderName, orderLineSequence);
         
         return OrderLineTimeLogic.getInstance().getOrderLineTimeTransfersByOrder(eea, userVisit, orderLine);
     }
 
     public void deleteOrderLineTime(final ExecutionErrorAccumulator eea, final String orderName, final String orderLineSequence, final String orderTimeTypeName, final BasePK deletedBy) {
-        OrderLine orderLine = SalesOrderLogic.getInstance().getOrderLineByName(eea, orderName, orderLineSequence);
+        OrderLine orderLine = SalesOrderLineLogic.getInstance().getOrderLineByName(eea, orderName, orderLineSequence);
         
         if(eea == null || !eea.hasExecutionErrors()) {
             deleteOrderLineTime(eea, orderLine, orderTimeTypeName, deletedBy);

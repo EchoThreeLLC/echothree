@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -542,20 +542,17 @@ public class ClubControl
     }
     
     public List<ClubItemType> getClubItemTypes() {
-        List<ClubItemType> clubItemTypes = null;
         PreparedStatement ps = ClubItemTypeFactory.getInstance().prepareStatement(
                 "SELECT _ALL_ " +
                 "FROM clubitemtypes " +
                 "ORDER BY clbitmtyp_sortorder, clbitmtyp_clubitemtypename");
         
-        clubItemTypes = ClubItemTypeFactory.getInstance().getEntitiesFromQuery(EntityPermission.READ_ONLY, ps);
-        
-        return clubItemTypes;
+        return ClubItemTypeFactory.getInstance().getEntitiesFromQuery(EntityPermission.READ_ONLY, ps);
     }
     
     public ClubItemType getClubItemTypeByName(String clubItemTypeName) {
         ClubItemType clubItemType = null;
-        
+
         try {
             PreparedStatement ps = ClubItemTypeFactory.getInstance().prepareStatement(
                     "SELECT _ALL_ " +
@@ -568,7 +565,7 @@ public class ClubControl
         } catch (SQLException se) {
             throw new PersistenceDatabaseException(se);
         }
-        
+
         return clubItemType;
     }
     

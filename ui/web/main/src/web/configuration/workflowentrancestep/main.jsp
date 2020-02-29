@@ -1,7 +1,7 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
 
 <!--                                                                                  -->
-<!-- Copyright 2002-2019 Echo Three, LLC                                              -->
+<!-- Copyright 2002-2020 Echo Three, LLC                                              -->
 <!--                                                                                  -->
 <!-- Licensed under the Apache License, Version 2.0 (the "License");                  -->
 <!-- you may not use this file except in compliance with the License.                 -->
@@ -38,11 +38,11 @@
             </h2>
         </div>
         <div id="Content">
-            <et:checkSecurityRoles securityRoles="WorkflowEntranceStep.Create:WorkflowEntranceStep.Delete" />
-            <et:hasSecurityRole securityRoles="WorkflowEntranceStep.Delete">
+            <et:checkSecurityRoles securityRoles="WorkflowEntrance.WorkflowStep" />
+            <et:hasSecurityRole securityRoles="WorkflowEntrance.WorkflowStep">
                 <c:set var="linksInFirstRow" value="true" />
             </et:hasSecurityRole>
-            <et:hasSecurityRole securityRole="WorkflowEntranceStep.Create">
+            <et:hasSecurityRole securityRole="WorkflowEntrance.WorkflowStep">
                 <c:url var="addUrl" value="/action/Configuration/WorkflowEntranceStep/Add">
                     <c:param name="WorkflowName" value="${workflow.workflowName}" />
                     <c:param name="WorkflowEntranceName" value="${workflowEntrance.workflowEntranceName}" />
@@ -58,7 +58,7 @@
                 </display:column>
                 <c:if test="${linksInFirstRow}">
                     <display:column>
-                        <et:hasSecurityRole securityRole="WorkflowEntranceStep.Delete">
+                        <et:hasSecurityRole securityRole="WorkflowEntrance.WorkflowStep">
                             <c:url var="deleteUrl" value="/action/Configuration/WorkflowEntranceStep/Delete">
                                 <c:param name="WorkflowName" value="${workflowEntranceStep.workflowEntrance.workflow.workflowName}" />
                                 <c:param name="WorkflowEntranceName" value="${workflowEntranceStep.workflowEntrance.workflowEntranceName}" />

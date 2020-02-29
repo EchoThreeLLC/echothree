@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package com.echothree.model.control.subscription.server;
 
 import com.echothree.model.control.club.server.ClubControl;
 import com.echothree.model.control.core.common.EventTypes;
-import com.echothree.model.control.sequence.common.SequenceConstants;
 import com.echothree.model.control.sequence.server.SequenceControl;
+import com.echothree.model.control.sequence.common.SequenceTypes;
 import com.echothree.model.control.subscription.common.SubscriptionConstants;
 import com.echothree.model.control.subscription.common.choice.SubscriptionKindChoicesBean;
 import com.echothree.model.control.subscription.common.choice.SubscriptionTypeChoicesBean;
@@ -1207,7 +1207,7 @@ public class SubscriptionControl
         var sequenceControl = (SequenceControl)Session.getModelController(SequenceControl.class);
         
         if(sequence == null) {
-            SequenceType sequenceType = sequenceControl.getSequenceTypeByName(SequenceConstants.SequenceType_SUBSCRIPTION);
+            SequenceType sequenceType = sequenceControl.getSequenceTypeByName(SequenceTypes.SUBSCRIPTION.name());
             sequence = sequenceControl.getDefaultSequence(sequenceType);
         }
         

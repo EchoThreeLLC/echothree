@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import com.echothree.control.user.authentication.common.form.SetPasswordForm;
 import com.echothree.control.user.party.common.PartyUtil;
 import com.echothree.control.user.party.common.form.GetPartyTypeForm;
 import com.echothree.control.user.party.common.result.GetPartyTypeResult;
-import com.echothree.model.control.party.common.PartyConstants;
 import com.echothree.model.control.party.common.PartyOptions;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.common.transfer.PartyTypePasswordStringPolicyTransfer;
 import com.echothree.model.control.party.common.transfer.PartyTypeTransfer;
 import com.echothree.ui.web.main.framework.AttributeConstants;
@@ -90,7 +90,7 @@ public class PasswordAction
         if(forwardKey == null) {
             GetPartyTypeForm commandForm = PartyUtil.getHome().getGetPartyTypeForm();
             
-            commandForm.setPartyTypeName(PartyConstants.PartyType_EMPLOYEE);
+            commandForm.setPartyTypeName(PartyTypes.EMPLOYEE.name());
             
             Set<String> options = new HashSet<>();
             options.add(PartyOptions.PartyTypeIncludePasswordStringPolicy);

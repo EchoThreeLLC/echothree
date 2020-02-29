@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,12 +45,12 @@ import com.echothree.model.control.item.common.transfer.HarmonizedTariffSchedule
 import com.echothree.model.control.item.common.transfer.HarmonizedTariffScheduleCodeTranslationTransfer;
 import com.echothree.model.control.item.common.transfer.HarmonizedTariffScheduleCodeUnitTransfer;
 import com.echothree.model.control.item.common.transfer.HarmonizedTariffScheduleCodeUseTransfer;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.Languages;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
-import com.echothree.util.common.string.StringUtils;
 import com.echothree.util.common.command.CommandResult;
 import com.echothree.util.common.command.EditMode;
 import com.echothree.util.common.command.ExecutionResult;
+import com.echothree.util.common.string.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -228,7 +228,7 @@ public abstract class HtsCountryParser<H extends Object> {
         getCodeTranslationForm.reset();
         getCodeTranslationForm.setCountryName(countryName);
         getCodeTranslationForm.setHarmonizedTariffScheduleCodeName(code);
-        getCodeTranslationForm.setLanguageIsoName(PartyConstants.Language_en);
+        getCodeTranslationForm.setLanguageIsoName(Languages.en.name());
         
         CommandResult commandResult = itemService.getHarmonizedTariffScheduleCodeTranslation(userVisitPK, getCodeTranslationForm);
         if(commandResult.hasErrors()) {

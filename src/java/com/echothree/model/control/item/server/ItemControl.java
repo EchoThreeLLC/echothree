@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -344,6 +344,7 @@ import com.echothree.model.data.party.common.pk.LanguagePK;
 import com.echothree.model.data.party.common.pk.PartyPK;
 import com.echothree.model.data.party.server.entity.Language;
 import com.echothree.model.data.party.server.entity.Party;
+import com.echothree.model.data.party.server.factory.PartyFactory;
 import com.echothree.model.data.returnpolicy.common.pk.ReturnPolicyPK;
 import com.echothree.model.data.returnpolicy.server.entity.ReturnPolicy;
 import com.echothree.model.data.sequence.common.pk.SequencePK;
@@ -1692,14 +1693,6 @@ public class ItemControl
         }
     }
     
-    /** Assume that the entityInstance passed to this function is a ECHOTHREE.Item */
-    public Item getItemByEntityInstance(EntityInstance entityInstance) {
-        ItemPK pk = new ItemPK(entityInstance.getEntityUniqueId());
-        Item item = ItemFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, pk);
-        
-        return item;
-    }
-    
     public void updateItemFromValue(ItemDetailValue itemDetailValue, BasePK updatedBy) {
         if(itemDetailValue.hasBeenModified()) {
             Item item = ItemFactory.getInstance().getEntityFromPK(EntityPermission.READ_WRITE,
@@ -1749,7 +1742,27 @@ public class ItemControl
             sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), null, null, updatedBy);
         }
     }
-    
+
+    public Item getItemByPK(ItemPK itemPK) {
+        return ItemFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, itemPK);
+    }
+
+    /** Assume that the entityInstance passed to this function is a ECHOTHREE.Item */
+    public Item getItemByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
+        ItemPK pk = new ItemPK(entityInstance.getEntityUniqueId());
+        Item item = ItemFactory.getInstance().getEntityFromPK(entityPermission, pk);
+
+        return item;
+    }
+
+    public Item getItemByEntityInstance(EntityInstance entityInstance) {
+        return getItemByEntityInstance(entityInstance, EntityPermission.READ_ONLY);
+    }
+
+    public Item getItemByEntityInstanceForUpdate(EntityInstance entityInstance) {
+        return getItemByEntityInstance(entityInstance, EntityPermission.READ_WRITE);
+    }
+
     // --------------------------------------------------------------------------------
     //   Item Unit Of Measure Types
     // --------------------------------------------------------------------------------
@@ -11201,7 +11214,7 @@ public class ItemControl
         return getItemHarmonizedTariffScheduleCodeTransfers(userVisit, getItemHarmonizedTariffScheduleCodesByHarmonizedTariffScheduleCode(harmonizedTariffScheduleCode));
     }
 
-    private void updateItemHarmonizedTariffScheduleCodeFromValue(ItemHarmonizedTariffScheduleCodeDetailValue itemHarmonizedTariffScheduleCodeDetailValue, boolean checkDefault,
+    public void updateItemHarmonizedTariffScheduleCodeFromValue(ItemHarmonizedTariffScheduleCodeDetailValue itemHarmonizedTariffScheduleCodeDetailValue,
             BasePK updatedBy) {
         if(itemHarmonizedTariffScheduleCodeDetailValue.hasBeenModified()) {
             ItemHarmonizedTariffScheduleCode itemHarmonizedTariffScheduleCode = ItemHarmonizedTariffScheduleCodeFactory.getInstance().getEntityFromPK(EntityPermission.READ_WRITE,
@@ -11225,10 +11238,6 @@ public class ItemControl
 
             sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemHarmonizedTariffScheduleCodePK, EventTypes.MODIFY.name(), updatedBy);
         }
-    }
-
-    public void updateItemHarmonizedTariffScheduleCodeFromValue(ItemHarmonizedTariffScheduleCodeDetailValue itemHarmonizedTariffScheduleCodeDetailValue, BasePK updatedBy) {
-        updateItemHarmonizedTariffScheduleCodeFromValue(itemHarmonizedTariffScheduleCodeDetailValue, true, updatedBy);
     }
 
     public void deleteItemHarmonizedTariffScheduleCode(ItemHarmonizedTariffScheduleCode itemHarmonizedTariffScheduleCode, BasePK deletedBy) {

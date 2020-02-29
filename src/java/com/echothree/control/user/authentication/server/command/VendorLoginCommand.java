@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package com.echothree.control.user.authentication.server.command;
 
 import com.echothree.control.user.authentication.common.form.VendorLoginForm;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.logic.LockoutPolicyLogic;
 import com.echothree.model.control.party.server.logic.PartyLogic;
 import com.echothree.model.control.user.server.UserControl;
 import com.echothree.model.control.user.server.logic.UserLoginLogic;
 import com.echothree.model.control.vendor.common.workflow.VendorStatusConstants;
-import com.echothree.model.control.workflow.server.logic.WorkflowLogic;
+import com.echothree.model.control.workflow.server.logic.WorkflowStepLogic;
 import com.echothree.model.data.party.server.entity.Party;
 import com.echothree.model.data.party.server.entity.PartyDetail;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
@@ -62,13 +62,13 @@ public class VendorLoginCommand
         if(!hasExecutionErrors()) {
             Party party = userLogin.getParty();
             PartyDetail partyDetail = party.getLastDetail();
-            PartyLogic.getInstance().checkPartyType(this, party, PartyConstants.PartyType_VENDOR);
+            PartyLogic.getInstance().checkPartyType(this, party, PartyTypes.VENDOR.name());
 
             if(!hasExecutionErrors()) {
                 UserControl userControl = getUserControl();
                 UserLoginStatus userLoginStatus = userControl.getUserLoginStatusForUpdate(party);
 
-                if(!WorkflowLogic.getInstance().isEntityInWorkflowSteps(this, VendorStatusConstants.Workflow_VENDOR_STATUS, party,
+                if(!WorkflowStepLogic.getInstance().isEntityInWorkflowSteps(this, VendorStatusConstants.Workflow_VENDOR_STATUS, party,
                         VendorStatusConstants.WorkflowStep_ACTIVE).isEmpty()) {
                     LockoutPolicyLogic.getInstance().checkUserLogin(session, this, party, userLoginStatus);
 

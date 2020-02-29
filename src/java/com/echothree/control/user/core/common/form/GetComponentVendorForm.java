@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package com.echothree.control.user.core.common.form;
 
-import com.echothree.control.user.core.common.spec.ComponentVendorSpec;
+import com.echothree.control.user.core.common.spec.ComponentVendorUniversalSpec;
 
 public interface GetComponentVendorForm
-        extends ComponentVendorSpec {
+        extends ComponentVendorUniversalSpec {
     
-    // Nothing additional beyond ComponentVendorSpec
+    // Nothing additional beyond ComponentVendorUniversalSpec
     
 }

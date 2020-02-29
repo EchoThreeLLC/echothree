@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@ package com.echothree.control.user.search.common.result;
 
 import com.echothree.model.control.core.common.transfer.EntityInstanceTransfer;
 import com.echothree.util.common.command.BaseResult;
-import java.util.List;
+import java.util.Set;
 
 public interface IdentifyResult
         extends BaseResult {
-    
-    List<EntityInstanceTransfer> getEntityInstances();
-    void setEntityInstances(List<EntityInstanceTransfer> entityInstances);
+
+    Set<EntityInstanceTransfer> getEntityInstances();
+    void setEntityInstances(Set<EntityInstanceTransfer> entityInstances);
     
 }

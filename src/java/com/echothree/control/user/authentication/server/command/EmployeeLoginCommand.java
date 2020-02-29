@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,14 +17,16 @@
 package com.echothree.control.user.authentication.server.command;
 
 import com.echothree.control.user.authentication.common.form.EmployeeLoginForm;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyRelationshipTypes;
+import com.echothree.model.control.party.common.PartyTypes;
+import com.echothree.model.control.party.common.RoleTypes;
 import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.party.server.logic.LockoutPolicyLogic;
 import com.echothree.model.control.party.server.logic.PartyLogic;
 import com.echothree.model.control.user.server.UserControl;
 import com.echothree.model.control.user.server.logic.UserLoginLogic;
 import com.echothree.model.control.employee.common.workflow.EmployeeStatusConstants;
-import com.echothree.model.control.workflow.server.logic.WorkflowLogic;
+import com.echothree.model.control.workflow.server.logic.WorkflowStepLogic;
 import com.echothree.model.data.party.server.entity.Party;
 import com.echothree.model.data.party.server.entity.PartyCompany;
 import com.echothree.model.data.party.server.entity.PartyDetail;
@@ -69,13 +71,13 @@ public class EmployeeLoginCommand
         if(!hasExecutionErrors()) {
             Party party = userLogin.getParty();
             PartyDetail partyDetail = party.getLastDetail();
-            PartyLogic.getInstance().checkPartyType(this, party, PartyConstants.PartyType_EMPLOYEE);
+            PartyLogic.getInstance().checkPartyType(this, party, PartyTypes.EMPLOYEE.name());
 
             if(!hasExecutionErrors()) {
                 UserControl userControl = getUserControl();
                 UserLoginStatus userLoginStatus = userControl.getUserLoginStatusForUpdate(party);
 
-                if(!WorkflowLogic.getInstance().isEntityInWorkflowSteps(this, EmployeeStatusConstants.Workflow_EMPLOYEE_STATUS, party,
+                if(!WorkflowStepLogic.getInstance().isEntityInWorkflowSteps(this, EmployeeStatusConstants.Workflow_EMPLOYEE_STATUS, party,
                         EmployeeStatusConstants.WorkflowStep_ACTIVE).isEmpty()) {
                     LockoutPolicyLogic.getInstance().checkUserLogin(session, this, party, userLoginStatus);
 
@@ -88,9 +90,9 @@ public class EmployeeLoginCommand
 
                             if(partyCompany != null) {
                                 Party partyCompanyParty = partyCompany.getParty();
-                                PartyRelationshipType partyRelationshipType = partyControl.getPartyRelationshipTypeByName(PartyConstants.PartyRelationshipType_EMPLOYMENT);
-                                RoleType fromRoleType = partyControl.getRoleTypeByName(PartyConstants.RoleType_EMPLOYER);
-                                RoleType toRoleType = partyControl.getRoleTypeByName(PartyConstants.RoleType_EMPLOYEE);
+                                PartyRelationshipType partyRelationshipType = partyControl.getPartyRelationshipTypeByName(PartyRelationshipTypes.EMPLOYMENT.name());
+                                RoleType fromRoleType = partyControl.getRoleTypeByName(RoleTypes.EMPLOYER.name());
+                                RoleType toRoleType = partyControl.getRoleTypeByName(RoleTypes.EMPLOYEE.name());
 
                                 PartyRelationship partyRelationship = partyControl.getPartyRelationship(partyRelationshipType, partyCompanyParty,
                                         fromRoleType, party, toRoleType);
@@ -100,9 +102,9 @@ public class EmployeeLoginCommand
 
                                     successfulLogin(userLoginStatus, party, partyRelationship, remoteInet4Address);
                                 } else {
-                                    addExecutionError(ExecutionErrors.UnknownPartyRelationship.name(), PartyConstants.PartyRelationshipType_EMPLOYMENT,
-                                            partyCompanyParty.getLastDetail().getPartyName(), PartyConstants.RoleType_EMPLOYER, partyDetail.getPartyName(),
-                                            PartyConstants.RoleType_EMPLOYEE);
+                                    addExecutionError(ExecutionErrors.UnknownPartyRelationship.name(), PartyRelationshipTypes.EMPLOYMENT.name(),
+                                            partyCompanyParty.getLastDetail().getPartyName(), RoleTypes.EMPLOYER.name(), partyDetail.getPartyName(),
+                                            RoleTypes.EMPLOYEE.name());
                                 }
                             } else {
                                 addExecutionError(ExecutionErrors.UnknownPartyCompanyName.name(), partyCompanyName);

@@ -1,7 +1,7 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
 
 <!--                                                                                  -->
-<!-- Copyright 2002-2019 Echo Three, LLC                                              -->
+<!-- Copyright 2002-2020 Echo Three, LLC                                              -->
 <!--                                                                                  -->
 <!-- Licensed under the Apache License, Version 2.0 (the "License");                  -->
 <!-- you may not use this file except in compliance with the License.                 -->
@@ -31,7 +31,7 @@
                 <a href="<c:url value="/action/SalesOrder/Main" />">Sales Orders</a> &gt;&gt;
                 Sales Order Batches &gt;&gt;
                 <a href="<c:url value="/action/SalesOrder/SalesOrderBatch/Main" />">Search</a> &gt;&gt;
-                <et:countSalesOrderBatchResults searchTypeName="SALES_ORDER_BATCH_MAINTAINENCE" countVar="salesOrderBatchResultsCount" commandResultVar="countSalesOrderBatchResultsCommandResult" logErrors="false" />
+                <et:countSalesOrderBatchResults searchTypeName="SALES_ORDER_BATCH_MAINTENANCE" countVar="salesOrderBatchResultsCount" commandResultVar="countSalesOrderBatchResultsCommandResult" logErrors="false" />
                 <c:if test="${salesOrderBatchResultsCount > 0}">
                     <a href="<c:url value="/action/SalesOrder/SalesOrderBatch/Result" />"><fmt:message key="navigation.results" /></a> &gt;&gt;
                 </c:if>

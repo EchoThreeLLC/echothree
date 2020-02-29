@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.echothree.control.user.offer.common.result.EditSourceResult;
 import com.echothree.control.user.offer.common.result.OfferResultFactory;
 import com.echothree.control.user.offer.common.spec.SourceSpec;
 import com.echothree.model.control.offer.server.OfferControl;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.offer.server.entity.Source;
@@ -53,8 +53,8 @@ public class EditSourceCommand
 
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyConstants.PartyType_UTILITY, null),
-                new PartyTypeDefinition(PartyConstants.PartyType_EMPLOYEE, Collections.unmodifiableList(Arrays.asList(
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
                         new SecurityRoleDefinition(SecurityRoleGroups.Source.name(), SecurityRoles.Edit.name())
                         )))
                 )));
@@ -120,7 +120,6 @@ public class EditSourceCommand
 
     @Override
     public void doLock(SourceEdit edit, Source source) {
-        var geoControl = (OfferControl)Session.getModelController(OfferControl.class);
         SourceDetail sourceDetail = source.getLastDetail();
 
         edit.setSourceName(sourceDetail.getSourceName());

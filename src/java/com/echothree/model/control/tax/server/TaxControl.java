@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -741,7 +741,7 @@ public class TaxControl
         return getItemTaxClassificationTransfers(userVisit, getItemTaxClassificationsByTaxClassification(taxClassification));
     }
 
-    private void updateItemTaxClassificationFromValue(ItemTaxClassificationDetailValue itemTaxClassificationDetailValue, boolean checkDefault,
+    public void updateItemTaxClassificationFromValue(ItemTaxClassificationDetailValue itemTaxClassificationDetailValue,
             BasePK updatedBy) {
         if(itemTaxClassificationDetailValue.hasBeenModified()) {
             ItemTaxClassification itemTaxClassification = ItemTaxClassificationFactory.getInstance().getEntityFromPK(EntityPermission.READ_WRITE,
@@ -764,10 +764,6 @@ public class TaxControl
 
             sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemTaxClassificationPK, EventTypes.MODIFY.name(), updatedBy);
         }
-    }
-
-    public void updateItemTaxClassificationFromValue(ItemTaxClassificationDetailValue itemTaxClassificationDetailValue, BasePK updatedBy) {
-        updateItemTaxClassificationFromValue(itemTaxClassificationDetailValue, true, updatedBy);
     }
 
     public void deleteItemTaxClassification(ItemTaxClassification itemTaxClassification, BasePK deletedBy) {

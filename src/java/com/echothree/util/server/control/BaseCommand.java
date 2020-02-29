@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import com.echothree.control.user.party.common.spec.PartySpec;
 import com.echothree.model.control.core.common.CommandMessageTypes;
 import com.echothree.model.control.core.common.ComponentVendors;
 import com.echothree.model.control.core.server.CoreControl;
-import com.echothree.model.control.license.server.logic.LicenseCheckLogic;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.server.logic.SecurityRoleLogic;
 import com.echothree.model.control.user.server.UserControl;
 import com.echothree.model.control.user.server.logic.UserSessionLogic;
@@ -42,16 +41,15 @@ import com.echothree.model.data.user.server.entity.UserSession;
 import com.echothree.model.data.user.server.entity.UserVisit;
 import com.echothree.model.data.user.server.entity.UserVisitStatus;
 import com.echothree.model.data.user.server.factory.UserVisitFactory;
-import com.echothree.util.common.exception.BaseException;
-import com.echothree.util.common.message.ExecutionErrors;
-import com.echothree.util.common.message.SecurityMessages;
 import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.command.CommandResult;
 import com.echothree.util.common.command.ExecutionResult;
 import com.echothree.util.common.command.SecurityResult;
+import com.echothree.util.common.exception.BaseException;
 import com.echothree.util.common.form.ValidationResult;
 import com.echothree.util.common.message.Message;
 import com.echothree.util.common.message.Messages;
+import com.echothree.util.common.message.SecurityMessages;
 import com.echothree.util.common.persistence.BasePK;
 import com.echothree.util.server.message.ExecutionErrorAccumulator;
 import com.echothree.util.server.message.ExecutionWarningAccumulator;
@@ -59,26 +57,29 @@ import com.echothree.util.server.message.MessageUtils;
 import com.echothree.util.server.message.SecurityMessageAccumulator;
 import com.echothree.util.server.persistence.EntityPermission;
 import com.echothree.util.server.persistence.Session;
-import com.echothree.util.server.persistence.ThreadCaches;
 import com.echothree.util.server.persistence.ThreadSession;
+import com.echothree.util.server.persistence.ThreadUtils;
 import com.google.common.base.Charsets;
 import java.util.List;
 import java.util.concurrent.Future;
+import javax.ejb.AsyncResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import javax.ejb.AsyncResult;
 
 public abstract class BaseCommand
         implements ExecutionWarningAccumulator, ExecutionErrorAccumulator, SecurityMessageAccumulator {
-    
+
     private Log log = null;
-    
+
     private UserVisitPK userVisitPK;
     private final CommandSecurityDefinition commandSecurityDefinition;
+
+    private ThreadUtils.PreservedState preservedState;
+    protected Session session;
+
     private UserVisit userVisit = null;
     private UserSession userSession = null;
     private Party party = null;
-    protected Session session;
     private Messages executionWarnings = null;
     private Messages executionErrors = null;
     private Messages securityMessages = null;
@@ -88,17 +89,16 @@ public abstract class BaseCommand
     private boolean checkPasswordVerifiedTime = true;
     private boolean updateLastCommandTime = true;
     private boolean logCommand = true;
-    
+
     protected BaseCommand(UserVisitPK userVisitPK, CommandSecurityDefinition commandSecurityDefinition) {
         if(ControlDebugFlags.LogBaseCommands) {
             getLog().info("BaseCommand()");
         }
-        
+
         this.userVisitPK = userVisitPK;
         this.commandSecurityDefinition = commandSecurityDefinition;
-        session = ThreadSession.currentSession();
     }
-    
+
     protected final Log getLog() {
         if(log == null) {
             log = LogFactory.getLog(this.getClass());
@@ -463,15 +463,30 @@ public abstract class BaseCommand
         return new AsyncResult<>(run());
     }
 
+    protected void setupSession() {
+        preservedState = ThreadUtils.preserveState();
+        session = ThreadSession.currentSession();
+    }
+
+    protected void teardownSession() {
+        ThreadUtils.close();
+        session = null;
+
+        ThreadUtils.restoreState(preservedState);
+        preservedState = null;
+    }
+
     public final CommandResult run()
             throws BaseException {
         if(ControlDebugFlags.LogBaseCommands) {
             log.info(">>> run()");
         }
 
-        SecurityResult securityResult = null;
+        setupSession();
+
+        SecurityResult securityResult;
         ValidationResult validationResult = null;
-        ExecutionResult executionResult = null;
+        ExecutionResult executionResult;
         CommandResult commandResult;
 
         try {
@@ -565,10 +580,10 @@ public abstract class BaseCommand
                 }
             }
         } finally {
-            ThreadSession.closeSession();
-            ThreadCaches.closeCaches();
+            teardownSession();
         }
 
+        // The Session for this Thread must NOT be utilized by anything after teardownSession() has been called.
         commandResult = new CommandResult(securityResult, validationResult, executionResult);
 
         if(commandResult.hasSecurityMessages() || commandResult.hasValidationErrors()) {
@@ -594,13 +609,10 @@ public abstract class BaseCommand
         var hasInsufficientSecurity = false;
         var partyTypeName = getPartyType().getPartyTypeName();
 
-        switch(partyTypeName) {
-            case PartyConstants.PartyType_CUSTOMER:
-            case PartyConstants.PartyType_VENDOR:
-                if(spec.getPartyName() != null) {
-                    hasInsufficientSecurity = true;;
-                }
-            break;
+        if(partyTypeName.equals(PartyTypes.CUSTOMER.name()) || partyTypeName.equals(PartyTypes.VENDOR.name())) {
+            if(spec.getPartyName() != null) {
+                hasInsufficientSecurity = true;
+            }
         }
 
         return hasInsufficientSecurity ? getInsufficientSecurityResult() : null;
@@ -658,21 +670,34 @@ public abstract class BaseCommand
     // --------------------------------------------------------------------------------
     //   Option Utilities
     // --------------------------------------------------------------------------------
-    
-    /** This should only be called from the Command's constructor. After that, TransferCaches may have cached knowledge
-     * that specific options were unset.
-     * @param option The option to add.
-     */
-    protected void addOption(String option) {
-        session.getOptions(true).add(option);
-    }
-    
-    /** This should only be called from the Command's constructor. After that, TransferCaches may have cached knowledge
+
+    /** This should only be called an override of setupSession(). After that, TransferCaches may have cached knowledge
      * that specific options were set.
      * @param option The option to remove.
      */
     protected void removeOption(String option) {
         session.getOptions(true).remove(option);
+    }
+
+    // --------------------------------------------------------------------------------
+    //   Transfer Property Utilities
+    // --------------------------------------------------------------------------------
+
+    /** This should only be called an override of setupSession(). After that, TransferCaches may have cached knowledge
+     * that specific properties were filtered.
+     * @param clazz The Class whose properties should be examined.
+     * @param property The property to remove.
+     */
+    protected void removeFilteredTransferProperty(Class clazz, String property) {
+        var transferProperties = session.getTransferProperties();
+
+        if(transferProperties != null) {
+            var properties = transferProperties.getProperties(clazz);
+
+            if(properties != null) {
+                properties.remove(property);
+            }
+        }
     }
     
 }

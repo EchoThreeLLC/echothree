@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,8 +38,6 @@ public class BillingAccountTransferCache
         extends BasePaymentTransferCache<BillingAccount, BillingAccountTransfer> {
 
     AccountingControl accountingControl = (AccountingControl)Session.getModelController(AccountingControl.class);
-    ContactControl contactControl = (ContactControl)Session.getModelController(ContactControl.class);
-    PartyControl partyControl = (PartyControl)Session.getModelController(PartyControl.class);
     boolean includeRoles;
 
     /** Creates a new instance of BillingAccountTransferCache */
@@ -66,15 +64,15 @@ public class BillingAccountTransferCache
             String description = billingAccountDetail.getDescription();
             String creditLimit = null;
             String potentialCreditLimit = null;
-            BillingAccountStatus billingAccountStatus = paymentControl.getBillingAccountStatus(billingAccount);
+//            BillingAccountStatus billingAccountStatus = paymentControl.getBillingAccountStatus(billingAccount);
 //            Integer rawCreditLimit = billingAccountStatus.getCreditLimit();
 //            Integer rawPotentialCreditLimit = billingAccountStatus.getPotentialCreditLimit();
 //
 //            String partyTypeName = fromParty.getLastDetail().getPartyType().getPartyTypeName();
-//            if(PartyConstants.PartyType_CUSTOMER.equals(partyTypeName)) {
+//            if(PartyTypes.CUSTOMER.name().equals(partyTypeName)) {
 //                creditLimit = rawCreditLimit == null? null: AmountUtils.getInstance().formatPriceLine(currency, rawCreditLimit);
 //                potentialCreditLimit = rawPotentialCreditLimit == null? null: AmountUtils.getInstance().formatPriceLine(currency, rawPotentialCreditLimit);
-//            } else if(PartyConstants.PartyType_COMPANY.equals(partyTypeName)) {
+//            } else if(PartyTypes.COMPANY.name().equals(partyTypeName)) {
 //                creditLimit = rawCreditLimit == null? null: AmountUtils.getInstance().formatCostLine(currency, rawCreditLimit);
 //                potentialCreditLimit = rawPotentialCreditLimit == null? null: AmountUtils.getInstance().formatCostLine(currency, rawPotentialCreditLimit);
 //            }

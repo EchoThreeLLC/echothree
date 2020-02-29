@@ -1,7 +1,7 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
 
 <!--                                                                                  -->
-<!-- Copyright 2002-2019 Echo Three, LLC                                              -->
+<!-- Copyright 2002-2020 Echo Three, LLC                                              -->
 <!--                                                                                  -->
 <!-- Licensed under the Apache License, Version 2.0 (the "License");                  -->
 <!-- you may not use this file except in compliance with the License.                 -->
@@ -43,11 +43,11 @@
             </h2>
         </div>
         <div id="Content">
-            <et:checkSecurityRoles securityRoles="WorkflowDestinationStep.Create:WorkflowDestinationStep.Delete" />
-            <et:hasSecurityRole securityRoles="WorkflowDestinationStep.Delete">
+            <et:checkSecurityRoles securityRoles="WorkflowDestination.WorkflowStep" />
+            <et:hasSecurityRole securityRoles="WorkflowDestination.WorkflowStep">
                 <c:set var="linksInFirstRow" value="true" />
             </et:hasSecurityRole>
-            <et:hasSecurityRole securityRole="WorkflowDestinationStep.Create">
+            <et:hasSecurityRole securityRole="WorkflowDestination.WorkflowStep">
                 <c:url var="addUrl" value="/action/Configuration/WorkflowDestinationStep/Add">
                     <c:param name="WorkflowName" value="${workflow.workflowName}" />
                     <c:param name="WorkflowStepName" value="${workflowStep.workflowStepName}" />
@@ -64,7 +64,7 @@
                 </display:column>
                 <c:if test="${linksInFirstRow}">
                     <display:column>
-                        <et:hasSecurityRole securityRole="WorkflowDestinationStep.Delete">
+                        <et:hasSecurityRole securityRole="WorkflowDestination.WorkflowStep">
                             <c:url var="deleteUrl" value="/action/Configuration/WorkflowDestinationStep/Delete">
                                 <c:param name="WorkflowName" value="${workflowDestinationStep.workflowDestination.workflowStep.workflow.workflowName}" />
                                 <c:param name="WorkflowStepName" value="${workflowDestinationStep.workflowDestination.workflowStep.workflowStepName}" />

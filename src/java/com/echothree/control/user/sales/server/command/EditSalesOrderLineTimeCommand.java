@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.echothree.control.user.sales.common.result.EditSalesOrderLineTimeResu
 import com.echothree.control.user.sales.common.result.SalesResultFactory;
 import com.echothree.control.user.sales.common.spec.SalesOrderLineTimeSpec;
 import com.echothree.model.control.order.server.OrderControl;
-import com.echothree.model.control.sales.server.logic.SalesOrderLogic;
+import com.echothree.model.control.sales.server.logic.SalesOrderLineLogic;
 import com.echothree.model.data.order.server.entity.Order;
 import com.echothree.model.data.order.server.entity.OrderLine;
 import com.echothree.model.data.order.server.entity.OrderLineTime;
@@ -79,7 +79,7 @@ public class EditSalesOrderLineTimeCommand
     public OrderLineTime getEntity(EditSalesOrderLineTimeResult result) {
         String orderName = spec.getOrderName();
         String orderLineSequence = spec.getOrderLineSequence();
-        OrderLine orderLine = SalesOrderLogic.getInstance().getOrderLineByName(this, orderName, orderLineSequence);
+        OrderLine orderLine = SalesOrderLineLogic.getInstance().getOrderLineByName(this, orderName, orderLineSequence);
         OrderLineTime orderLineTime = null;
         
         if(!hasExecutionErrors()) {

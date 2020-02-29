@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,14 +24,14 @@ import com.echothree.control.user.employee.common.result.EmployeeResultFactory;
 import com.echothree.control.user.employee.common.spec.LeaveSpec;
 import com.echothree.model.control.employee.server.EmployeeControl;
 import com.echothree.model.control.employee.server.logic.LeaveLogic;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.control.uom.common.UomConstants;
 import com.echothree.model.control.uom.server.logic.UnitOfMeasureTypeLogic;
 import com.echothree.model.control.employee.common.workflow.LeaveStatusConstants;
-import com.echothree.model.control.workflow.server.logic.WorkflowLogic;
+import com.echothree.model.control.workflow.server.logic.WorkflowStepLogic;
 import com.echothree.model.data.employee.server.entity.Leave;
 import com.echothree.model.data.employee.server.entity.LeaveDetail;
 import com.echothree.model.data.employee.server.entity.LeaveReason;
@@ -62,8 +62,8 @@ public class EditLeaveCommand
 
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyConstants.PartyType_UTILITY, null),
-                new PartyTypeDefinition(PartyConstants.PartyType_EMPLOYEE, Collections.unmodifiableList(Arrays.asList(
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
                     new SecurityRoleDefinition(SecurityRoleGroups.Leave.name(), SecurityRoles.Edit.name())
                     )))
                 )));
@@ -152,7 +152,7 @@ public class EditLeaveCommand
 
     @Override
     public void canEdit(Leave leave) {
-        if(WorkflowLogic.getInstance().isEntityInWorkflowStepsForUpdate(null, LeaveStatusConstants.Workflow_LEAVE_STATUS, leave,
+        if(WorkflowStepLogic.getInstance().isEntityInWorkflowStepsForUpdate(null, LeaveStatusConstants.Workflow_LEAVE_STATUS, leave,
                 LeaveStatusConstants.WorkflowStep_APPROVED, LeaveStatusConstants.WorkflowStep_DENIED, LeaveStatusConstants.WorkflowStep_SUBMITTED).isEmpty()) {
             addExecutionError(ExecutionErrors.InvalidLeaveStatus.name(), leave.getLastDetail().getLeaveName());
         }

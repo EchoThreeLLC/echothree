@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import com.echothree.model.control.customer.server.CustomerControl;
 import com.echothree.model.control.document.common.DocumentConstants;
 import com.echothree.model.control.document.server.DocumentControl;
 import com.echothree.model.control.offer.server.OfferControl;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.term.server.TermControl;
 import com.echothree.model.control.workeffort.server.logic.WorkEffortLogic;
@@ -214,7 +214,7 @@ public class CreateCommunicationEventCommand
                                             if(defaultArGlAccount != null) {
                                                 var partyControl = (PartyControl)Session.getModelController(PartyControl.class);
                                                 OfferUse defaultOfferUse = source.getLastDetail().getOfferUse();
-                                                PartyType partyType = partyControl.getPartyTypeByName(PartyConstants.PartyType_CUSTOMER);
+                                                PartyType partyType = partyControl.getPartyTypeByName(PartyTypes.CUSTOMER.name());
 
                                                 party = partyControl.createParty(null, partyType, null, null, null, null, createdBy);
 

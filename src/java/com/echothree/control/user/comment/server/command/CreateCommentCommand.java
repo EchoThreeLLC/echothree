@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.echothree.model.control.comment.server.CommentControl;
 import com.echothree.model.control.core.common.EntityAttributeTypes;
 import com.echothree.model.control.core.server.CoreControl;
 import com.echothree.model.control.party.server.PartyControl;
-import com.echothree.model.control.sequence.common.SequenceConstants;
+import com.echothree.model.control.sequence.common.SequenceTypes;
 import com.echothree.model.control.sequence.server.SequenceControl;
 import com.echothree.model.control.user.server.UserControl;
 import com.echothree.model.control.workflow.server.WorkflowControl;
@@ -113,7 +113,7 @@ public class CreateCommentCommand
             Sequence commentSequence = commentType.getLastDetail().getCommentSequence();
             
             if(commentSequence == null) {
-                commentSequence = sequenceControl.getDefaultSequenceUsingNames(SequenceConstants.SequenceType_COMMENT);
+                commentSequence = sequenceControl.getDefaultSequenceUsingNames(SequenceTypes.COMMENT.name());
             }
             
             commentName = sequenceControl.getNextSequenceValue(commentSequence);

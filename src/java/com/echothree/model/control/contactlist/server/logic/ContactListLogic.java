@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.echothree.model.control.contactlist.common.workflow.PartyContactListS
 import com.echothree.model.control.contactlist.server.ContactListControl;
 import com.echothree.model.control.core.server.CoreControl;
 import com.echothree.model.control.customer.server.CustomerControl;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.logic.PartyLogic;
 import com.echothree.model.control.workflow.server.WorkflowControl;
 import com.echothree.model.data.contact.server.entity.ContactMechanismPurpose;
@@ -84,7 +84,7 @@ public class ContactListLogic
         var contactListGroup = contactList.getLastDetail().getContactListGroup();
 
         // Employees may do anything they want with lists.
-        var hasAccess = partyTypeName.equals(PartyConstants.PartyType_EMPLOYEE);
+        var hasAccess = partyTypeName.equals(PartyTypes.EMPLOYEE.name());
 
         // If the Contact List Group that the Contact List is in has been explicitly given access to the Party Type,
         // then allow access.
@@ -100,7 +100,7 @@ public class ContactListLogic
         }
 
         // Customers have some special checks based on Customer Type, if access still has no yet been granted.
-        if(!hasAccess && partyTypeName.equals(PartyConstants.PartyType_CUSTOMER)) {
+        if(!hasAccess && partyTypeName.equals(PartyTypes.CUSTOMER.name())) {
             var customerControl = (CustomerControl)Session.getModelController(CustomerControl.class);
             var customerType = customerControl.getCustomer(executingParty).getCustomerType();
 
@@ -166,7 +166,7 @@ public class ContactListLogic
             contactLists.addAll(contactListControl.getContactListsByContactListGroup(partyTypeContactListGroup.getContactListGroup()));
         });
 
-        if(PartyLogic.getInstance().isPartyType(party, PartyConstants.PartyType_CUSTOMER)) {
+        if(PartyLogic.getInstance().isPartyType(party, PartyTypes.CUSTOMER.name())) {
             var customerControl = (CustomerControl)Session.getModelController(CustomerControl.class);
             CustomerType customerType = customerControl.getCustomer(party).getCustomerType();
 

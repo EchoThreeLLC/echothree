@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -344,12 +344,17 @@ public class CoreBean
     // -------------------------------------------------------------------------
     //   Entity Instances
     // -------------------------------------------------------------------------
-    
+
+    @Override
+    public CommandResult getEntityInstance(UserVisitPK userVisitPK, GetEntityInstanceForm form) {
+        return new GetEntityInstanceCommand(userVisitPK, form).run();
+    }
+
     @Override
     public CommandResult getEntityInstances(UserVisitPK userVisitPK, GetEntityInstancesForm form) {
         return new GetEntityInstancesCommand(userVisitPK, form).run();
     }
-    
+
     @Override
     public CommandResult generateKey(UserVisitPK userVisitPK, GenerateKeyForm form) {
         return new GenerateKeyCommand(userVisitPK, form).run();

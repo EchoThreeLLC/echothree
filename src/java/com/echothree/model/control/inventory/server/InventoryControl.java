@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1491,15 +1491,12 @@ public class InventoryControl
     }
     
     public List<InventoryConditionUseType> getInventoryConditionUseTypes() {
-        List<InventoryConditionUseType>inventoryConditionUseTypes = null;
         PreparedStatement ps = InventoryConditionUseTypeFactory.getInstance().prepareStatement(
                 "SELECT _ALL_ " +
                 "FROM inventoryconditionusetypes " +
                 "ORDER BY invconut_inventoryconditionusetypename");
         
-        inventoryConditionUseTypes = InventoryConditionUseTypeFactory.getInstance().getEntitiesFromQuery(EntityPermission.READ_ONLY, ps);
-        
-        return inventoryConditionUseTypes;
+        return InventoryConditionUseTypeFactory.getInstance().getEntitiesFromQuery(EntityPermission.READ_ONLY, ps);
     }
     
     public InventoryConditionUseType getInventoryConditionUseTypeByName(String inventoryConditionUseTypeName) {

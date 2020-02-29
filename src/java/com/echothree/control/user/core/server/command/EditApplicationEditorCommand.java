@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import com.echothree.control.user.core.common.result.EditApplicationEditorResult
 import com.echothree.control.user.core.common.spec.ApplicationEditorSpec;
 import com.echothree.model.control.core.server.CoreControl;
 import com.echothree.model.control.core.server.logic.ApplicationLogic;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.core.server.entity.Application;
@@ -55,8 +55,8 @@ public class EditApplicationEditorCommand
     
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyConstants.PartyType_UTILITY, null),
-                new PartyTypeDefinition(PartyConstants.PartyType_EMPLOYEE, Collections.unmodifiableList(Arrays.asList(
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
                         new SecurityRoleDefinition(SecurityRoleGroups.ApplicationEditor.name(), SecurityRoles.Edit.name())
                         )))
                 )));
@@ -129,7 +129,6 @@ public class EditApplicationEditorCommand
 
     @Override
     public void doLock(ApplicationEditorEdit edit, ApplicationEditor applicationEditor) {
-        var coreControl = getCoreControl();
         ApplicationEditorDetail applicationEditorDetail = applicationEditor.getLastDetail();
 
         edit.setIsDefault(applicationEditorDetail.getIsDefault().toString());

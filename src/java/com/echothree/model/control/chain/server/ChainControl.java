@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -2792,7 +2792,7 @@ public class ChainControl
         return chainActionTransfers;
     }
 
-    private void updateChainActionFromValue(ChainActionDetailValue chainActionDetailValue, boolean checkDefault, BasePK updatedBy) {
+    public void updateChainActionFromValue(ChainActionDetailValue chainActionDetailValue, BasePK updatedBy) {
         if(chainActionDetailValue.hasBeenModified()) {
             ChainAction chainAction = ChainActionFactory.getInstance().getEntityFromPK(EntityPermission.READ_WRITE, chainActionDetailValue.getChainActionPK());
             ChainActionDetail chainActionDetail = chainAction.getActiveDetailForUpdate();
@@ -2815,10 +2815,6 @@ public class ChainControl
 
             sendEventUsingNames(chainActionPK, EventTypes.MODIFY.name(), null, null, updatedBy);
         }
-    }
-
-    public void updateChainActionFromValue(ChainActionDetailValue chainActionDetailValue, BasePK updatedBy) {
-        updateChainActionFromValue(chainActionDetailValue, true, updatedBy);
     }
 
     public void deleteChainAction(ChainAction chainAction, BasePK deletedBy) {

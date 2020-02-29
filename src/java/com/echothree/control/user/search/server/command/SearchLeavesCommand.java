@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import com.echothree.control.user.search.common.form.SearchLeavesForm;
 import com.echothree.control.user.search.common.result.SearchLeavesResult;
 import com.echothree.control.user.search.common.result.SearchResultFactory;
 import com.echothree.model.control.employee.server.logic.LeaveLogic;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.logic.CompanyLogic;
 import com.echothree.model.control.party.server.logic.PartyLogic;
 import com.echothree.model.control.search.common.SearchConstants;
@@ -61,8 +61,8 @@ public class SearchLeavesCommand
 
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyConstants.PartyType_UTILITY, null),
-                new PartyTypeDefinition(PartyConstants.PartyType_EMPLOYEE, Collections.unmodifiableList(Arrays.asList(
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
                         new SecurityRoleDefinition(SecurityRoleGroups.Leave.name(), SecurityRoles.Search.name())
                         )))
                 )));

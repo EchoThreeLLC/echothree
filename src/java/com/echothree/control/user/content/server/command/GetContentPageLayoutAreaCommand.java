@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,7 +59,6 @@ public class GetContentPageLayoutAreaCommand
     @Override
     protected ContentPageLayoutArea getEntity() {
         var contentControl = (ContentControl)Session.getModelController(ContentControl.class);
-        GetContentPageLayoutAreaResult result = ContentResultFactory.getGetContentPageLayoutAreaResult();
         String contentCollectionName = form.getContentCollectionName();
         ContentCollection contentCollection = contentControl.getContentCollectionByName(contentCollectionName);
         ContentPageLayoutArea contentPageLayoutArea = null;

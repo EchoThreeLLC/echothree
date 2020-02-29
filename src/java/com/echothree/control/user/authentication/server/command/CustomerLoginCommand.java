@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package com.echothree.control.user.authentication.server.command;
 
 import com.echothree.control.user.authentication.common.form.CustomerLoginForm;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.logic.LockoutPolicyLogic;
 import com.echothree.model.control.party.server.logic.PartyLogic;
 import com.echothree.model.control.user.server.UserControl;
@@ -57,7 +57,7 @@ public class CustomerLoginCommand
         
         if(!hasExecutionErrors()) {
             Party party = userLogin.getParty();
-            PartyLogic.getInstance().checkPartyType(this, party, PartyConstants.PartyType_CUSTOMER);
+            PartyLogic.getInstance().checkPartyType(this, party, PartyTypes.CUSTOMER.name());
 
             if(!hasExecutionErrors()) {
                 UserControl userControl = getUserControl();

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,16 +17,37 @@
 package com.echothree.control.user.search.server.command;
 
 import com.echothree.control.user.search.common.form.ClearEmployeeResultsForm;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.search.common.SearchConstants;
+import com.echothree.model.control.security.common.SecurityRoleGroups;
+import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
 import com.echothree.util.common.command.BaseResult;
+import com.echothree.util.common.validation.FieldDefinition;
+import com.echothree.util.common.validation.FieldType;
+import com.echothree.util.server.control.CommandSecurityDefinition;
+import com.echothree.util.server.control.PartyTypeDefinition;
+import com.echothree.util.server.control.SecurityRoleDefinition;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class ClearEmployeeResultsCommand
         extends BaseClearResultsCommand<ClearEmployeeResultsForm> {
-    
+
+    private final static CommandSecurityDefinition COMMAND_SECURITY_DEFINITION;
+
+    static {
+        COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
+                        new SecurityRoleDefinition(SecurityRoleGroups.Employee.name(), SecurityRoles.Search.name())
+                        )))
+                )));
+    }
+
     /** Creates a new instance of ClearEmployeeResultsCommand */
     public ClearEmployeeResultsCommand(UserVisitPK userVisitPK, ClearEmployeeResultsForm form) {
-        super(userVisitPK, form, null);
+        super(userVisitPK, form, COMMAND_SECURITY_DEFINITION);
     }
     
     @Override

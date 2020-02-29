@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,10 +18,12 @@ package com.echothree.model.control.wishlist.server.logic;
 
 import com.echothree.model.control.item.common.ItemPriceTypes;
 import com.echothree.model.control.offer.server.OfferControl;
-import com.echothree.model.control.order.common.OrderConstants;
+import com.echothree.model.control.order.common.OrderRoleTypes;
+import com.echothree.model.control.order.common.OrderTypes;
 import com.echothree.model.control.order.server.OrderControl;
 import com.echothree.model.control.order.server.logic.OrderLogic;
 import com.echothree.model.control.party.server.PartyControl;
+import com.echothree.model.control.sales.server.logic.SalesOrderLineLogic;
 import com.echothree.model.control.wishlist.server.WishlistControl;
 import com.echothree.model.data.accounting.server.entity.Currency;
 import com.echothree.model.data.associate.server.entity.AssociateReferral;
@@ -104,7 +106,7 @@ public class WishlistLogic
             Order order = wishlistControl.getWishlist(companyParty, party, wishlistType, currency);
 
             if(order == null) {
-                OrderType orderType = orderLogic.getOrderTypeByName(ema, OrderConstants.OrderType_WISHLIST);
+                OrderType orderType = orderLogic.getOrderTypeByName(ema, OrderTypes.WISHLIST.name());
 
                 if(!ema.hasExecutionErrors()) {
                     order = orderLogic.createOrder(ema, orderType, null, null, currency, null, null, null, null, null, null, null, null, null, null, createdBy);
@@ -112,8 +114,8 @@ public class WishlistLogic
                     if(!ema.hasExecutionErrors()) {
                         wishlistControl.createWishlist(order, getOrderOfferUse(userVisit, offerUse, companyParty), wishlistType, createdBy);
 
-                        orderControl.createOrderRoleUsingNames(order, companyParty, OrderConstants.OrderRoleType_BILL_FROM, createdBy);
-                        orderControl.createOrderRoleUsingNames(order, party, OrderConstants.OrderRoleType_BILL_TO, createdBy);
+                        orderControl.createOrderRoleUsingNames(order, companyParty, OrderRoleTypes.BILL_FROM.name(), createdBy);
+                        orderControl.createOrderRoleUsingNames(order, party, OrderRoleTypes.BILL_TO.name(), createdBy);
                     }
                 }
             }
@@ -129,7 +131,7 @@ public class WishlistLogic
                     Long unitAmount = offerItemFixedPrice.getUnitPrice();
                     AssociateReferral associateReferral = userVisit.getAssociateReferral();
 
-                    orderLine = OrderLogic.getInstance().createOrderLine(session, ema, order, null, null, null, item, inventoryCondition, unitOfMeasureType,
+                    orderLine = SalesOrderLineLogic.getInstance().createOrderLine(session, ema, order, null, null, null, item, inventoryCondition, unitOfMeasureType,
                             quantity, unitAmount, null, null, null, null, createdBy);
 
                     if(!ema.hasExecutionErrors()) {

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.echothree.model.control.index.server.indexer.sortabledescriptionproducer;
 
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.Languages;
 import com.echothree.model.data.party.server.entity.Language;
 
 public class SortableDescriptionProducerFactory {
@@ -36,7 +36,7 @@ public class SortableDescriptionProducerFactory {
     public SortableDescriptionProducer getSortableDescriptionProducer(Language language) {
         String languageIsoName = language.getLanguageIsoName();
 
-        if(languageIsoName.equals(PartyConstants.Language_en)) {
+        if(languageIsoName.equals(Languages.en.name())) {
             return new EnglishSortableDescriptionProducer();
         } else {
             return new UniversalSortableDescriptionProducer();

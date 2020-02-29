@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.echothree.control.user.user.common.edit.UserEditFactory;
 import com.echothree.control.user.user.common.form.EditRecoveryAnswerForm;
 import com.echothree.control.user.user.common.result.EditRecoveryAnswerResult;
 import com.echothree.control.user.user.common.result.UserResultFactory;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.logic.PartyLogic;
 import com.echothree.model.control.user.server.UserControl;
 import com.echothree.model.data.party.server.entity.Party;
@@ -78,7 +78,7 @@ public class EditRecoveryAnswerCommand
         Party party = PartyLogic.getInstance().getPartyByName(this, spec.getPartyName());
 
         if(!hasExecutionErrors()) {
-            PartyLogic.getInstance().checkPartyType(this, party, PartyConstants.PartyType_CUSTOMER);
+            PartyLogic.getInstance().checkPartyType(this, party, PartyTypes.CUSTOMER.name());
 
             if(!hasExecutionErrors()) {
                 UserControl userControl = getUserControl();

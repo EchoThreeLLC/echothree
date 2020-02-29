@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.echothree.model.control.invoice.server.transfer;
 
-import com.echothree.model.control.invoice.common.InvoiceConstants;
+import com.echothree.model.control.invoice.common.InvoiceLineUseTypes;
 import com.echothree.model.control.invoice.common.transfer.InvoiceLineTransfer;
 import com.echothree.model.control.invoice.common.transfer.InvoiceLineTypeTransfer;
 import com.echothree.model.control.invoice.common.transfer.InvoiceLineUseTypeTransfer;
@@ -62,9 +62,9 @@ public class InvoiceLineTransferCache
             put(invoiceLine, invoiceLineTransfer);
             
             String invoiceLineUseTypeName = invoiceLineUseTypeTransfer.getInvoiceLineUseTypeName();
-            if(invoiceLineUseTypeName.equals(InvoiceConstants.InvoiceLineUseType_ITEM)) {
+            if(invoiceLineUseTypeName.equals(InvoiceLineUseTypes.ITEM.name())) {
                 invoiceLineTransfer.setInvoiceLineItem(invoiceControl.getInvoiceLineItemTransfer(userVisit, invoiceControl.getInvoiceLineItem(invoiceLine)));
-            } else if(invoiceLineUseTypeName.equals(InvoiceConstants.InvoiceLineUseType_GL_ACCOUNT)) {
+            } else if(invoiceLineUseTypeName.equals(InvoiceLineUseTypes.GL_ACCOUNT.name())) {
                 invoiceLineTransfer.setInvoiceLineGlAccount(invoiceControl.getInvoiceLineGlAccountTransfer(userVisit, invoiceControl.getInvoiceLineGlAccount(invoiceLine)));
             }
         }

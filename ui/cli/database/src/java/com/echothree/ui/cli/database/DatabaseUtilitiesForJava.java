@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -86,7 +86,7 @@ public class DatabaseUtilitiesForJava {
     
     public void writeCopyright(PrintWriter pw) {
         pw.println("// --------------------------------------------------------------------------------");
-        pw.println("// Copyright 2002-2019 Echo Three, LLC");
+        pw.println("// Copyright 2002-2020 Echo Three, LLC");
         pw.println("//");
         pw.println("// Licensed under the Apache License, Version 2.0 (the \"License\");");
         pw.println("// you may not use this file except in compliance with the License.");
@@ -401,7 +401,6 @@ public class DatabaseUtilitiesForJava {
             columns.stream().forEach((column) -> {
                 int columnType = column.getType();
                 if (columnType != ColumnType.columnEID && columnType != ColumnType.columnBLOB) {
-                    String variableName = column.getVariableName();
                     pw.println("            stringValue.append(\", " + column.getVariableName() + "=\").append(" + column.getGetFunctionName() + "());");
                 }
             });

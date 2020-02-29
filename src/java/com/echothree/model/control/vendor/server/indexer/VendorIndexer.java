@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package com.echothree.model.control.vendor.server.indexer;
 
-import com.echothree.model.control.party.server.indexer.PartyIndexer;
 import com.echothree.model.control.index.common.IndexConstants;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
+import com.echothree.model.control.party.server.indexer.PartyIndexer;
 import com.echothree.model.control.vendor.server.VendorControl;
 import com.echothree.model.data.index.server.entity.Index;
 import com.echothree.model.data.party.server.entity.Party;
@@ -32,7 +32,7 @@ public class VendorIndexer
     
     /** Creates a new instance of VendorIndexer */
     public VendorIndexer(final ExecutionErrorAccumulator eea, final Index index) {
-        super(eea, index, PartyConstants.PartyType_VENDOR, IndexConstants.IndexField_VendorName);
+        super(eea, index, PartyTypes.VENDOR.name(), IndexConstants.IndexField_VendorName);
     }
     
     @Override

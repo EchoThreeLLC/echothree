@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.echothree.ui.web.main.action.customer.customeralias;
 import com.echothree.control.user.party.common.PartyUtil;
 import com.echothree.control.user.party.common.form.GetPartyAliasTypeChoicesForm;
 import com.echothree.control.user.party.common.result.GetPartyAliasTypeChoicesResult;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.common.choice.PartyAliasTypeChoicesBean;
 import com.echothree.util.common.command.CommandResult;
 import com.echothree.util.common.command.ExecutionResult;
@@ -44,7 +44,7 @@ public class AddActionForm
             try {
                 GetPartyAliasTypeChoicesForm form = PartyUtil.getHome().getGetPartyAliasTypeChoicesForm();
 
-                form.setPartyTypeName(PartyConstants.PartyType_CUSTOMER);
+                form.setPartyTypeName(PartyTypes.CUSTOMER.name());
                 form.setDefaultPartyAliasTypeChoice(partyAliasTypeChoice);
                 form.setAllowNullChoice(Boolean.FALSE.toString());
                 

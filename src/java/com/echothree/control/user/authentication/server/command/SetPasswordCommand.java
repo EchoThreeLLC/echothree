@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.echothree.control.user.authentication.server.command;
 import com.echothree.control.user.authentication.common.form.SetPasswordForm;
 import com.echothree.model.control.customer.server.CustomerControl;
 import com.echothree.model.control.employee.server.EmployeeControl;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.party.server.logic.PartyLogic;
 import com.echothree.model.control.party.server.logic.PasswordStringPolicyLogic;
@@ -120,8 +120,8 @@ public class SetPasswordCommand
             
             if(!hasExecutionErrors()) {
                 if(party != null) {
-                    PartyLogic.getInstance().checkPartyType(this, party, PartyConstants.PartyType_EMPLOYEE, PartyConstants.PartyType_CUSTOMER,
-                            PartyConstants.PartyType_VENDOR);
+                    PartyLogic.getInstance().checkPartyType(this, party, PartyTypes.EMPLOYEE.name(), PartyTypes.CUSTOMER.name(),
+                            PartyTypes.VENDOR.name());
 
                     if(!hasExecutionErrors()) {
                         UserLoginPasswordType userLoginPasswordType = userControl.getUserLoginPasswordTypeByName(UserConstants.UserLoginPasswordType_STRING);

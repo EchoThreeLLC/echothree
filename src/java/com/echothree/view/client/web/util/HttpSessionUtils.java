@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -78,25 +78,25 @@ public class HttpSessionUtils {
                 if(cookie != null) {
                     commandForm.setUserKeyName(cookie.getValue());
                 }
-                
+
                 CommandResult commandResult = authenticationService.getUserVisit(commandForm);
                 ExecutionResult executionResult = commandResult.getExecutionResult();
                 GetUserVisitResult getUserVisitResult = (GetUserVisitResult)executionResult.getResult();
-                
+
                 String userKeyName = getUserVisitResult.getUserKeyName();
                 if(cookie == null) {
                     cookie = new Cookie(WebConstants.Cookie_USER_KEY, userKeyName);
                 } else {
                     cookie.setValue(userKeyName);
                 }
-                
+
                 cookie.setPath("/");
                 cookie.setMaxAge(365 * 24 * 60 * 60); // 1 Year
                 if(secureUserKey) {
                     cookie.setSecure(true);
                 }
                 response.addCookie(cookie);
-                
+
                 userVisitPK = getUserVisitResult.getUserVisitPK();
                 httpSession.setAttribute(WebConstants.Session_USER_VISIT, userVisitPK);
                 httpSession.setAttribute("bindings.listener", new CustomBindingListener(userVisitPK));

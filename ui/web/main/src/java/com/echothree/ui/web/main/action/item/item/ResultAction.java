@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ public class ResultAction
         GetItemResultsForm commandForm = SearchUtil.getHome().getGetItemResultsForm();
         String results = request.getParameter(ParameterConstants.RESULTS);
 
-        commandForm.setSearchTypeName(SearchConstants.SearchType_ITEM_MAINTAINENCE);
+        commandForm.setSearchTypeName(SearchConstants.SearchType_ITEM_MAINTENANCE);
 
         Set<String> options = new HashSet<>();
         options.add(SearchOptions.ItemResultIncludeItem);

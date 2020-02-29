@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.echothree.control.user.user.server.command;
 import com.echothree.control.user.user.common.form.GetUserSessionForm;
 import com.echothree.control.user.user.common.result.GetUserSessionResult;
 import com.echothree.control.user.user.common.result.UserResultFactory;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.user.server.UserControl;
 import com.echothree.model.control.employee.common.workflow.EmployeeAvailabilityConstants;
 import com.echothree.model.control.workflow.server.WorkflowControl;
@@ -67,7 +67,7 @@ public class GetUserSessionCommand
             
             result.setUserSession(userControl.getUserSessionTransfer(userVisit, userSession));
 
-            if(partyTypeName != null && partyTypeName.equals(PartyConstants.PartyType_EMPLOYEE)) {
+            if(partyTypeName != null && partyTypeName.equals(PartyTypes.EMPLOYEE.name())) {
                 result.setEmployeeAvailability(workflowControl.getWorkflowEntityStatusTransferByEntityInstanceUsingNames(userVisit,
                         EmployeeAvailabilityConstants.Workflow_EMPLOYEE_AVAILABILITY, entityInstance));
             }

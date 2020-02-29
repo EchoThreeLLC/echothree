@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ package com.echothree.control.user.sales.common.edit;
 import com.echothree.control.user.contact.common.spec.ContactMechanismSpec;
 import com.echothree.control.user.inventory.common.spec.InventoryConditionSpec;
 import com.echothree.control.user.item.common.spec.ItemSpec;
-import com.echothree.control.user.offer.common.spec.OfferUseSpec;
+import com.echothree.control.user.offer.common.spec.SourceSpec;
 import com.echothree.control.user.shipping.common.spec.ShippingMethodSpec;
 import com.echothree.util.common.form.BaseEdit;
 
 public interface SalesOrderLineEdit
-        extends BaseEdit, ContactMechanismSpec, ShippingMethodSpec, ItemSpec, InventoryConditionSpec, OfferUseSpec {
+        extends BaseEdit, ContactMechanismSpec, ShippingMethodSpec, ItemSpec, InventoryConditionSpec, SourceSpec {
     
     String getOrderShipmentGroupSequence();
     void setOrderShipmentGroupSequence(String orderShipmentGroupSequence);

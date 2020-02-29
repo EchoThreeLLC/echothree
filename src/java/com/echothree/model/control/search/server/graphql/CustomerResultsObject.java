@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -79,10 +79,9 @@ public class CustomerResultsObject {
 
         if(userVisitSearch != null) {
             GraphQlContext context = env.getContext();
-            UserVisit userVisit = context.getUserVisit();
             var searchControl = (SearchControl)Session.getModelController(SearchControl.class);
 
-            objects = searchControl.getCustomerResultObjects(userVisit, userVisitSearch);
+            objects = searchControl.getCustomerResultObjects(userVisitSearch);
         }
         
         return objects == null ? Collections.EMPTY_LIST : objects;

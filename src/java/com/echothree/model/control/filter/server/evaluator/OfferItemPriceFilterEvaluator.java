@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -71,11 +71,11 @@ public class OfferItemPriceFilterEvaluator
         long initialUnitPrice = filteredItemFixedPrice.getUnitPrice();
         long unitPrice = initialUnitPrice;
         
-        if(BaseFilterEvaluatorDebugFlags.OfferItemPriceFilterEvaluator)
+        if(BaseFilterEvaluatorDebugFlags.OfferItemPriceFilterEvaluator) {
             log.info("--- filterAdjustmentName = " + filterAdjustmentDetail.getFilterAdjustmentName());
-        
-        if(BaseFilterEvaluatorDebugFlags.OfferItemPriceFilterEvaluator)
             log.info("--- filterAdjustmentSourceName = " + filterAdjustmentSourceName);
+        }
+
         if(filterAdjustmentSourceName.equals(FilterConstants.FilterAdjustmentSource_CURRENT)) {
             // No source price changes.
         } else if(filterAdjustmentSourceName.equals(FilterConstants.FilterAdjustmentSource_INVENTORY_COST)) {
@@ -165,7 +165,7 @@ public class OfferItemPriceFilterEvaluator
             }
             
             if(!evaluatedPrices.isEmpty())
-                filteredItemFixedPrice = (FilteredItemFixedPrice)evaluatedPrices.first();
+                filteredItemFixedPrice = evaluatedPrices.first();
         } else {
             filteredItemFixedPrice = null;
         }

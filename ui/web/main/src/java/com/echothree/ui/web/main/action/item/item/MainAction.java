@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public class MainAction
         GetItemResultsForm commandForm = SearchUtil.getHome().getGetItemResultsForm();
         String itemName = null;
         
-        commandForm.setSearchTypeName(SearchConstants.SearchType_ITEM_MAINTAINENCE);
+        commandForm.setSearchTypeName(SearchConstants.SearchType_ITEM_MAINTENANCE);
         
         CommandResult commandResult = SearchUtil.getHome().getItemResults(getUserVisitPK(request), commandForm);
         ExecutionResult executionResult = commandResult.getExecutionResult();
@@ -87,7 +87,7 @@ public class MainAction
         if(wasPost(request)) {
             SearchItemsForm commandForm = SearchUtil.getHome().getSearchItemsForm();
 
-            commandForm.setSearchTypeName(SearchConstants.SearchType_ITEM_MAINTAINENCE);
+            commandForm.setSearchTypeName(SearchConstants.SearchType_ITEM_MAINTENANCE);
             commandForm.setItemNameOrAlias(actionForm.getItemNameOrAlias());
             commandForm.setDescription(actionForm.getDescription());
             commandForm.setItemTypeName(actionForm.getItemTypeChoice());

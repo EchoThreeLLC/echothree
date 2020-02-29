@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -101,7 +101,6 @@ public class IconControl
     }
     
     private List<Icon> getIcons(EntityPermission entityPermission) {
-        List<Icon> icons = null;
         String query = null;
         
         if(entityPermission.equals(EntityPermission.READ_ONLY)) {
@@ -118,9 +117,7 @@ public class IconControl
         
         PreparedStatement ps = IconFactory.getInstance().prepareStatement(query);
         
-        icons = IconFactory.getInstance().getEntitiesFromQuery(entityPermission, ps);
-        
-        return icons;
+        return IconFactory.getInstance().getEntitiesFromQuery(entityPermission, ps);
     }
     
     public List<Icon> getIcons() {

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,12 +25,12 @@ import com.echothree.model.control.customer.server.CustomerControl;
 import com.echothree.model.control.inventory.server.logic.AllocationPriorityLogic;
 import com.echothree.model.control.item.server.ItemControl;
 import com.echothree.model.control.offer.server.OfferControl;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.returnpolicy.common.ReturnPolicyConstants;
 import com.echothree.model.control.returnpolicy.server.ReturnPolicyControl;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
-import com.echothree.model.control.sequence.common.SequenceConstants;
+import com.echothree.model.control.sequence.common.SequenceTypes;
 import com.echothree.model.control.sequence.server.SequenceControl;
 import com.echothree.model.control.term.server.TermControl;
 import com.echothree.model.control.customer.common.workflow.CustomerCreditStatusConstants;
@@ -75,8 +75,8 @@ public class CreateCustomerTypeCommand
     
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyConstants.PartyType_UTILITY, null),
-                new PartyTypeDefinition(PartyConstants.PartyType_EMPLOYEE, Collections.unmodifiableList(Arrays.asList(
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
                         new SecurityRoleDefinition(SecurityRoleGroups.CustomerType.name(), SecurityRoles.Create.name())
                         )))
                 )));
@@ -125,7 +125,7 @@ public class CreateCustomerTypeCommand
             
             if(customerSequenceName != null) {
                 var sequenceControl = (SequenceControl)Session.getModelController(SequenceControl.class);
-                SequenceType sequenceType = sequenceControl.getSequenceTypeByName(SequenceConstants.SequenceType_CUSTOMER);
+                SequenceType sequenceType = sequenceControl.getSequenceTypeByName(SequenceTypes.CUSTOMER.name());
                 
                 if(sequenceType != null) {
                     customerSequence = sequenceControl.getSequenceByName(sequenceType, customerSequenceName);
@@ -238,7 +238,6 @@ public class CreateCustomerTypeCommand
                                                 AllocationPriority allocationPriority = allocationPriorityName == null ? null : AllocationPriorityLogic.getInstance().getAllocationPriorityByName(this, allocationPriorityName);
                                                 
                                                 if(!hasExecutionErrors()) {
-                                                    var itemControl = (ItemControl)Session.getModelController(ItemControl.class);
                                                     PartyPK partyPK = getPartyPK();
                                                     Boolean defaultHoldUntilComplete = Boolean.valueOf(form.getDefaultHoldUntilComplete());
                                                     Boolean defaultAllowBackorders = Boolean.valueOf(form.getDefaultAllowBackorders());

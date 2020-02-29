@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,7 +46,6 @@ public class InventoryConditionUseTypesHandler
     throws SAXException {
         if(localName.equals("inventoryConditionUseType")) {
             String inventoryConditionUseTypeName = null;
-            String allowMultiple = null;
             String isDefault = null;
             String sortOrder = null;
             

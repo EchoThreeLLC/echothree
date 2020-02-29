@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.echothree.model.control.party.server.logic;
 
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.common.exception.CannotSpecifyCompanyNameAndPartyNameException;
 import com.echothree.model.control.party.common.exception.MustSpecifyCompanyNameOrPartyNameException;
 import com.echothree.model.control.party.common.exception.UnknownCompanyNameException;
@@ -61,7 +61,7 @@ public class CompanyLogic
                 Party party = partyControl.getPartyByName(partyName);
 
                 if(party != null) {
-                    PartyLogic.getInstance().checkPartyType(eea, party, PartyConstants.PartyType_COMPANY);
+                    PartyLogic.getInstance().checkPartyType(eea, party, PartyTypes.COMPANY.name());
 
                     partyCompany = partyControl.getPartyCompany(party);
                 } else {

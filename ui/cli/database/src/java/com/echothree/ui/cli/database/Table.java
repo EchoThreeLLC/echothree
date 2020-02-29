@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -239,7 +239,7 @@ public class Table {
     public int countColumnsWithDestinationTable(String destinationTable) {
         int totalColumns = 0;
         
-        totalColumns = columns.stream().filter((theColumn) -> (theColumn.getType() == ColumnType.columnForeignKey)).filter((theColumn) -> (theColumn.getDestinationTable().equals(destinationTable))).map((_item) -> 1).reduce(totalColumns, Integer::sum);
+        totalColumns = columns.stream().filter((theColumn) -> (theColumn.getType() == ColumnType.columnForeignKey)).filter((theColumn) -> theColumn.getDestinationTable().equals(destinationTable)).map((_item) -> 1).reduce(totalColumns, Integer::sum);
         
         return totalColumns;
     }

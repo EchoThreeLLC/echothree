@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -148,7 +148,7 @@ public class MainActionForm
                 GetSearchDefaultOperatorChoicesForm form = SearchUtil.getHome().getGetSearchDefaultOperatorChoicesForm();
                 
                 form.setSearchKindName(SearchConstants.SearchKind_ITEM);
-                form.setSearchTypeName(SearchConstants.SearchType_ITEM_MAINTAINENCE);
+                form.setSearchTypeName(SearchConstants.SearchType_ITEM_MAINTENANCE);
                 form.setDefaultSearchDefaultOperatorChoice(searchDefaultOperatorChoice);
                 form.setAllowNullChoice(Boolean.TRUE.toString());
                 
@@ -173,7 +173,7 @@ public class MainActionForm
                 GetSearchSortOrderChoicesForm form = SearchUtil.getHome().getGetSearchSortOrderChoicesForm();
                 
                 form.setSearchKindName(SearchConstants.SearchKind_ITEM);
-                form.setSearchTypeName(SearchConstants.SearchType_ITEM_MAINTAINENCE);
+                form.setSearchTypeName(SearchConstants.SearchType_ITEM_MAINTENANCE);
                 form.setDefaultSearchSortOrderChoice(searchSortOrderChoice);
                 form.setAllowNullChoice(Boolean.TRUE.toString());
                 
@@ -198,7 +198,7 @@ public class MainActionForm
                 GetSearchSortDirectionChoicesForm form = SearchUtil.getHome().getGetSearchSortDirectionChoicesForm();
                 
                 form.setSearchKindName(SearchConstants.SearchKind_ITEM);
-                form.setSearchTypeName(SearchConstants.SearchType_ITEM_MAINTAINENCE);
+                form.setSearchTypeName(SearchConstants.SearchType_ITEM_MAINTENANCE);
                 form.setDefaultSearchSortDirectionChoice(searchSortDirectionChoice);
                 form.setAllowNullChoice(Boolean.TRUE.toString());
                 

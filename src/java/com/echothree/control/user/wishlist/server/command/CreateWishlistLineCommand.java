@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.echothree.model.control.inventory.common.InventoryConstants;
 import com.echothree.model.control.inventory.server.InventoryControl;
 import com.echothree.model.control.item.server.ItemControl;
 import com.echothree.model.control.offer.server.OfferControl;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.uom.server.UomControl;
 import com.echothree.model.control.wishlist.server.WishlistControl;
@@ -86,7 +86,7 @@ public class CreateWishlistLineCommand
         if(party != null) {
             String partyTypeName = party.getLastDetail().getPartyType().getPartyTypeName();
             
-            if(partyTypeName.equals(PartyConstants.PartyType_CUSTOMER)) {
+            if(partyTypeName.equals(PartyTypes.CUSTOMER.name())) {
                 var wishlistControl = (WishlistControl)Session.getModelController(WishlistControl.class);
                 String wishlistTypeName = form.getWishlistTypeName();
                 WishlistType wishlistType = wishlistTypeName == null? wishlistControl.getDefaultWishlistType():

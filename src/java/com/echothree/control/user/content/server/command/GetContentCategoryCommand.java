@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -63,7 +63,6 @@ public class GetContentCategoryCommand
     
     @Override
     protected ContentCategory getEntity() {
-        GetContentCategoryResult result = ContentResultFactory.getGetContentCategoryResult();
         String contentWebAddressName = form.getContentWebAddressName();
         String contentCollectionName = form.getContentCollectionName();
         int parameterCount = (contentWebAddressName == null ? 0 : 1) + (contentCollectionName == null ? 0 : 1);

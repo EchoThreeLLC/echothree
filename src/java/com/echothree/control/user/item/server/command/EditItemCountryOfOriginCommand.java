@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -119,8 +119,6 @@ public class EditItemCountryOfOriginCommand
 
     @Override
     public void doLock(ItemCountryOfOriginEdit edit, ItemCountryOfOrigin itemCountryOfOrigin) {
-        var uomControl = (UomControl)Session.getModelController(UomControl.class);
-
         edit.setPercent(PercentUtils.getInstance().formatFractionalPercent(itemCountryOfOrigin.getPercent()));
     }
 

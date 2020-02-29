@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import com.echothree.control.user.contactlist.common.result.EditPartyContactList
 import com.echothree.control.user.contactlist.common.spec.PartyContactListSpec;
 import com.echothree.model.control.contact.server.ContactControl;
 import com.echothree.model.control.contactlist.server.ContactListControl;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
@@ -35,13 +35,12 @@ import com.echothree.model.data.contactlist.server.entity.PartyContactList;
 import com.echothree.model.data.contactlist.server.entity.PartyContactListDetail;
 import com.echothree.model.data.contactlist.server.value.PartyContactListDetailValue;
 import com.echothree.model.data.party.common.pk.PartyPK;
-import com.echothree.model.data.party.server.entity.Party;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.EditMode;
 import com.echothree.util.common.command.SecurityResult;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.EditMode;
 import com.echothree.util.server.control.BaseAbstractEditCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -60,10 +59,10 @@ public class EditPartyContactListCommand
 
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyConstants.PartyType_UTILITY, null),
-                new PartyTypeDefinition(PartyConstants.PartyType_CUSTOMER, null),
-                new PartyTypeDefinition(PartyConstants.PartyType_VENDOR, null),
-                new PartyTypeDefinition(PartyConstants.PartyType_EMPLOYEE, Collections.unmodifiableList(Arrays.asList(
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.CUSTOMER.name(), null),
+                new PartyTypeDefinition(PartyTypes.VENDOR.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
                         new SecurityRoleDefinition(SecurityRoleGroups.PartyContactList.name(), SecurityRoles.Edit.name())
                         )))
                 )));

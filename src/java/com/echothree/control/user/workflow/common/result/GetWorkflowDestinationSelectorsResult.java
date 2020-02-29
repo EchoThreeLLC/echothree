@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,12 +25,6 @@ import java.util.List;
 
 public interface GetWorkflowDestinationSelectorsResult
         extends BaseResult {
-    
-    WorkflowTransfer getWorkflow();
-    void setWorkflow(WorkflowTransfer workflow);
-    
-    WorkflowStepTransfer getWorkflowStep();
-    void setWorkflowStep(WorkflowStepTransfer workflowStep);
     
     WorkflowDestinationTransfer getWorkflowDestination();
     void setWorkflowDestination(WorkflowDestinationTransfer workflowDestination);

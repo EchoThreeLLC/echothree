@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package com.echothree.util.client.string.test;
 
 import com.echothree.util.client.string.NameCleaner;
-import com.echothree.util.client.string.NameCleaner.NameResult;
 import com.echothree.util.client.test.UserVisitTestCase;
+import com.echothree.util.common.string.NameResult;
 import javax.naming.NamingException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -116,10 +116,6 @@ public class NameCleanerTest
         checkCleansedName("Richard R. Harms-Harms", null, "Richard", "R.", "Harms-Harms", null);
         
         tearDown();
-    }
-
-    private String printException(Exception e) {
-        return e.getClass().getName() + ", " + e.getMessage();
     }
 
 }

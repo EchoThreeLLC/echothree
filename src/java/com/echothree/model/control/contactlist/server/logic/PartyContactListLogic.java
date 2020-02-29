@@ -18,36 +18,18 @@ package com.echothree.model.control.contactlist.server.logic;
 
 import com.echothree.model.control.contact.server.ContactControl;
 import com.echothree.model.control.contactlist.common.exception.DuplicatePartyContactListException;
-import com.echothree.model.control.contactlist.common.exception.UnknownContactListContactMechanismPurposeException;
-import com.echothree.model.control.contactlist.common.exception.UnknownContactListNameException;
 import com.echothree.model.control.contactlist.common.exception.UnknownPreferredContactMechanismPurposeNameException;
-import com.echothree.model.control.contactlist.common.workflow.PartyContactListStatusConstants;
 import com.echothree.model.control.contactlist.server.ContactListControl;
-import com.echothree.model.control.core.server.CoreControl;
-import com.echothree.model.control.customer.server.CustomerControl;
-import com.echothree.model.control.party.common.PartyConstants;
-import com.echothree.model.control.party.common.exception.UnknownPartyNameException;
-import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.party.server.logic.PartyLogic;
-import com.echothree.model.control.workflow.server.WorkflowControl;
 import com.echothree.model.data.contact.server.entity.ContactMechanismPurpose;
-import com.echothree.model.data.contactlist.server.entity.ContactList;
 import com.echothree.model.data.contactlist.server.entity.ContactListContactMechanismPurpose;
 import com.echothree.model.data.contactlist.server.entity.PartyContactList;
-import com.echothree.model.data.core.server.entity.EntityInstance;
-import com.echothree.model.data.customer.server.entity.CustomerType;
-import com.echothree.model.data.party.server.entity.Party;
-import com.echothree.model.data.party.server.entity.PartyType;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
-import com.echothree.model.data.workflow.server.entity.WorkflowEntityStatus;
-import com.echothree.model.data.workflow.server.entity.WorkflowEntrance;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.persistence.BasePK;
 import com.echothree.util.server.control.BaseLogic;
 import com.echothree.util.server.message.ExecutionErrorAccumulator;
 import com.echothree.util.server.persistence.Session;
-import java.util.HashSet;
-import java.util.Set;
 
 public class PartyContactListLogic
     extends BaseLogic {

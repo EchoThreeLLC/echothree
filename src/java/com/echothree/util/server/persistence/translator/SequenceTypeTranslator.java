@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@
 
 package com.echothree.util.server.persistence.translator;
 
+import com.echothree.model.data.party.server.entity.Party;
+
 public interface SequenceTypeTranslator {
 
-    EntityInstanceAndNames getNames(final String sequenceTypeName, final String value, final boolean includeEntityInstance);
+    EntityInstanceAndNames getNames(final String sequenceTypeName, final String value,
+            final boolean includeEntityInstance);
 
 }

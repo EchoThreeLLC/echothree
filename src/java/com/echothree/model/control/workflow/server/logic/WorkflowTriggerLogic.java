@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,7 +84,6 @@ public class WorkflowTriggerLogic {
     
     public void processWorkflowTriggers(final Session session, final ExecutionErrorAccumulator eea, final PartyPK triggeredBy) {
         var workflowControl = (WorkflowControl)Session.getModelController(WorkflowControl.class);
-        long workflowTriggersProcessed = 0;
         long remainingTime = (long) 1 * 60 * 1000; // 1 minute
         
         for(WorkflowTrigger workflowTrigger : workflowControl.getWorkflowTriggersByTriggerTime(session.START_TIME_LONG)) {
@@ -100,7 +99,6 @@ public class WorkflowTriggerLogic {
                     workflowTrigger.setErrorsOccurred(Boolean.TRUE);
                     break;
                 } else {
-                    workflowTriggersProcessed++;
                     remainingTime -= System.currentTimeMillis() - startTime;
                     if(remainingTime < 0) {
                         break;

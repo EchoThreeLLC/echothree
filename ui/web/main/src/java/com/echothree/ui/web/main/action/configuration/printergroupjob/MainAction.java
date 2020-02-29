@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,8 +64,8 @@ public class MainAction
             CommandResult commandResult = PrinterUtil.getHome().getPrinterGroupJobs(getUserVisitPK(request), commandForm);
             ExecutionResult executionResult = commandResult.getExecutionResult();
             GetPrinterGroupJobsResult result = (GetPrinterGroupJobsResult)executionResult.getResult();
-            PrinterGroupTransfer printerGroupTransfer = result.getPrinterGroup();
             
+            request.setAttribute(AttributeConstants.PRINTER_GROUP, result.getPrinterGroup());
             request.setAttribute(AttributeConstants.PRINTER_GROUP_JOBS, result.getPrinterGroupJobs());
             forwardKey = ForwardConstants.DISPLAY;
         } catch (NamingException ne) {

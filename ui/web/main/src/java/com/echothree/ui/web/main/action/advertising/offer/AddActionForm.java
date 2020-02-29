@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import com.echothree.model.control.filter.common.FilterConstants;
 import com.echothree.model.control.filter.common.choice.FilterChoicesBean;
 import com.echothree.model.control.selector.common.SelectorConstants;
 import com.echothree.model.control.selector.common.choice.SelectorChoicesBean;
-import com.echothree.model.control.sequence.common.SequenceConstants;
+import com.echothree.model.control.sequence.common.SequenceTypes;
 import com.echothree.model.control.sequence.common.choice.SequenceChoicesBean;
 import com.echothree.util.common.command.CommandResult;
 import com.echothree.util.common.command.ExecutionResult;
@@ -65,7 +65,7 @@ public class AddActionForm
             try {
                 GetSequenceChoicesForm form = SequenceUtil.getHome().getGetSequenceChoicesForm();
                 
-                form.setSequenceTypeName(SequenceConstants.SequenceType_SALES_ORDER);
+                form.setSequenceTypeName(SequenceTypes.SALES_ORDER.name());
                 form.setDefaultSequenceChoice(salesOrderSequenceChoice);
                 form.setAllowNullChoice(Boolean.TRUE.toString());
                 

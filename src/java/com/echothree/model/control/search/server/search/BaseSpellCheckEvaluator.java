@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package com.echothree.model.control.search.server.search;
 
 import com.echothree.model.control.index.common.IndexConstants;
-import com.echothree.model.control.party.common.PartyConstants;
+import com.echothree.model.control.party.common.Languages;
 import com.echothree.model.control.search.common.SearchConstants;
 import com.echothree.model.control.search.common.exception.ComplexQueriesUnsupportedException;
 import com.echothree.model.control.search.common.exception.FieldRequiredException;
@@ -302,13 +302,10 @@ public abstract class BaseSpellCheckEvaluator
         if(languageIsoName == null) {
             handleExecutionError(LanguageRequiredException.class, eea, ExecutionErrors.LanguageRequired.name());
         } else {
-            switch(languageIsoName) {
-                case PartyConstants.Language_en:
-                    checkSpellingWords = executeCheckSpelling(eea);
-                    break;
-                default:
-                    handleExecutionError(LanguageUnsupportedException.class, eea, ExecutionErrors.LanguageUnsupported.name(), languageIsoName);
-                    break;
+            if(languageIsoName.equals(Languages.en.name())) {
+                checkSpellingWords = executeCheckSpelling(eea);
+            } else {
+                handleExecutionError(LanguageUnsupportedException.class, eea, ExecutionErrors.LanguageUnsupported.name(), languageIsoName);
             }
         }
         

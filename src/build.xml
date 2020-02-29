@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--                                                                                  -->
-<!-- Copyright 2002-2019 Echo Three, LLC                                              -->
+<!-- Copyright 2002-2020 Echo Three, LLC                                              -->
 <!--                                                                                  -->
 <!-- Licensed under the Apache License, Version 2.0 (the "License");                  -->
 <!-- you may not use this file except in compliance with the License.                 -->
@@ -295,7 +295,7 @@
   
     <target name="deploy" depends="ear" >
         <!-- Copy the ear file to the application server -->        
-        <copy file="${dir.home}/build/ears/echothree.ear" todir="${wildfly.home.deploy}" />
+        <copy file="${dir.home}/build/ears/echothree.ear" todir="../${wildfly.home.deploy}" />
     </target>
     
     <target name="javadoc" depends="generated">
@@ -307,17 +307,28 @@
             use="${javadoc.use}"
             windowtitle="${javadoc.windowtitle}"
             doctitle="${javadoc.doctitle}"
-            bottom="${javadoc.bottom}"
-            additionalparam="-J-Xmx4096m -linksource"
+            additionalparam="-J-Xmx4096m -linksource --allow-script-in-comments"
             classpath="${compile.task.classpath}"
-	    classpathref="shared.class.path">
-            
+	        classpathref="shared.class.path">
+            <bottom>
+${javadoc.copyright}
+<![CDATA[
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=${javadoc.trackingId}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '${javadoc.trackingId}');
+</script>
+]]>
+            </bottom>
             <sourcepath>
                 <pathelement path="${dir.home}/generated/data/java"/>
                 <pathelement path="${dir.home}/generated/form/java"/>
                 <pathelement path="java"/>
             </sourcepath>
-            
         </javadoc>
     </target>
         

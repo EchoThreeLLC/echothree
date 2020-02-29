@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2019 Echo Three, LLC
+// Copyright 2002-2020 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ import com.echothree.model.control.forum.server.transfer.ForumPartyTypeRoleTrans
 import com.echothree.model.control.forum.server.transfer.ForumThreadTransferCache;
 import com.echothree.model.control.forum.server.transfer.ForumTransferCache;
 import com.echothree.model.control.forum.server.transfer.ForumTransferCaches;
-import com.echothree.model.control.sequence.common.SequenceConstants;
+import com.echothree.model.control.sequence.common.SequenceTypes;
 import com.echothree.model.control.sequence.server.SequenceControl;
 import com.echothree.model.data.core.common.pk.MimeTypePK;
 import com.echothree.model.data.core.server.entity.EntityInstance;
@@ -2594,7 +2594,7 @@ public class ForumControl
         Sequence sequence = forum == null? null: forum.getLastDetail().getForumThreadSequence();
         
         if(sequence == null) {
-            sequence = sequenceControl.getDefaultSequenceUsingNames(SequenceConstants.SequenceType_FORUM_THREAD);
+            sequence = sequenceControl.getDefaultSequenceUsingNames(SequenceTypes.FORUM_THREAD.name());
         }
         
         return createForumThread(sequenceControl.getNextSequenceValue(sequence), icon, postedTime, sortOrder, createdBy);
@@ -2821,7 +2821,7 @@ public class ForumControl
         Sequence sequence = forum == null? null: forum.getLastDetail().getForumThreadSequence();
         
         if(sequence == null) {
-            sequence = sequenceControl.getDefaultSequenceUsingNames(SequenceConstants.SequenceType_FORUM_MESSAGE);
+            sequence = sequenceControl.getDefaultSequenceUsingNames(SequenceTypes.FORUM_MESSAGE.name());
         }
         
         return createForumMessage(sequenceControl.getNextSequenceValue(sequence), forumThread, forumMessageType, parentForumMessage,
