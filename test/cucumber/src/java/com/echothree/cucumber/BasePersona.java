@@ -22,12 +22,21 @@ import com.echothree.control.user.contact.common.edit.ContactTelephoneEdit;
 import com.echothree.control.user.contact.common.edit.ContactWebAddressEdit;
 import com.echothree.control.user.item.common.form.CreateItemForm;
 import com.echothree.control.user.party.common.form.CreateCustomerWithLoginForm;
+import com.echothree.control.user.payment.common.form.CreatePartyPaymentMethodForm;
+import com.echothree.cucumber.authentication.UserVisits;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import javax.naming.NamingException;
 
 public class BasePersona {
 
     public String persona;
     public UserVisitPK userVisitPK;
+
+    public BasePersona(String persona)
+            throws NamingException {
+        this.persona = persona;
+        userVisitPK = UserVisits.getUserVisitPK();
+    }
 
     // Contact
     public ContactEmailAddressEdit contactEmailAddressEdit;
@@ -55,6 +64,11 @@ public class BasePersona {
 
     // Party
     public String lastPartyName;
+
+    // Payment
+    public CreatePartyPaymentMethodForm createPartyPaymentMethodForm;
+
+    public String lastPartyPaymentMethodName;
 
     // Sales
     public String lastSalesOrderBatchName;

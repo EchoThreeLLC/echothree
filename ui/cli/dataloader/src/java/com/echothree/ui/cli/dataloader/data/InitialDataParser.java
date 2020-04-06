@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.naming.NamingException;
+import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
@@ -68,9 +69,6 @@ public class InitialDataParser
     
     // default settings
     
-    /** Default parser name. */
-    protected static final String DEFAULT_PARSER_NAME = "org.apache.xerces.parsers.SAXParser";
-    
     /** Default namespaces support (true). */
     protected static final boolean DEFAULT_NAMESPACES = true;
     
@@ -88,13 +86,7 @@ public class InitialDataParser
     
     /** Default dynamic validation support (false). */
     protected static final boolean DEFAULT_DYNAMIC_VALIDATION = false;
-    
-    /** Default memory usage report (false). */
-    protected static final boolean DEFAULT_MEMORY_USAGE = true;
-    
-    /** Default "tagginess" report (false). */
-    protected static final boolean DEFAULT_TAGGINESS = true;
-    
+
     //
     // ContentHandler methods
     //
@@ -328,41 +320,35 @@ public class InitialDataParser
     public void execute()
             throws IOException, SAXException {
         XMLReader parser = null;
-        boolean namespaces = DEFAULT_NAMESPACES;
-        boolean namespacePrefixes = DEFAULT_NAMESPACE_PREFIXES;
-        boolean validation = DEFAULT_VALIDATION;
-        boolean schemaValidation = DEFAULT_SCHEMA_VALIDATION;
-        boolean schemaFullChecking = DEFAULT_SCHEMA_FULL_CHECKING;
-        boolean dynamicValidation = DEFAULT_DYNAMIC_VALIDATION;
 
         // create parser
         try {
-            parser = XMLReaderFactory.createXMLReader(DEFAULT_PARSER_NAME);
+            parser = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
         } catch(Exception e) {
-            System.err.println("error: Unable to instantiate parser (" + DEFAULT_PARSER_NAME + ")");
+            System.err.println("error: Unable to instantiate parser");
         }
 
         // set parser features
         try {
-            parser.setFeature(NAMESPACES_FEATURE_ID, namespaces);
+            parser.setFeature(NAMESPACES_FEATURE_ID, DEFAULT_NAMESPACES);
         } catch(SAXException e) {
             System.err.println("warning: Parser does not support feature (" + NAMESPACES_FEATURE_ID + ")");
         }
 
         try {
-            parser.setFeature(NAMESPACE_PREFIXES_FEATURE_ID, namespacePrefixes);
+            parser.setFeature(NAMESPACE_PREFIXES_FEATURE_ID, DEFAULT_NAMESPACE_PREFIXES);
         } catch(SAXException e) {
             System.err.println("warning: Parser does not support feature (" + NAMESPACE_PREFIXES_FEATURE_ID + ")");
         }
 
         try {
-            parser.setFeature(VALIDATION_FEATURE_ID, validation);
+            parser.setFeature(VALIDATION_FEATURE_ID, DEFAULT_VALIDATION);
         } catch(SAXException e) {
             System.err.println("warning: Parser does not support feature (" + VALIDATION_FEATURE_ID + ")");
         }
 
         try {
-            parser.setFeature(SCHEMA_VALIDATION_FEATURE_ID, schemaValidation);
+            parser.setFeature(SCHEMA_VALIDATION_FEATURE_ID, DEFAULT_SCHEMA_VALIDATION);
         } catch(SAXNotRecognizedException e) {
             // ignore
         } catch(SAXNotSupportedException e) {
@@ -370,7 +356,7 @@ public class InitialDataParser
         }
 
         try {
-            parser.setFeature(SCHEMA_FULL_CHECKING_FEATURE_ID, schemaFullChecking);
+            parser.setFeature(SCHEMA_FULL_CHECKING_FEATURE_ID, DEFAULT_SCHEMA_FULL_CHECKING);
         } catch(SAXNotRecognizedException e) {
             // ignore
         } catch(SAXNotSupportedException e) {
@@ -378,7 +364,7 @@ public class InitialDataParser
         }
 
         try {
-            parser.setFeature(DYNAMIC_VALIDATION_FEATURE_ID, dynamicValidation);
+            parser.setFeature(DYNAMIC_VALIDATION_FEATURE_ID, DEFAULT_DYNAMIC_VALIDATION);
         } catch(SAXNotRecognizedException e) {
             // ignore
         } catch(SAXNotSupportedException e) {
