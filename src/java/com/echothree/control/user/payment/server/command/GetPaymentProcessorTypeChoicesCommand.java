@@ -17,16 +17,15 @@
 package com.echothree.control.user.payment.server.command;
 
 import com.echothree.control.user.payment.common.form.GetPaymentProcessorTypeChoicesForm;
-import com.echothree.control.user.payment.common.result.GetPaymentProcessorTypeChoicesResult;
 import com.echothree.control.user.payment.common.result.PaymentResultFactory;
 import com.echothree.model.control.party.common.PartyTypes;
-import com.echothree.model.control.payment.server.PaymentControl;
+import com.echothree.model.control.payment.server.control.PaymentProcessorTypeControl;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.server.control.BaseSimpleCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -48,7 +47,7 @@ public class GetPaymentProcessorTypeChoicesCommand
                         new SecurityRoleDefinition(SecurityRoleGroups.PaymentProcessorType.name(), SecurityRoles.Choices.name())
                         )))
                 )));
-
+        
         FORM_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
                 new FieldDefinition("DefaultPaymentProcessorTypeChoice", FieldType.ENTITY_NAME, false, null, null),
                 new FieldDefinition("AllowNullChoice", FieldType.BOOLEAN, true, null, null)
@@ -62,14 +61,14 @@ public class GetPaymentProcessorTypeChoicesCommand
     
     @Override
     protected BaseResult execute() {
-        var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
-        GetPaymentProcessorTypeChoicesResult result = PaymentResultFactory.getGetPaymentProcessorTypeChoicesResult();
-        String defaultPaymentProcessorTypeChoice = form.getDefaultPaymentProcessorTypeChoice();
-        boolean allowNullChoice = Boolean.parseBoolean(form.getAllowNullChoice());
+        var paymentProcessorTypeControl = (PaymentProcessorTypeControl)Session.getModelController(PaymentProcessorTypeControl.class);
+        var result = PaymentResultFactory.getGetPaymentProcessorTypeChoicesResult();
+        var defaultPaymentProcessorTypeChoice = form.getDefaultPaymentProcessorTypeChoice();
+        var allowNullChoice = Boolean.parseBoolean(form.getAllowNullChoice());
         
-        result.setPaymentProcessorTypeChoices(paymentControl.getPaymentProcessorTypeChoices(defaultPaymentProcessorTypeChoice,
+        result.setPaymentProcessorTypeChoices(paymentProcessorTypeControl.getPaymentProcessorTypeChoices(defaultPaymentProcessorTypeChoice,
                 getPreferredLanguage(), allowNullChoice));
-        
+
         return result;
     }
     

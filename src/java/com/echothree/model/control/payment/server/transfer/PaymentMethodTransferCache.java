@@ -17,28 +17,35 @@
 package com.echothree.model.control.payment.server.transfer;
 
 import com.echothree.model.control.comment.common.CommentConstants;
-import com.echothree.model.control.payment.common.PaymentConstants;
+import com.echothree.model.control.payment.common.PaymentMethodTypes;
 import com.echothree.model.control.payment.common.PaymentOptions;
 import com.echothree.model.control.payment.common.transfer.PaymentMethodTransfer;
 import com.echothree.model.control.payment.common.transfer.PaymentMethodTypeTransfer;
 import com.echothree.model.control.payment.common.transfer.PaymentProcessorTransfer;
-import com.echothree.model.control.payment.server.PaymentControl;
+import com.echothree.model.control.payment.server.control.PaymentMethodControl;
+import com.echothree.model.control.payment.server.control.PaymentMethodTypeControl;
+import com.echothree.model.control.payment.server.control.PaymentProcessorControl;
 import com.echothree.model.data.payment.server.entity.PaymentMethod;
 import com.echothree.model.data.payment.server.entity.PaymentMethodCheck;
 import com.echothree.model.data.payment.server.entity.PaymentMethodCreditCard;
 import com.echothree.model.data.payment.server.entity.PaymentMethodDetail;
 import com.echothree.model.data.payment.server.entity.PaymentProcessor;
 import com.echothree.model.data.user.server.entity.UserVisit;
+import com.echothree.util.server.persistence.Session;
 import java.util.Set;
 
 public class PaymentMethodTransferCache
         extends BasePaymentTransferCache<PaymentMethod, PaymentMethodTransfer> {
-    
+
+    PaymentMethodControl paymentMethodControl = (PaymentMethodControl)Session.getModelController(PaymentMethodControl.class);
+    PaymentMethodTypeControl paymentMethodTypeControl = (PaymentMethodTypeControl) Session.getModelController(PaymentMethodTypeControl.class);
+    PaymentProcessorControl paymentProcessorControl = (PaymentProcessorControl)Session.getModelController(PaymentProcessorControl.class);
+
     boolean includeComments;
 
     /** Creates a new instance of PaymentMethodTransferCache */
-    public PaymentMethodTransferCache(UserVisit userVisit, PaymentControl paymentControl) {
-        super(userVisit, paymentControl);
+    public PaymentMethodTransferCache(UserVisit userVisit) {
+        super(userVisit);
 
         Set<String> options = session.getOptions();
         if(options != null) {
@@ -50,20 +57,21 @@ public class PaymentMethodTransferCache
         
         setIncludeEntityInstance(true);
     }
-    
-    public PaymentMethodTransfer getPaymentMethodTransfer(PaymentMethod paymentMethod) {
+
+    @Override
+    public PaymentMethodTransfer getTransfer(PaymentMethod paymentMethod) {
         PaymentMethodTransfer paymentMethodTransfer = get(paymentMethod);
         
         if(paymentMethodTransfer == null) {
             PaymentMethodDetail paymentMethodDetail = paymentMethod.getLastDetail();
             String paymentMethodName = paymentMethodDetail.getPaymentMethodName();
-            PaymentMethodTypeTransfer paymentMethodTypeTransfer = paymentControl.getPaymentMethodTypeTransfer(userVisit, paymentMethodDetail.getPaymentMethodType());
+            PaymentMethodTypeTransfer paymentMethodTypeTransfer = paymentMethodTypeControl.getPaymentMethodTypeTransfer(userVisit, paymentMethodDetail.getPaymentMethodType());
             String paymentMethodTypeName = paymentMethodTypeTransfer.getPaymentMethodTypeName();
             PaymentProcessor paymentProcessor = paymentMethodDetail.getPaymentProcessor();
-            PaymentProcessorTransfer paymentProcessorTransfer = paymentProcessor == null? null: paymentControl.getPaymentProcessorTransfer(userVisit, paymentProcessor);
+            PaymentProcessorTransfer paymentProcessorTransfer = paymentProcessor == null ? null : paymentProcessorControl.getPaymentProcessorTransfer(userVisit, paymentProcessor);
             Boolean isDefault = paymentMethodDetail.getIsDefault();
             Integer sortOrder = paymentMethodDetail.getSortOrder();
-            String description = paymentControl.getBestPaymentMethodDescription(paymentMethod, getLanguage());
+            String description = paymentMethodControl.getBestPaymentMethodDescription(paymentMethod, getLanguage());
             Boolean requestNameOnCard = null;
             Boolean requireNameOnCard = null;
             Boolean checkCardNumber = null;
@@ -82,12 +90,12 @@ public class PaymentMethodTransferCache
             Boolean requireIssuer = null;
             Integer holdDays = null;
             
-            if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CHECK)) {
-                PaymentMethodCheck paymentMethodCheck = paymentControl.getPaymentMethodCheck(paymentMethod);
+            if(paymentMethodTypeName.equals(PaymentMethodTypes.CHECK.name())) {
+                PaymentMethodCheck paymentMethodCheck = paymentMethodControl.getPaymentMethodCheck(paymentMethod);
                 
                 holdDays = paymentMethodCheck.getHoldDays();
-            } else if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CREDIT_CARD)) {
-                PaymentMethodCreditCard paymentMethodCreditCard = paymentControl.getPaymentMethodCreditCard(paymentMethod);
+            } else if(paymentMethodTypeName.equals(PaymentMethodTypes.CREDIT_CARD.name())) {
+                PaymentMethodCreditCard paymentMethodCreditCard = paymentMethodControl.getPaymentMethodCreditCard(paymentMethod);
                 
                 requestNameOnCard = paymentMethodCreditCard.getRequestNameOnCard();
                 requireNameOnCard = paymentMethodCreditCard.getRequireNameOnCard();

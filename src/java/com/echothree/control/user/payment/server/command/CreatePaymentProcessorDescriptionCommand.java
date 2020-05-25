@@ -19,7 +19,7 @@ package com.echothree.control.user.payment.server.command;
 import com.echothree.control.user.payment.common.form.CreatePaymentProcessorDescriptionForm;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.PartyControl;
-import com.echothree.model.control.payment.server.PaymentControl;
+import com.echothree.model.control.payment.server.control.PaymentProcessorControl;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.party.server.entity.Language;
@@ -67,9 +67,9 @@ public class CreatePaymentProcessorDescriptionCommand
     
     @Override
     protected BaseResult execute() {
-        var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
+        var paymentProcessorControl = (PaymentProcessorControl)Session.getModelController(PaymentProcessorControl.class);
         String paymentProcessorName = form.getPaymentProcessorName();
-        PaymentProcessor paymentProcessor = paymentControl.getPaymentProcessorByName(paymentProcessorName);
+        PaymentProcessor paymentProcessor = paymentProcessorControl.getPaymentProcessorByName(paymentProcessorName);
         
         if(paymentProcessor != null) {
             var partyControl = (PartyControl)Session.getModelController(PartyControl.class);
@@ -77,12 +77,12 @@ public class CreatePaymentProcessorDescriptionCommand
             Language language = partyControl.getLanguageByIsoName(languageIsoName);
             
             if(language != null) {
-                PaymentProcessorDescription paymentProcessorDescription = paymentControl.getPaymentProcessorDescription(paymentProcessor, language);
+                PaymentProcessorDescription paymentProcessorDescription = paymentProcessorControl.getPaymentProcessorDescription(paymentProcessor, language);
                 
                 if(paymentProcessorDescription == null) {
                     String description = form.getDescription();
                     
-                    paymentControl.createPaymentProcessorDescription(paymentProcessor, language, description, getPartyPK());
+                    paymentProcessorControl.createPaymentProcessorDescription(paymentProcessor, language, description, getPartyPK());
                 } else {
                     addExecutionError(ExecutionErrors.DuplicatePaymentProcessorDescription.name());
                 }

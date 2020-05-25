@@ -17,15 +17,18 @@
 package com.echothree.model.control.inventory.server.transfer;
 
 import com.echothree.model.control.inventory.common.transfer.LotAliasTypeTransfer;
-import com.echothree.model.control.inventory.common.transfer.LotTypeTransfer;
-import com.echothree.model.control.inventory.server.InventoryControl;
+import com.echothree.model.control.inventory.server.control.InventoryControl;
+import com.echothree.model.control.inventory.server.control.LotAliasControl;
 import com.echothree.model.data.inventory.server.entity.LotAliasType;
 import com.echothree.model.data.inventory.server.entity.LotAliasTypeDetail;
 import com.echothree.model.data.user.server.entity.UserVisit;
+import com.echothree.util.server.persistence.Session;
 
 public class LotAliasTypeTransferCache
         extends BaseInventoryTransferCache<LotAliasType, LotAliasTypeTransfer> {
-    
+
+    LotAliasControl lotAliasControl = (LotAliasControl) Session.getModelController(LotAliasControl.class);
+
     /** Creates a new instance of LotAliasTypeTransferCache */
     public LotAliasTypeTransferCache(UserVisit userVisit, InventoryControl inventoryControl) {
         super(userVisit, inventoryControl);
@@ -39,14 +42,13 @@ public class LotAliasTypeTransferCache
         
         if(lotAliasTypeTransfer == null) {
             LotAliasTypeDetail lotAliasTypeDetail = lotAliasType.getLastDetail();
-            LotTypeTransfer lotType = inventoryControl.getLotTypeTransfer(userVisit, lotAliasTypeDetail.getLotType());
             String lotAliasTypeName = lotAliasTypeDetail.getLotAliasTypeName();
             String validationPattern = lotAliasTypeDetail.getValidationPattern();
             Boolean isDefault = lotAliasTypeDetail.getIsDefault();
             Integer sortOrder = lotAliasTypeDetail.getSortOrder();
-            String description = inventoryControl.getBestLotAliasTypeDescription(lotAliasType, getLanguage());
+            String description = lotAliasControl.getBestLotAliasTypeDescription(lotAliasType, getLanguage());
             
-            lotAliasTypeTransfer = new LotAliasTypeTransfer(lotType, lotAliasTypeName, validationPattern, isDefault, sortOrder, description);
+            lotAliasTypeTransfer = new LotAliasTypeTransfer(lotAliasTypeName, validationPattern, isDefault, sortOrder, description);
             put(lotAliasType, lotAliasTypeTransfer);
         }
         

@@ -20,17 +20,16 @@ import com.echothree.control.user.inventory.common.form.GetLotTimeTypeForm;
 import com.echothree.control.user.inventory.common.result.GetLotTimeTypeResult;
 import com.echothree.control.user.inventory.common.result.InventoryResultFactory;
 import com.echothree.model.control.core.common.EventTypes;
-import com.echothree.model.control.inventory.server.InventoryControl;
+import com.echothree.model.control.inventory.server.control.LotTimeControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.inventory.server.entity.LotTimeType;
-import com.echothree.model.data.inventory.server.entity.LotType;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.server.control.BaseSimpleCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -55,7 +54,6 @@ public class GetLotTimeTypeCommand
                 )));
         
         FORM_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
-                new FieldDefinition("LotTypeName", FieldType.ENTITY_NAME, true, null, null),
                 new FieldDefinition("LotTimeTypeName", FieldType.ENTITY_NAME, true, null, null)
                 ));
     }
@@ -67,24 +65,17 @@ public class GetLotTimeTypeCommand
     
     @Override
     protected BaseResult execute() {
-        var inventoryControl = (InventoryControl)Session.getModelController(InventoryControl.class);
+        var lotTimeControl = (LotTimeControl)Session.getModelController(LotTimeControl.class);
         GetLotTimeTypeResult result = InventoryResultFactory.getGetLotTimeTypeResult();
-        String lotTypeName = form.getLotTypeName();
-        LotType lotType = inventoryControl.getLotTypeByName(lotTypeName);
+        String lotTimeTypeName = form.getLotTimeTypeName();
+        LotTimeType lotTimeType = lotTimeControl.getLotTimeTypeByName(lotTimeTypeName);
 
-        if(lotType != null) {
-            String lotTimeTypeName = form.getLotTimeTypeName();
-            LotTimeType lotTimeType = inventoryControl.getLotTimeTypeByName(lotType, lotTimeTypeName);
+        if(lotTimeType != null) {
+            result.setLotTimeType(lotTimeControl.getLotTimeTypeTransfer(getUserVisit(), lotTimeType));
 
-            if(lotTimeType != null) {
-                result.setLotTimeType(inventoryControl.getLotTimeTypeTransfer(getUserVisit(), lotTimeType));
-
-                sendEventUsingNames(lotTimeType.getPrimaryKey(), EventTypes.READ.name(), null, null, getPartyPK());
-            } else {
-                addExecutionError(ExecutionErrors.UnknownLotTimeTypeName.name(), lotTimeTypeName);
-            }
+            sendEventUsingNames(lotTimeType.getPrimaryKey(), EventTypes.READ.name(), null, null, getPartyPK());
         } else {
-            addExecutionError(ExecutionErrors.UnknownLotTypeName.name(), lotTypeName);
+            addExecutionError(ExecutionErrors.UnknownLotTimeTypeName.name(), lotTimeTypeName);
         }
 
         return result;

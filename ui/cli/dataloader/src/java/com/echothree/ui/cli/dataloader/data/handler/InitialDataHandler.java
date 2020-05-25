@@ -104,7 +104,8 @@ import com.echothree.ui.cli.dataloader.data.handler.index.IndexesHandler;
 import com.echothree.ui.cli.dataloader.data.handler.inventory.AllocationPrioritiesHandler;
 import com.echothree.ui.cli.dataloader.data.handler.inventory.InventoryConditionUseTypesHandler;
 import com.echothree.ui.cli.dataloader.data.handler.inventory.InventoryConditionsHandler;
-import com.echothree.ui.cli.dataloader.data.handler.inventory.LotTypesHandler;
+import com.echothree.ui.cli.dataloader.data.handler.inventory.LotAliasTypesHandler;
+import com.echothree.ui.cli.dataloader.data.handler.inventory.LotTimeTypesHandler;
 import com.echothree.ui.cli.dataloader.data.handler.invoice.InvoiceLineUseTypesHandler;
 import com.echothree.ui.cli.dataloader.data.handler.invoice.InvoiceRoleTypesHandler;
 import com.echothree.ui.cli.dataloader.data.handler.invoice.InvoiceTypesHandler;
@@ -149,6 +150,8 @@ import com.echothree.ui.cli.dataloader.data.handler.party.TimeZonesHandler;
 import com.echothree.ui.cli.dataloader.data.handler.payment.BillingAccountRoleTypesHandler;
 import com.echothree.ui.cli.dataloader.data.handler.payment.PaymentMethodTypesHandler;
 import com.echothree.ui.cli.dataloader.data.handler.payment.PaymentMethodsHandler;
+import com.echothree.ui.cli.dataloader.data.handler.payment.PaymentProcessorActionTypesHandler;
+import com.echothree.ui.cli.dataloader.data.handler.payment.PaymentProcessorResultCodesHandler;
 import com.echothree.ui.cli.dataloader.data.handler.payment.PaymentProcessorTypesHandler;
 import com.echothree.ui.cli.dataloader.data.handler.payment.PaymentProcessorsHandler;
 import com.echothree.ui.cli.dataloader.data.handler.period.PeriodKindsHandler;
@@ -224,7 +227,7 @@ public class InitialDataHandler
     
     @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes attrs)
-            throws SAXException {
+            throws SAXException, NamingException {
         if(localName.equals("languages")) {
             initialDataParser.pushHandler(new LanguagesHandler(initialDataParser, this));
         } else if(localName.equals("partyTypes")) {
@@ -407,8 +410,10 @@ public class InitialDataHandler
             initialDataParser.pushHandler(new OrderTypesHandler(initialDataParser, this));
         } else if(localName.equals("orderRoleTypes")) {
             initialDataParser.pushHandler(new OrderRoleTypesHandler(initialDataParser, this));
-        } else if(localName.equals("lotTypes")) {
-            initialDataParser.pushHandler(new LotTypesHandler(initialDataParser, this));
+        } else if(localName.equals("lotAliasTypes")) {
+            initialDataParser.pushHandler(new LotAliasTypesHandler(initialDataParser, this));
+        } else if(localName.equals("lotTimeTypes")) {
+            initialDataParser.pushHandler(new LotTimeTypesHandler(initialDataParser, this));
         } else if(localName.equals("shipmentTypes")) {
             initialDataParser.pushHandler(new ShipmentTypesHandler(initialDataParser, this));
         } else if(localName.equals("picklistTypes")) {
@@ -427,6 +432,10 @@ public class InitialDataHandler
             initialDataParser.pushHandler(new PaymentMethodTypesHandler(initialDataParser, this));
         } else if(localName.equals("paymentMethods")) {
             initialDataParser.pushHandler(new PaymentMethodsHandler(initialDataParser, this));
+        } else if(localName.equals("paymentProcessorActionTypes")) {
+            initialDataParser.pushHandler(new PaymentProcessorActionTypesHandler(initialDataParser, this));
+        } else if(localName.equals("paymentProcessorResultCodes")) {
+            initialDataParser.pushHandler(new PaymentProcessorResultCodesHandler(initialDataParser, this));
         } else if(localName.equals("paymentProcessorTypes")) {
             initialDataParser.pushHandler(new PaymentProcessorTypesHandler(initialDataParser, this));
         } else if(localName.equals("paymentProcessors")) {

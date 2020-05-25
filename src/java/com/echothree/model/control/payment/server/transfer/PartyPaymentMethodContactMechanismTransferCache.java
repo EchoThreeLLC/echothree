@@ -19,10 +19,10 @@ package com.echothree.model.control.payment.server.transfer;
 import com.echothree.model.control.contact.common.transfer.PartyContactMechanismPurposeTransfer;
 import com.echothree.model.control.contact.server.ContactControl;
 import com.echothree.model.control.core.server.CoreControl;
-import com.echothree.model.control.payment.common.PaymentConstants;
+import com.echothree.model.control.payment.common.PaymentMethodTypes;
 import com.echothree.model.control.payment.common.transfer.PartyPaymentMethodContactMechanismTransfer;
 import com.echothree.model.control.payment.common.transfer.PartyPaymentMethodTransfer;
-import com.echothree.model.control.payment.server.PaymentControl;
+import com.echothree.model.control.payment.server.control.PartyPaymentMethodControl;
 import static com.echothree.model.control.customer.common.workflow.CustomerCreditCardContactMechanismConstants.Workflow_CUSTOMER_CREDIT_CARD_CONTACT_MECHANISM;
 import com.echothree.model.control.workflow.common.transfer.WorkflowEntityStatusTransfer;
 import com.echothree.model.control.workflow.server.WorkflowControl;
@@ -34,32 +34,30 @@ import com.echothree.util.server.persistence.Session;
 
 public class PartyPaymentMethodContactMechanismTransferCache
         extends BasePaymentTransferCache<PartyPaymentMethodContactMechanism, PartyPaymentMethodContactMechanismTransfer> {
-    
-    ContactControl contactControl;
-    CoreControl coreControl;
-    WorkflowControl workflowControl;
+
+    ContactControl contactControl = (ContactControl)Session.getModelController(ContactControl.class);
+    CoreControl coreControl = (CoreControl)Session.getModelController(CoreControl.class);
+    PartyPaymentMethodControl partyPaymentMethodControl = (PartyPaymentMethodControl)Session.getModelController(PartyPaymentMethodControl.class);
+    WorkflowControl workflowControl = (WorkflowControl)Session.getModelController(WorkflowControl.class);
     
     /** Creates a new instance of PartyPaymentMethodContactMechanismTransferCache */
-    public PartyPaymentMethodContactMechanismTransferCache(UserVisit userVisit, PaymentControl paymentControl) {
-        super(userVisit, paymentControl);
-        
-        contactControl = (ContactControl)Session.getModelController(ContactControl.class);
-        coreControl = (CoreControl)Session.getModelController(CoreControl.class);
-        workflowControl = (WorkflowControl)Session.getModelController(WorkflowControl.class);
+    public PartyPaymentMethodContactMechanismTransferCache(UserVisit userVisit) {
+        super(userVisit);
     }
-    
-    public PartyPaymentMethodContactMechanismTransfer getPartyPaymentMethodContactMechanismTransfer(PartyPaymentMethodContactMechanism partyPaymentMethodContactMechanism) {
+
+    @Override
+    public PartyPaymentMethodContactMechanismTransfer getTransfer(PartyPaymentMethodContactMechanism partyPaymentMethodContactMechanism) {
         PartyPaymentMethodContactMechanismTransfer partyPaymentMethodContactMechanismTransfer = get(partyPaymentMethodContactMechanism);
         
         if(partyPaymentMethodContactMechanismTransfer == null) {
             PartyPaymentMethod partyPaymentMethod = partyPaymentMethodContactMechanism.getPartyPaymentMethod();
-            PartyPaymentMethodTransfer partyPaymentMethodTransfer = paymentControl.getPartyPaymentMethodTransfer(userVisit, partyPaymentMethod);
+            PartyPaymentMethodTransfer partyPaymentMethodTransfer = partyPaymentMethodControl.getPartyPaymentMethodTransfer(userVisit, partyPaymentMethod);
             PartyContactMechanismPurposeTransfer partyContactMechanismPurposeTransfer = contactControl.getPartyContactMechanismPurposeTransfer(userVisit, partyPaymentMethodContactMechanism.getPartyContactMechanismPurpose());
             WorkflowEntityStatusTransfer partyPaymentMethodContactMechanismStatusTransfer = null;
             
-            String paymentMethodTypeName = partyPaymentMethod.getLastDetail().getPaymentMethod().getLastDetail().getPaymentMethodType().getPaymentMethodTypeName();
+            String paymentMethodTypeName = partyPaymentMethod.getLastDetail().getPaymentMethod().getLastDetail().getPaymentMethodType().getLastDetail().getPaymentMethodTypeName();
             EntityInstance entityInstance = coreControl.getEntityInstanceByBasePK(partyPaymentMethodContactMechanism.getPrimaryKey());
-            if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CREDIT_CARD)) {
+            if(paymentMethodTypeName.equals(PaymentMethodTypes.CREDIT_CARD.name())) {
                     partyPaymentMethodContactMechanismStatusTransfer = workflowControl.getWorkflowEntityStatusTransferByEntityInstanceUsingNames(userVisit,
                             Workflow_CUSTOMER_CREDIT_CARD_CONTACT_MECHANISM, entityInstance);
             }

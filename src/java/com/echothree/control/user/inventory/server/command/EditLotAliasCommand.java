@@ -22,8 +22,8 @@ import com.echothree.control.user.inventory.common.form.EditLotAliasForm;
 import com.echothree.control.user.inventory.common.result.EditLotAliasResult;
 import com.echothree.control.user.inventory.common.result.InventoryResultFactory;
 import com.echothree.control.user.inventory.common.spec.LotAliasSpec;
-import com.echothree.control.user.inventory.server.command.util.LotAliasUtil;
-import com.echothree.model.control.inventory.server.InventoryControl;
+import com.echothree.model.control.inventory.server.control.LotAliasControl;
+import com.echothree.model.control.inventory.server.control.LotControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
@@ -31,13 +31,12 @@ import com.echothree.model.data.inventory.server.entity.Lot;
 import com.echothree.model.data.inventory.server.entity.LotAlias;
 import com.echothree.model.data.inventory.server.entity.LotAliasType;
 import com.echothree.model.data.inventory.server.entity.LotAliasTypeDetail;
-import com.echothree.model.data.inventory.server.entity.LotType;
 import com.echothree.model.data.inventory.server.value.LotAliasValue;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.EditMode;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.EditMode;
 import com.echothree.util.server.control.BaseAbstractEditCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -49,13 +48,20 @@ import java.util.List;
 
 public class EditLotAliasCommand
         extends BaseAbstractEditCommand<LotAliasSpec, LotAliasEdit, EditLotAliasResult, LotAlias, LotAlias> {
-    
+
+    private final static CommandSecurityDefinition COMMAND_SECURITY_DEFINITION;
     private final static List<FieldDefinition> SPEC_FIELD_DEFINITIONS;
     private final static List<FieldDefinition> EDIT_FIELD_DEFINITIONS;
     
     static {
+        COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
+                        new SecurityRoleDefinition(SecurityRoleGroups.LotAliasType.name(), SecurityRoles.Edit.name())
+                )))
+        )));
+
         SPEC_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
-                new FieldDefinition("LotTypeName", FieldType.ENTITY_NAME, true, null, null),
                 new FieldDefinition("LotName", FieldType.ENTITY_NAME, true, null, null),
                 new FieldDefinition("LotAliasTypeName", FieldType.ENTITY_NAME, true, null, null)
                 ));
@@ -67,12 +73,7 @@ public class EditLotAliasCommand
     
     /** Creates a new instance of EditLotAliasCommand */
     public EditLotAliasCommand(UserVisitPK userVisitPK, EditLotAliasForm form) {
-        super(userVisitPK, form, new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
-                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
-                        new SecurityRoleDefinition(LotAliasUtil.getInstance().getSecurityRoleGroupNameByLotTypeSpec(form == null ? null : form.getSpec()), SecurityRoles.Edit.name())
-                        )))
-                ))), SPEC_FIELD_DEFINITIONS, EDIT_FIELD_DEFINITIONS);
+        super(userVisitPK, form, COMMAND_SECURITY_DEFINITION, SPEC_FIELD_DEFINITIONS, EDIT_FIELD_DEFINITIONS);
     }
     
     @Override
@@ -89,40 +90,34 @@ public class EditLotAliasCommand
     
     @Override
     public LotAlias getEntity(EditLotAliasResult result) {
-        var inventoryControl = (InventoryControl)Session.getModelController(InventoryControl.class);
+        var lotControl = (LotControl)Session.getModelController(LotControl.class);
         LotAlias lotAlias = null;
-        String lotTypeName = spec.getLotTypeName();
-        LotType lotType = inventoryControl.getLotTypeByName(lotTypeName);
+        String lotName = spec.getLotName();
+        Lot lot = lotControl.getLotByName(lotName);
 
-        if(lotType != null) {
-            String lotName = spec.getLotName();
-            Lot lot = inventoryControl.getLotByName(lotType, lotName);
+        if(lot != null) {
+            var lotAliasControl = (LotAliasControl)Session.getModelController(LotAliasControl.class);
+            String lotAliasTypeName = spec.getLotAliasTypeName();
 
-            if(lot != null) {
-                String lotAliasTypeName = spec.getLotAliasTypeName();
+            lotAliasType = lotAliasControl.getLotAliasTypeByName(lotAliasTypeName);
 
-                lotAliasType = inventoryControl.getLotAliasTypeByName(lotType, lotAliasTypeName);
+            if(lotAliasType != null) {
+                if(editMode.equals(EditMode.LOCK) || editMode.equals(EditMode.ABANDON)) {
+                    lotAlias = lotAliasControl.getLotAlias(lot, lotAliasType);
+                } else { // EditMode.UPDATE
+                    lotAlias = lotAliasControl.getLotAliasForUpdate(lot, lotAliasType);
+                }
 
-                if(lotAliasType != null) {
-                    if(editMode.equals(EditMode.LOCK) || editMode.equals(EditMode.ABANDON)) {
-                        lotAlias = inventoryControl.getLotAlias(lot, lotAliasType);
-                    } else { // EditMode.UPDATE
-                        lotAlias = inventoryControl.getLotAliasForUpdate(lot, lotAliasType);
-                    }
-
-                    if(lotAlias != null) {
-                        result.setLotAlias(inventoryControl.getLotAliasTransfer(getUserVisit(), lotAlias));
-                    } else {
-                        addExecutionError(ExecutionErrors.UnknownLotAlias.name(), lotTypeName, lotName, lotAliasTypeName);
-                    }
+                if(lotAlias != null) {
+                    result.setLotAlias(lotAliasControl.getLotAliasTransfer(getUserVisit(), lotAlias));
                 } else {
-                    addExecutionError(ExecutionErrors.UnknownLotAliasTypeName.name(), lotTypeName, lotAliasTypeName);
+                    addExecutionError(ExecutionErrors.UnknownLotAlias.name(), lotName, lotAliasTypeName);
                 }
             } else {
-                addExecutionError(ExecutionErrors.UnknownLotName.name(), lotTypeName, lotName);
+                addExecutionError(ExecutionErrors.UnknownLotAliasTypeName.name(), lotAliasTypeName);
             }
         } else {
-            addExecutionError(ExecutionErrors.UnknownLotTypeName.name(), lotTypeName);
+            addExecutionError(ExecutionErrors.UnknownLotName.name(), lotName);
         }
 
         return lotAlias;
@@ -135,9 +130,9 @@ public class EditLotAliasCommand
 
     @Override
     public void fillInResult(EditLotAliasResult result, LotAlias lotAlias) {
-        var inventoryControl = (InventoryControl)Session.getModelController(InventoryControl.class);
+        var lotAliasControl = (LotAliasControl)Session.getModelController(LotAliasControl.class);
 
-        result.setLotAlias(inventoryControl.getLotAliasTransfer(getUserVisit(), lotAlias));
+        result.setLotAlias(lotAliasControl.getLotAliasTransfer(getUserVisit(), lotAlias));
     }
 
     @Override
@@ -147,26 +142,25 @@ public class EditLotAliasCommand
 
     @Override
     public void canUpdate(LotAlias lotAlias) {
-        var inventoryControl = (InventoryControl)Session.getModelController(InventoryControl.class);
+        var lotAliasControl = (LotAliasControl)Session.getModelController(LotAliasControl.class);
         String alias = edit.getAlias();
-        LotAlias duplicateLotAlias = inventoryControl.getLotAliasByAlias(lotAliasType, alias);
+        LotAlias duplicateLotAlias = lotAliasControl.getLotAliasByAlias(lotAliasType, alias);
 
         if(duplicateLotAlias != null && !lotAlias.equals(duplicateLotAlias)) {
             LotAliasTypeDetail lotAliasTypeDetail = lotAlias.getLotAliasType().getLastDetail();
 
-            addExecutionError(ExecutionErrors.DuplicateLotAlias.name(), lotAliasTypeDetail.getLotType().getLastDetail().getLotTypeName(),
-                    lotAliasTypeDetail.getLotAliasTypeName(), alias);
+            addExecutionError(ExecutionErrors.DuplicateLotAlias.name(), lotAliasTypeDetail.getLotAliasTypeName(), alias);
         }
     }
 
     @Override
     public void doUpdate(LotAlias lotAlias) {
-        var inventoryControl = (InventoryControl)Session.getModelController(InventoryControl.class);
-        LotAliasValue lotAliasValue = inventoryControl.getLotAliasValue(lotAlias);
+        var lotAliasControl = (LotAliasControl)Session.getModelController(LotAliasControl.class);
+        LotAliasValue lotAliasValue = lotAliasControl.getLotAliasValue(lotAlias);
 
         lotAliasValue.setAlias(edit.getAlias());
 
-        inventoryControl.updateLotAliasFromValue(lotAliasValue, getPartyPK());
+        lotAliasControl.updateLotAliasFromValue(lotAliasValue, getPartyPK());
     }
 
 }

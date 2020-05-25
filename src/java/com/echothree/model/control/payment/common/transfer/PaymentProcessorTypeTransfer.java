@@ -41,7 +41,6 @@ public class PaymentProcessorTypeTransfer
     public void setPaymentProcessorTypeName(String paymentProcessorTypeName) {
         this.paymentProcessorTypeName = paymentProcessorTypeName;
     }
-    
     public Boolean getIsDefault() {
         return isDefault;
     }

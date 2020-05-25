@@ -16,9 +16,8 @@
 
 package com.echothree.ui.cli.dataloader.data.handler.payment;
 
-import com.echothree.control.user.payment.common.PaymentUtil;
 import com.echothree.control.user.payment.common.PaymentService;
-import com.echothree.control.user.payment.common.form.CreatePaymentProcessorTypeDescriptionForm;
+import com.echothree.control.user.payment.common.PaymentUtil;
 import com.echothree.control.user.payment.common.form.PaymentFormFactory;
 import com.echothree.ui.cli.dataloader.data.InitialDataParser;
 import com.echothree.ui.cli.dataloader.data.handler.BaseHandler;
@@ -28,31 +27,47 @@ import org.xml.sax.SAXException;
 
 public class PaymentProcessorTypeHandler
         extends BaseHandler {
+
     PaymentService paymentService;
+
     String paymentProcessorTypeName;
     
     /** Creates a new instance of PaymentProcessorTypeHandler */
-    public PaymentProcessorTypeHandler(InitialDataParser initialDataParser, BaseHandler parentHandler, String paymentProcessorTypeName) {
+    public PaymentProcessorTypeHandler(InitialDataParser initialDataParser, BaseHandler parentHandler, String paymentProcessorTypeName)
+            throws NamingException {
         super(initialDataParser, parentHandler);
         
-        try {
-            paymentService = PaymentUtil.getHome();
-        } catch (NamingException ne) {
-            // TODO: Handle Exception
-        }
-        
+        paymentService = PaymentUtil.getHome();
+
         this.paymentProcessorTypeName = paymentProcessorTypeName;
     }
     
     @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes attrs)
-            throws SAXException {
-        if(localName.equals("paymentProcessorTypeDescription")) {
-            CreatePaymentProcessorTypeDescriptionForm commandForm = PaymentFormFactory.getCreatePaymentProcessorTypeDescriptionForm();
-            
+            throws SAXException, NamingException {
+        if(localName.equals("paymentProcessorTypeCodeType")) {
+            var commandForm = PaymentFormFactory.getCreatePaymentProcessorTypeCodeTypeForm();
+
             commandForm.setPaymentProcessorTypeName(paymentProcessorTypeName);
             commandForm.set(getAttrsMap(attrs));
-            
+
+            checkCommandResult(paymentService.createPaymentProcessorTypeCodeType(initialDataParser.getUserVisit(), commandForm));
+
+            initialDataParser.pushHandler(new PaymentProcessorTypeCodeTypeHandler(initialDataParser, this,
+                    commandForm.getPaymentProcessorTypeName(), commandForm.getPaymentProcessorTypeCodeTypeName()));
+        } else if(localName.equals("paymentProcessorTypeAction")) {
+            var commandForm = PaymentFormFactory.getCreatePaymentProcessorTypeActionForm();
+
+            commandForm.setPaymentProcessorTypeName(paymentProcessorTypeName);
+            commandForm.set(getAttrsMap(attrs));
+
+            checkCommandResult(paymentService.createPaymentProcessorTypeAction(initialDataParser.getUserVisit(), commandForm));
+        } else if(localName.equals("paymentProcessorTypeDescription")) {
+            var commandForm = PaymentFormFactory.getCreatePaymentProcessorTypeDescriptionForm();
+
+            commandForm.setPaymentProcessorTypeName(paymentProcessorTypeName);
+            commandForm.set(getAttrsMap(attrs));
+
             checkCommandResult(paymentService.createPaymentProcessorTypeDescription(initialDataParser.getUserVisit(), commandForm));
         }
     }

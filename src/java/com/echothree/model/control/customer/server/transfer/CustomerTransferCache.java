@@ -30,6 +30,8 @@ import com.echothree.model.control.core.server.CoreControl;
 import com.echothree.model.control.customer.common.CustomerOptions;
 import com.echothree.model.control.customer.common.transfer.CustomerTransfer;
 import com.echothree.model.control.customer.common.transfer.CustomerTypeTransfer;
+import com.echothree.model.control.customer.common.workflow.CustomerCreditStatusConstants;
+import com.echothree.model.control.customer.common.workflow.CustomerStatusConstants;
 import com.echothree.model.control.customer.server.CustomerControl;
 import com.echothree.model.control.document.server.DocumentControl;
 import com.echothree.model.control.invoice.server.InvoiceControl;
@@ -44,7 +46,8 @@ import com.echothree.model.control.party.common.transfer.PersonTransfer;
 import com.echothree.model.control.party.common.transfer.ProfileTransfer;
 import com.echothree.model.control.party.common.transfer.TimeZoneTransfer;
 import com.echothree.model.control.party.server.PartyControl;
-import com.echothree.model.control.payment.server.PaymentControl;
+import com.echothree.model.control.payment.server.control.BillingControl;
+import com.echothree.model.control.payment.server.control.PartyPaymentMethodControl;
 import com.echothree.model.control.printer.server.PrinterControl;
 import com.echothree.model.control.returnpolicy.common.transfer.ReturnPolicyTransfer;
 import com.echothree.model.control.returnpolicy.server.ReturnPolicyControl;
@@ -52,8 +55,6 @@ import com.echothree.model.control.scale.server.ScaleControl;
 import com.echothree.model.control.subscription.server.SubscriptionControl;
 import com.echothree.model.control.term.server.TermControl;
 import com.echothree.model.control.user.server.UserControl;
-import com.echothree.model.control.customer.common.workflow.CustomerCreditStatusConstants;
-import com.echothree.model.control.customer.common.workflow.CustomerStatusConstants;
 import com.echothree.model.control.workflow.common.transfer.WorkflowEntityStatusTransfer;
 import com.echothree.model.control.workflow.server.WorkflowControl;
 import com.echothree.model.data.accounting.server.entity.Currency;
@@ -81,6 +82,7 @@ public class CustomerTransferCache
         extends BaseCustomerTransferCache<Party, CustomerTransfer> {
 
     AccountingControl accountingControl = (AccountingControl)Session.getModelController(AccountingControl.class);
+    BillingControl billingControl = (BillingControl)Session.getModelController(BillingControl.class);
     CancellationPolicyControl cancellationPolicyControl = (CancellationPolicyControl)Session.getModelController(CancellationPolicyControl.class);
     CarrierControl carrierControl = (CarrierControl)Session.getModelController(CarrierControl.class);
     CommunicationControl communicationControl = (CommunicationControl)Session.getModelController(CommunicationControl.class);
@@ -91,7 +93,7 @@ public class CustomerTransferCache
     InvoiceControl invoiceControl = (InvoiceControl)Session.getModelController(InvoiceControl.class);
     OfferControl offerControl = (OfferControl)Session.getModelController(OfferControl.class);
     PartyControl partyControl = (PartyControl)Session.getModelController(PartyControl.class);
-    PaymentControl paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
+    PartyPaymentMethodControl partyPaymentMethodControl = (PartyPaymentMethodControl)Session.getModelController(PartyPaymentMethodControl.class);
     PrinterControl printerControl = (PrinterControl)Session.getModelController(PrinterControl.class);
     ReturnPolicyControl returnPolicyControl = (ReturnPolicyControl)Session.getModelController(ReturnPolicyControl.class);
     ScaleControl scaleControl = (ScaleControl)Session.getModelController(ScaleControl.class);
@@ -99,6 +101,7 @@ public class CustomerTransferCache
     TermControl termControl = (TermControl)Session.getModelController(TermControl.class);
     UserControl userControl = (UserControl)Session.getModelController(UserControl.class);
     WorkflowControl workflowControl = (WorkflowControl)Session.getModelController(WorkflowControl.class);
+
     boolean includeUserLogin;
     boolean includeRecoveryAnswer;
     boolean includePartyAliases;
@@ -270,7 +273,7 @@ public class CustomerTransferCache
             }
             
             if(includeBillingAccounts) {
-                customerTransfer.setBillingAccounts(new ListWrapper<>(paymentControl.getBillingAccountTransfersByBillFrom(userVisit, party)));
+                customerTransfer.setBillingAccounts(new ListWrapper<>(billingControl.getBillingAccountTransfersByBillFrom(userVisit, party)));
             }
             
             if(includeInvoicesFrom) {
@@ -298,7 +301,7 @@ public class CustomerTransferCache
             }
 
             if(includePartyPaymentMethods) {
-                customerTransfer.setPartyPaymentMethods(new ListWrapper<>(paymentControl.getPartyPaymentMethodTransfersByParty(userVisit, party)));
+                customerTransfer.setPartyPaymentMethods(new ListWrapper<>(partyPaymentMethodControl.getPartyPaymentMethodTransfersByParty(userVisit, party)));
             }
 
             if(includePartyCancellationPolicies) {

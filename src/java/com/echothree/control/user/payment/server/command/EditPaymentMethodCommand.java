@@ -23,8 +23,8 @@ import com.echothree.control.user.payment.common.result.EditPaymentMethodResult;
 import com.echothree.control.user.payment.common.result.PaymentResultFactory;
 import com.echothree.control.user.payment.common.spec.PaymentMethodSpec;
 import com.echothree.model.control.party.common.PartyTypes;
-import com.echothree.model.control.payment.common.PaymentConstants;
-import com.echothree.model.control.payment.server.PaymentControl;
+import com.echothree.model.control.payment.common.PaymentMethodTypes;
+import com.echothree.model.control.payment.server.control.PaymentMethodControl;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.control.selector.common.SelectorConstants;
@@ -41,11 +41,11 @@ import com.echothree.model.data.payment.server.value.PaymentMethodDescriptionVal
 import com.echothree.model.data.payment.server.value.PaymentMethodDetailValue;
 import com.echothree.model.data.selector.server.entity.Selector;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.EditMode;
+import com.echothree.util.common.form.ValidationResult;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.EditMode;
-import com.echothree.util.common.form.ValidationResult;
 import com.echothree.util.server.control.BaseAbstractEditCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -120,15 +120,15 @@ public class EditPaymentMethodCommand
         ValidationResult validationResult = validator.validate(edit, getEditFieldDefinitions());
         
         if(!validationResult.getHasErrors()) {
-            var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
-            PaymentMethod paymentMethod = paymentControl.getPaymentMethodByName(spec.getPaymentMethodName());
+            var paymentMethodControl = (PaymentMethodControl)Session.getModelController(PaymentMethodControl.class);
+            PaymentMethod paymentMethod = paymentMethodControl.getPaymentMethodByName(spec.getPaymentMethodName());
             
             if(paymentMethod != null) {
-                String paymentMethodTypeName = paymentMethod.getLastDetail().getPaymentMethodType().getPaymentMethodTypeName();
+                String paymentMethodTypeName = paymentMethod.getLastDetail().getPaymentMethodType().getLastDetail().getPaymentMethodTypeName();
                 
-                if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CHECK)) {
+                if(paymentMethodTypeName.equals(PaymentMethodTypes.CHECK.name())) {
                     validationResult = validator.validate(edit, editCheckFieldDefinitions);
-                } else if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CREDIT_CARD)) {
+                } else if(paymentMethodTypeName.equals(PaymentMethodTypes.CREDIT_CARD.name())) {
                     validationResult = validator.validate(edit, editCreditCardFieldDefinitions);
                 }
             }
@@ -149,18 +149,18 @@ public class EditPaymentMethodCommand
 
     @Override
     public PaymentMethod getEntity(EditPaymentMethodResult result) {
-        var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
+        var paymentMethodControl = (PaymentMethodControl)Session.getModelController(PaymentMethodControl.class);
         PaymentMethod paymentMethod = null;
         String paymentMethodName = spec.getPaymentMethodName();
 
         if(editMode.equals(EditMode.LOCK) || editMode.equals(EditMode.ABANDON)) {
-            paymentMethod = paymentControl.getPaymentMethodByName(paymentMethodName);
+            paymentMethod = paymentMethodControl.getPaymentMethodByName(paymentMethodName);
         } else { // EditMode.UPDATE
-            paymentMethod = paymentControl.getPaymentMethodByNameForUpdate(paymentMethodName);
+            paymentMethod = paymentMethodControl.getPaymentMethodByNameForUpdate(paymentMethodName);
         }
 
         if(paymentMethod != null) {
-            result.setPaymentMethod(paymentControl.getPaymentMethodTransfer(getUserVisit(), paymentMethod));
+            result.setPaymentMethod(paymentMethodControl.getPaymentMethodTransfer(getUserVisit(), paymentMethod));
         } else {
             addExecutionError(ExecutionErrors.UnknownPaymentMethodName.name(), paymentMethodName);
         }
@@ -175,9 +175,9 @@ public class EditPaymentMethodCommand
 
     @Override
     public void fillInResult(EditPaymentMethodResult result, PaymentMethod paymentMethod) {
-        var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
+        var paymentMethodControl = (PaymentMethodControl)Session.getModelController(PaymentMethodControl.class);
 
-        result.setPaymentMethod(paymentControl.getPaymentMethodTransfer(getUserVisit(), paymentMethod));
+        result.setPaymentMethod(paymentMethodControl.getPaymentMethodTransfer(getUserVisit(), paymentMethod));
     }
 
     Selector itemSelector = null;
@@ -185,10 +185,10 @@ public class EditPaymentMethodCommand
 
     @Override
     public void doLock(PaymentMethodEdit edit, PaymentMethod paymentMethod) {
-        var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
-        PaymentMethodDescription paymentMethodDescription = paymentControl.getPaymentMethodDescription(paymentMethod, getPreferredLanguage());
+        var paymentMethodControl = (PaymentMethodControl)Session.getModelController(PaymentMethodControl.class);
+        PaymentMethodDescription paymentMethodDescription = paymentMethodControl.getPaymentMethodDescription(paymentMethod, getPreferredLanguage());
         PaymentMethodDetail paymentMethodDetail = paymentMethod.getLastDetail();
-        String paymentMethodTypeName = paymentMethodDetail.getPaymentMethodType().getPaymentMethodTypeName();
+        String paymentMethodTypeName = paymentMethodDetail.getPaymentMethodType().getLastDetail().getPaymentMethodTypeName();
 
         itemSelector = paymentMethodDetail.getItemSelector();
         salesOrderItemSelector = paymentMethodDetail.getSalesOrderItemSelector();
@@ -199,12 +199,12 @@ public class EditPaymentMethodCommand
         edit.setIsDefault(paymentMethodDetail.getIsDefault().toString());
         edit.setSortOrder(paymentMethodDetail.getSortOrder().toString());
 
-        if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CHECK)) {
-            PaymentMethodCheck paymentMethodCheck = paymentControl.getPaymentMethodCheck(paymentMethod);
+        if(paymentMethodTypeName.equals(PaymentMethodTypes.CHECK.name())) {
+            PaymentMethodCheck paymentMethodCheck = paymentMethodControl.getPaymentMethodCheck(paymentMethod);
 
             edit.setHoldDays(paymentMethodCheck.getHoldDays().toString());
-        } else if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CREDIT_CARD)) {
-            PaymentMethodCreditCard paymentMethodCreditCard = paymentControl.getPaymentMethodCreditCard(paymentMethod);
+        } else if(paymentMethodTypeName.equals(PaymentMethodTypes.CREDIT_CARD.name())) {
+            PaymentMethodCreditCard paymentMethodCreditCard = paymentMethodControl.getPaymentMethodCreditCard(paymentMethod);
 
             edit.setRequestNameOnCard(paymentMethodCreditCard.getRequestNameOnCard().toString());
             edit.setRequireNameOnCard(paymentMethodCreditCard.getRequireNameOnCard().toString());
@@ -231,9 +231,9 @@ public class EditPaymentMethodCommand
 
     @Override
     public void canUpdate(PaymentMethod paymentMethod) {
-        var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
+        var paymentMethodControl = (PaymentMethodControl)Session.getModelController(PaymentMethodControl.class);
         String paymentMethodName = edit.getPaymentMethodName();
-        PaymentMethod duplicatePaymentMethod = paymentControl.getPaymentMethodByName(paymentMethodName);
+        PaymentMethod duplicatePaymentMethod = paymentMethodControl.getPaymentMethodByName(paymentMethodName);
 
         if(duplicatePaymentMethod != null && !paymentMethod.equals(duplicatePaymentMethod)) {
             addExecutionError(ExecutionErrors.DuplicatePaymentMethodName.name(), paymentMethodName);
@@ -254,11 +254,11 @@ public class EditPaymentMethodCommand
 
     @Override
     public void doUpdate(PaymentMethod paymentMethod) {
-        var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
+        var paymentMethodControl = (PaymentMethodControl)Session.getModelController(PaymentMethodControl.class);
         PartyPK partyPK = getPartyPK();
-        PaymentMethodDetailValue paymentMethodDetailValue = paymentControl.getPaymentMethodDetailValueForUpdate(paymentMethod);
-        PaymentMethodDescription paymentMethodDescription = paymentControl.getPaymentMethodDescriptionForUpdate(paymentMethod, getPreferredLanguage());
-        String paymentMethodTypeName = paymentMethod.getLastDetail().getPaymentMethodType().getPaymentMethodTypeName();
+        PaymentMethodDetailValue paymentMethodDetailValue = paymentMethodControl.getPaymentMethodDetailValueForUpdate(paymentMethod);
+        PaymentMethodDescription paymentMethodDescription = paymentMethodControl.getPaymentMethodDescriptionForUpdate(paymentMethod, getPreferredLanguage());
+        String paymentMethodTypeName = paymentMethod.getLastDetail().getPaymentMethodType().getLastDetail().getPaymentMethodTypeName();
         String description = edit.getDescription();
 
         paymentMethodDetailValue.setPaymentMethodName(edit.getPaymentMethodName());
@@ -267,17 +267,17 @@ public class EditPaymentMethodCommand
         paymentMethodDetailValue.setIsDefault(Boolean.valueOf(edit.getIsDefault()));
         paymentMethodDetailValue.setSortOrder(Integer.valueOf(edit.getSortOrder()));
 
-        paymentControl.updatePaymentMethodFromValue(paymentMethodDetailValue, partyPK);
+        paymentMethodControl.updatePaymentMethodFromValue(paymentMethodDetailValue, partyPK);
 
-        if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CHECK)) {
-            PaymentMethodCheckValue paymentMethodCheckValue = paymentControl.getPaymentMethodCheckValueForUpdate(paymentMethod);
+        if(paymentMethodTypeName.equals(PaymentMethodTypes.CHECK.name())) {
+            PaymentMethodCheckValue paymentMethodCheckValue = paymentMethodControl.getPaymentMethodCheckValueForUpdate(paymentMethod);
 
             paymentMethodCheckValue.setHoldDays(Integer.valueOf(edit.getHoldDays()));
 
-            paymentControl.updatePaymentMethodCheckFromValue(paymentMethodCheckValue, partyPK);
+            paymentMethodControl.updatePaymentMethodCheckFromValue(paymentMethodCheckValue, partyPK);
         } else {
-            if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CREDIT_CARD)) {
-                PaymentMethodCreditCardValue paymentMethodCreditCardValue = paymentControl.getPaymentMethodCreditCardValueForUpdate(paymentMethod);
+            if(paymentMethodTypeName.equals(PaymentMethodTypes.CREDIT_CARD.name())) {
+                PaymentMethodCreditCardValue paymentMethodCreditCardValue = paymentMethodControl.getPaymentMethodCreditCardValueForUpdate(paymentMethod);
 
                 paymentMethodCreditCardValue.setRequestNameOnCard(Boolean.valueOf(edit.getRequestNameOnCard()));
                 paymentMethodCreditCardValue.setRequireNameOnCard(Boolean.valueOf(edit.getRequireNameOnCard()));
@@ -296,21 +296,21 @@ public class EditPaymentMethodCommand
                 paymentMethodCreditCardValue.setRequestIssuer(Boolean.valueOf(edit.getRequestIssuer()));
                 paymentMethodCreditCardValue.setRequireIssuer(Boolean.valueOf(edit.getRequireIssuer()));
 
-                paymentControl.updatePaymentMethodCreditCardFromValue(paymentMethodCreditCardValue, partyPK);
+                paymentMethodControl.updatePaymentMethodCreditCardFromValue(paymentMethodCreditCardValue, partyPK);
             }
         }
 
         if(paymentMethodDescription == null && description != null) {
-            paymentControl.createPaymentMethodDescription(paymentMethod, getPreferredLanguage(), description, partyPK);
+            paymentMethodControl.createPaymentMethodDescription(paymentMethod, getPreferredLanguage(), description, partyPK);
         } else {
             if(paymentMethodDescription != null && description == null) {
-                paymentControl.deletePaymentMethodDescription(paymentMethodDescription, partyPK);
+                paymentMethodControl.deletePaymentMethodDescription(paymentMethodDescription, partyPK);
             } else {
                 if(paymentMethodDescription != null && description != null) {
-                    PaymentMethodDescriptionValue paymentMethodDescriptionValue = paymentControl.getPaymentMethodDescriptionValue(paymentMethodDescription);
+                    PaymentMethodDescriptionValue paymentMethodDescriptionValue = paymentMethodControl.getPaymentMethodDescriptionValue(paymentMethodDescription);
 
                     paymentMethodDescriptionValue.setDescription(description);
-                    paymentControl.updatePaymentMethodDescriptionFromValue(paymentMethodDescriptionValue, partyPK);
+                    paymentMethodControl.updatePaymentMethodDescriptionFromValue(paymentMethodDescriptionValue, partyPK);
                 }
             }
         }

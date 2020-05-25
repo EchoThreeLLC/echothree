@@ -18,16 +18,13 @@ package com.echothree.model.control.payment.server.transfer;
 
 import com.echothree.model.control.accounting.common.transfer.CurrencyTransfer;
 import com.echothree.model.control.accounting.server.AccountingControl;
-import com.echothree.model.control.contact.server.ContactControl;
-import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.payment.common.PaymentOptions;
 import com.echothree.model.control.payment.common.transfer.BillingAccountRoleTransfer;
 import com.echothree.model.control.payment.common.transfer.BillingAccountTransfer;
-import com.echothree.model.control.payment.server.PaymentControl;
+import com.echothree.model.control.payment.server.control.BillingControl;
 import com.echothree.model.data.accounting.server.entity.Currency;
 import com.echothree.model.data.payment.server.entity.BillingAccount;
 import com.echothree.model.data.payment.server.entity.BillingAccountDetail;
-import com.echothree.model.data.payment.server.entity.BillingAccountStatus;
 import com.echothree.model.data.user.server.entity.UserVisit;
 import com.echothree.util.common.transfer.MapWrapper;
 import com.echothree.util.server.persistence.Session;
@@ -38,11 +35,12 @@ public class BillingAccountTransferCache
         extends BasePaymentTransferCache<BillingAccount, BillingAccountTransfer> {
 
     AccountingControl accountingControl = (AccountingControl)Session.getModelController(AccountingControl.class);
+    BillingControl billingControl = (BillingControl)Session.getModelController(BillingControl.class);
     boolean includeRoles;
 
     /** Creates a new instance of BillingAccountTransferCache */
-    public BillingAccountTransferCache(UserVisit userVisit, PaymentControl paymentControl) {
-        super(userVisit, paymentControl);
+    public BillingAccountTransferCache(UserVisit userVisit) {
+        super(userVisit);
 
         Set<String> options = session.getOptions();
         if(options != null) {
@@ -52,7 +50,8 @@ public class BillingAccountTransferCache
         setIncludeEntityInstance(true);
     }
 
-    public BillingAccountTransfer getBillingAccountTransfer(BillingAccount billingAccount) {
+    @Override
+    public BillingAccountTransfer getTransfer(BillingAccount billingAccount) {
         BillingAccountTransfer billingAccountTransfer = get(billingAccount);
 
         if(billingAccountTransfer == null) {
@@ -81,7 +80,7 @@ public class BillingAccountTransferCache
             put(billingAccount, billingAccountTransfer);
             
             if(includeRoles) {
-                List<BillingAccountRoleTransfer> billingAccountRoleTransfers = paymentControl.getBillingAccountRoleTransfersByBillingAccount(userVisit, billingAccount);
+                List<BillingAccountRoleTransfer> billingAccountRoleTransfers = billingControl.getBillingAccountRoleTransfersByBillingAccount(userVisit, billingAccount);
                 MapWrapper<BillingAccountRoleTransfer> billingAccountRoles = new MapWrapper<>(billingAccountRoleTransfers.size());
 
                 billingAccountRoleTransfers.stream().forEach((billingAccountRoleTransfer) -> {

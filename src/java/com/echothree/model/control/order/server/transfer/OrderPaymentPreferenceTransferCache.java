@@ -20,7 +20,8 @@ import com.echothree.model.control.order.common.transfer.OrderPaymentPreferenceT
 import com.echothree.model.control.order.server.OrderControl;
 import com.echothree.model.control.payment.common.transfer.PartyPaymentMethodTransfer;
 import com.echothree.model.control.payment.common.transfer.PaymentMethodTransfer;
-import com.echothree.model.control.payment.server.PaymentControl;
+import com.echothree.model.control.payment.server.control.PartyPaymentMethodControl;
+import com.echothree.model.control.payment.server.control.PaymentMethodControl;
 import com.echothree.model.data.order.server.entity.OrderPaymentPreference;
 import com.echothree.model.data.order.server.entity.OrderPaymentPreferenceDetail;
 import com.echothree.model.data.payment.server.entity.PartyPaymentMethod;
@@ -30,9 +31,10 @@ import com.echothree.util.server.string.AmountUtils;
 
 public class OrderPaymentPreferenceTransferCache
         extends BaseOrderTransferCache<OrderPaymentPreference, OrderPaymentPreferenceTransfer> {
-    
-    PaymentControl paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);;
-    
+
+    PartyPaymentMethodControl partyPaymentMethodControl = (PartyPaymentMethodControl)Session.getModelController(PartyPaymentMethodControl.class);
+    PaymentMethodControl paymentMethodControl = (PaymentMethodControl)Session.getModelController(PaymentMethodControl.class);
+
     /** Creates a new instance of OrderPaymentPreferenceTransferCache */
     public OrderPaymentPreferenceTransferCache(UserVisit userVisit, OrderControl orderControl) {
         super(userVisit, orderControl);
@@ -46,9 +48,9 @@ public class OrderPaymentPreferenceTransferCache
         if(orderPaymentPreferenceTransfer == null) {
             OrderPaymentPreferenceDetail orderPaymentPreferenceDetail = orderPaymentPreference.getLastDetail();
             Integer orderPaymentPreferenceSequence = orderPaymentPreferenceDetail.getOrderPaymentPreferenceSequence();
-            PaymentMethodTransfer paymentMethodTransfer = paymentControl.getPaymentMethodTransfer(userVisit, orderPaymentPreferenceDetail.getPaymentMethod());
+            PaymentMethodTransfer paymentMethodTransfer = paymentMethodControl.getPaymentMethodTransfer(userVisit, orderPaymentPreferenceDetail.getPaymentMethod());
             PartyPaymentMethod partyPaymentMethod = orderPaymentPreferenceDetail.getPartyPaymentMethod();
-            PartyPaymentMethodTransfer partyPaymentMethodTransfer = partyPaymentMethod == null ? null : paymentControl.getPartyPaymentMethodTransfer(userVisit, partyPaymentMethod);
+            PartyPaymentMethodTransfer partyPaymentMethodTransfer = partyPaymentMethod == null ? null : partyPaymentMethodControl.getPartyPaymentMethodTransfer(userVisit, partyPaymentMethod);
             Boolean wasPresent = orderPaymentPreferenceDetail.getWasPresent();
             Long unformattedMaximumAmount = orderPaymentPreferenceDetail.getMaximumAmount();
             String maximumAmount = AmountUtils.getInstance().formatPriceUnit(orderPaymentPreferenceDetail.getOrder().getLastDetail().getCurrency(), unformattedMaximumAmount);

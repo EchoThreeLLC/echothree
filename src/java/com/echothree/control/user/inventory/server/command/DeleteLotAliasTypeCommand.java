@@ -17,17 +17,16 @@
 package com.echothree.control.user.inventory.server.command;
 
 import com.echothree.control.user.inventory.common.form.DeleteLotAliasTypeForm;
-import com.echothree.model.control.inventory.server.InventoryControl;
+import com.echothree.model.control.inventory.server.control.LotAliasControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.inventory.server.entity.LotAliasType;
-import com.echothree.model.data.inventory.server.entity.LotType;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.server.control.BaseSimpleCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -52,7 +51,6 @@ public class DeleteLotAliasTypeCommand
                 )));
         
         FORM_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
-                new FieldDefinition("LotTypeName", FieldType.ENTITY_NAME, true, null, null),
                 new FieldDefinition("LotAliasTypeName", FieldType.ENTITY_NAME, true, null, null)
                 ));
     }
@@ -64,23 +62,16 @@ public class DeleteLotAliasTypeCommand
     
     @Override
     protected BaseResult execute() {
-        var inventoryControl = (InventoryControl)Session.getModelController(InventoryControl.class);
-        String lotTypeName = form.getLotTypeName();
-        LotType lotType = inventoryControl.getLotTypeByName(lotTypeName);
+        var lotAliasControl = (LotAliasControl)Session.getModelController(LotAliasControl.class);
+        String lotAliasTypeName = form.getLotAliasTypeName();
+        LotAliasType lotAliasType = lotAliasControl.getLotAliasTypeByNameForUpdate(lotAliasTypeName);
 
-        if(lotType != null) {
-            String lotAliasTypeName = form.getLotAliasTypeName();
-            LotAliasType lotAliasType = inventoryControl.getLotAliasTypeByNameForUpdate(lotType, lotAliasTypeName);
-
-            if(lotAliasType != null) {
-                inventoryControl.deleteLotAliasType(lotAliasType, getPartyPK());
-            } else {
-                addExecutionError(ExecutionErrors.UnknownLotAliasTypeName.name(), lotTypeName, lotAliasTypeName);
-            }
+        if(lotAliasType != null) {
+            lotAliasControl.deleteLotAliasType(lotAliasType, getPartyPK());
         } else {
-            addExecutionError(ExecutionErrors.UnknownLotTypeName.name(), lotTypeName);
+            addExecutionError(ExecutionErrors.UnknownLotAliasTypeName.name(), lotAliasTypeName);
         }
-        
+
         return null;
     }
     

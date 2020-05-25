@@ -1192,6 +1192,12 @@
             <entityType entityTypeName="PaymentProcessorDescription" keepAllHistory="false" sortOrder="1">
                 <entityTypeDescription languageIsoName="en" description="Payment Processor Description" />
             </entityType>
+            <entityType entityTypeName="PaymentProcessorTransaction" keepAllHistory="false" sortOrder="1">
+                <entityTypeDescription languageIsoName="en" description="Payment Processor Transaction" />
+            </entityType>
+            <entityType entityTypeName="PaymentProcessorTransactionCode" keepAllHistory="false" sortOrder="1">
+                <entityTypeDescription languageIsoName="en" description="Payment Processor Transaction Code" />
+            </entityType>
             <entityType entityTypeName="PaymentMethodCheck" keepAllHistory="false" sortOrder="1">
                 <entityTypeDescription languageIsoName="en" description="Payment Method Check" />
             </entityType>
@@ -1203,6 +1209,30 @@
             </entityType>
             <entityType entityTypeName="PaymentMethodTypeDescription" keepAllHistory="false" sortOrder="1">
                 <entityTypeDescription languageIsoName="en" description="Payment Method Type Description" />
+            </entityType>
+            <entityType entityTypeName="PaymentProcessorType" keepAllHistory="false" sortOrder="1">
+                <entityTypeDescription languageIsoName="en" description="Payment Processor Type" />
+            </entityType>
+            <entityType entityTypeName="PaymentProcessorAction" keepAllHistory="false" sortOrder="1">
+                <entityActionDescription languageIsoName="en" description="Payment Processor Action" />
+            </entityType>
+            <entityType entityTypeName="PaymentProcessorTypeDescription" keepAllHistory="false" sortOrder="1">
+                <entityTypeDescription languageIsoName="en" description="Payment Processor Type Description" />
+            </entityType>
+            <entityType entityTypeName="PaymentProcessorTypeAction" keepAllHistory="false" sortOrder="1">
+                <entityTypeDescription languageIsoName="en" description="Payment Processor Type Action" />
+            </entityType>
+            <entityType entityTypeName="PaymentProcessorTypeCodeType" keepAllHistory="false" sortOrder="1">
+                <entityTypeDescription languageIsoName="en" description="Payment Processor Type Code Type" />
+            </entityType>
+            <entityType entityTypeName="PaymentProcessorTypeCodeTypeDescription" keepAllHistory="false" sortOrder="1">
+                <entityTypeDescription languageIsoName="en" description="Payment Processor Type Code Type Description" />
+            </entityType>
+            <entityType entityTypeName="PaymentProcessorTypeCode" keepAllHistory="false" sortOrder="1">
+                <entityTypeDescription languageIsoName="en" description="Payment Processor Type Code" />
+            </entityType>
+            <entityType entityTypeName="PaymentProcessorTypeCodeDescription" keepAllHistory="false" sortOrder="1">
+                <entityTypeDescription languageIsoName="en" description="Payment Processor Type Code Description" />
             </entityType>
             <entityType entityTypeName="Person" keepAllHistory="false" sortOrder="1">
                 <entityTypeDescription languageIsoName="en" description="Person" />
@@ -2026,12 +2056,6 @@
             <entityType entityTypeName="ContactMechanismAliasTypeDescription" keepAllHistory="false" sortOrder="1">
                 <entityTypeDescription languageIsoName="en" description="Contact Mechanism Alias Type" />
             </entityType>
-            <entityType entityTypeName="LotType" keepAllHistory="false" sortOrder="1">
-                <entityTypeDescription languageIsoName="en" description="Lot Type" />
-            </entityType>
-            <entityType entityTypeName="LotTypeDescription" keepAllHistory="false" sortOrder="1">
-                <entityTypeDescription languageIsoName="en" description="Lot Type Description" />
-            </entityType>
             <entityType entityTypeName="LotAliasType" keepAllHistory="false" sortOrder="1">
                 <entityTypeDescription languageIsoName="en" description="Lot Alias Type" />
             </entityType>
@@ -2343,6 +2367,18 @@
             </entityType>
             <entityType entityTypeName="EntityAttributeString" keepAllHistory="false" sortOrder="1">
                 <entityTypeDescription languageIsoName="en" description="Entity Attribute String" />
+            </entityType>
+            <entityType entityTypeName="PaymentProcessorActionType" keepAllHistory="false" sortOrder="1">
+                <entityTypeDescription languageIsoName="en" description="Payment Processor Action Type" />
+            </entityType>
+            <entityType entityTypeName="PaymentProcessorActionTypeDescription" keepAllHistory="false" sortOrder="1">
+                <entityTypeDescription languageIsoName="en" description="Payment Processor Action Type Description" />
+            </entityType>
+            <entityType entityTypeName="PaymentProcessorResultCode" keepAllHistory="false" sortOrder="1">
+                <entityTypeDescription languageIsoName="en" description="Payment Processor Result Code" />
+            </entityType>
+            <entityType entityTypeName="PaymentProcessorResultCodeDescription" keepAllHistory="false" sortOrder="1">
+                <entityTypeDescription languageIsoName="en" description="Payment Processor Result Code Description" />
             </entityType>
             <component componentName="InitialDataFromXML" description="Initial Data From XML">
                 <componentVersion majorRevision="1" minorRevision="0" componentStageName="DEVELOPMENT" buildNumber="1" />

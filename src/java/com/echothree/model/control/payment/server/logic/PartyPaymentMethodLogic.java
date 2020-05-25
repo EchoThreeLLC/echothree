@@ -20,9 +20,10 @@ import com.echothree.control.user.payment.common.edit.PartyPaymentMethodEdit;
 import com.echothree.model.control.contact.server.ContactControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.PartyControl;
-import com.echothree.model.control.payment.common.PaymentConstants;
+import com.echothree.model.control.payment.common.PaymentMethodTypes;
 import com.echothree.model.control.payment.common.exception.UnknownPartyPaymentMethodNameException;
-import com.echothree.model.control.payment.server.PaymentControl;
+import com.echothree.model.control.payment.server.control.PartyPaymentMethodControl;
+import com.echothree.model.control.payment.server.control.PaymentMethodControl;
 import com.echothree.model.control.user.server.UserControl;
 import com.echothree.model.data.contact.server.entity.ContactMechanism;
 import com.echothree.model.data.contact.server.entity.PartyContactMechanism;
@@ -274,8 +275,8 @@ public class PartyPaymentMethodLogic
 
     public void checkCreditCard(final Session session, final ExecutionErrorAccumulator ema, final Party party, final PaymentMethod paymentMethod,
             final PartyPaymentMethodEdit ppme) {
-        var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
-        PaymentMethodCreditCard paymentMethodCreditCard = paymentControl.getPaymentMethodCreditCard(paymentMethod);
+        var paymentMethodControl = (PaymentMethodControl)Session.getModelController(PaymentMethodControl.class);
+        PaymentMethodCreditCard paymentMethodCreditCard = paymentMethodControl.getPaymentMethodCreditCard(paymentMethod);
 
         if(paymentMethodCreditCard.getRequestNameOnCard()) {
             checkNameOnCard(ema, ppme, paymentMethodCreditCard);
@@ -322,9 +323,9 @@ public class PartyPaymentMethodLogic
     public void checkPaymentMethodType(final Session session, final ExecutionErrorAccumulator ema, final Party party, final PaymentMethod paymentMethod,
             final PartyPaymentMethodEdit ppme) {
         PaymentMethodType paymentMethodType = paymentMethod.getLastDetail().getPaymentMethodType();
-        String paymentMethodTypeName = paymentMethodType.getPaymentMethodTypeName();
+        String paymentMethodTypeName = paymentMethodType.getLastDetail().getPaymentMethodTypeName();
 
-        if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CREDIT_CARD)) {
+        if(paymentMethodTypeName.equals(PaymentMethodTypes.CREDIT_CARD.name())) {
             checkCreditCard(session, ema, party, paymentMethod, ppme);
         } else {
             ema.addExecutionError(ExecutionErrors.InvalidPaymentMethodType.name(), paymentMethodTypeName);
@@ -342,8 +343,8 @@ public class PartyPaymentMethodLogic
 
     private PartyPaymentMethod getPartyPaymentMethodByName(final ExecutionErrorAccumulator eea, final String partyPaymentMethodName,
             final EntityPermission entityPermission) {
-        var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
-        var partyPaymentMethod = paymentControl.getPartyPaymentMethodByName(partyPaymentMethodName, entityPermission);
+        var partyPaymentMethodControl = (PartyPaymentMethodControl)Session.getModelController(PartyPaymentMethodControl.class);
+        var partyPaymentMethod = partyPaymentMethodControl.getPartyPaymentMethodByName(partyPaymentMethodName, entityPermission);
 
         if(partyPaymentMethod == null) {
             handleExecutionError(UnknownPartyPaymentMethodNameException.class, eea, ExecutionErrors.UnknownPartyPaymentMethodName.name(), partyPaymentMethodName);
@@ -364,12 +365,12 @@ public class PartyPaymentMethodLogic
 
     public void deletePartyPaymentMethod(final ExecutionErrorAccumulator eea, final PartyPaymentMethod partyPaymentMethod,
             final PartyPK deletedBy) {
-        var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
+        var partyPaymentMethodControl = (PartyPaymentMethodControl)Session.getModelController(PartyPaymentMethodControl.class);
 
         // TODO: Check to see if this payment method is in use on any open orders,
         // or orders that currently are allowing returns to be made against them.
         // If that's the case, the PPM shouldn't be deleted.
-        paymentControl.deletePartyPaymentMethod(partyPaymentMethod, deletedBy);
+        partyPaymentMethodControl.deletePartyPaymentMethod(partyPaymentMethod, deletedBy);
     }
 
     public void deletePartyPaymentMethod(final ExecutionErrorAccumulator eea, final String partyPaymentMethodName,

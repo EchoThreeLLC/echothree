@@ -17,20 +17,19 @@
 package com.echothree.control.user.inventory.server.command;
 
 import com.echothree.control.user.inventory.common.form.DeleteLotAliasForm;
-import com.echothree.control.user.inventory.server.command.util.LotAliasUtil;
-import com.echothree.model.control.inventory.server.InventoryControl;
+import com.echothree.model.control.inventory.server.control.LotAliasControl;
+import com.echothree.model.control.inventory.server.control.LotControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.inventory.server.entity.Lot;
 import com.echothree.model.data.inventory.server.entity.LotAlias;
 import com.echothree.model.data.inventory.server.entity.LotAliasType;
-import com.echothree.model.data.inventory.server.entity.LotType;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.server.control.BaseSimpleCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -42,12 +41,19 @@ import java.util.List;
 
 public class DeleteLotAliasCommand
         extends BaseSimpleCommand<DeleteLotAliasForm> {
-    
+
+    private final static CommandSecurityDefinition COMMAND_SECURITY_DEFINITION;
     private final static List<FieldDefinition> FORM_FIELD_DEFINITIONS;
     
     static {
+        COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
+                        new SecurityRoleDefinition(SecurityRoleGroups.LotAliasType.name(), SecurityRoles.Delete.name())
+                )))
+        )));
+
         FORM_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
-                new FieldDefinition("LotTypeName", FieldType.ENTITY_NAME, true, null, null),
                 new FieldDefinition("LotName", FieldType.ENTITY_NAME, true, null, null),
                 new FieldDefinition("LotAliasTypeName", FieldType.ENTITY_NAME, true, null, null)
                 ));
@@ -55,44 +61,33 @@ public class DeleteLotAliasCommand
     
     /** Creates a new instance of DeleteLotAliasCommand */
     public DeleteLotAliasCommand(UserVisitPK userVisitPK, DeleteLotAliasForm form) {
-        super(userVisitPK, form, new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
-                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
-                        new SecurityRoleDefinition(LotAliasUtil.getInstance().getSecurityRoleGroupNameByLotTypeSpec(form), SecurityRoles.Delete.name())
-                        )))
-                ))), FORM_FIELD_DEFINITIONS, false);
+        super(userVisitPK, form, COMMAND_SECURITY_DEFINITION, FORM_FIELD_DEFINITIONS, false);
     }
     
     @Override
     protected BaseResult execute() {
-        var inventoryControl = (InventoryControl)Session.getModelController(InventoryControl.class);
-        String lotTypeName = form.getLotTypeName();
-        LotType lotType = inventoryControl.getLotTypeByName(lotTypeName);
+        var lotControl = (LotControl)Session.getModelController(LotControl.class);
+        String lotName = form.getLotName();
+        Lot lot = lotControl.getLotByName(lotName);
 
-        if(lotType != null) {
-            String lotName = form.getLotName();
-            Lot lot = inventoryControl.getLotByName(lotType, lotName);
+        if(lot != null) {
+            var lotAliasControl = (LotAliasControl)Session.getModelController(LotAliasControl.class);
+            String lotAliasTypeName = form.getLotAliasTypeName();
+            LotAliasType lotAliasType = lotAliasControl.getLotAliasTypeByName(lotAliasTypeName);
 
-            if(lot != null) {
-                String lotAliasTypeName = form.getLotAliasTypeName();
-                LotAliasType lotAliasType = inventoryControl.getLotAliasTypeByName(lotType, lotAliasTypeName);
+            if(lotAliasType != null) {
+                LotAlias lotAlias = lotAliasControl.getLotAliasForUpdate(lot, lotAliasType);
 
-                if(lotAliasType != null) {
-                    LotAlias lotAlias = inventoryControl.getLotAliasForUpdate(lot, lotAliasType);
-
-                    if(lotAlias != null) {
-                        inventoryControl.deleteLotAlias(lotAlias, getPartyPK());
-                    } else {
-                        addExecutionError(ExecutionErrors.UnknownLotAlias.name(), lotTypeName, lotName, lotAliasTypeName);
-                    }
+                if(lotAlias != null) {
+                    lotAliasControl.deleteLotAlias(lotAlias, getPartyPK());
                 } else {
-                    addExecutionError(ExecutionErrors.UnknownLotAliasTypeName.name(), lotTypeName, lotAliasTypeName);
+                    addExecutionError(ExecutionErrors.UnknownLotAlias.name(), lotName, lotAliasTypeName);
                 }
             } else {
-                addExecutionError(ExecutionErrors.UnknownLotName.name(), lotTypeName, lotName);
+                addExecutionError(ExecutionErrors.UnknownLotAliasTypeName.name(), lotAliasTypeName);
             }
         } else {
-            addExecutionError(ExecutionErrors.UnknownLotTypeName.name(), lotTypeName);
+            addExecutionError(ExecutionErrors.UnknownLotName.name(), lotName);
         }
 
         return null;

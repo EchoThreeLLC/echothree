@@ -19,16 +19,14 @@ package com.echothree.control.user.inventory.server.command;
 import com.echothree.control.user.inventory.common.form.GetLotTimeTypeChoicesForm;
 import com.echothree.control.user.inventory.common.result.GetLotTimeTypeChoicesResult;
 import com.echothree.control.user.inventory.common.result.InventoryResultFactory;
-import com.echothree.model.control.inventory.server.InventoryControl;
+import com.echothree.model.control.inventory.server.control.LotTimeControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
-import com.echothree.model.data.inventory.server.entity.LotType;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
-import com.echothree.util.common.message.ExecutionErrors;
+import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.server.control.BaseSimpleCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -52,7 +50,6 @@ public class GetLotTimeTypeChoicesCommand
                 )));
         
         FORM_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
-                new FieldDefinition("LotTypeName", FieldType.ENTITY_NAME, true, null, null),
                 new FieldDefinition("DefaultLotTimeTypeChoice", FieldType.ENTITY_NAME, false, null, null),
                 new FieldDefinition("AllowNullChoice", FieldType.BOOLEAN, true, null, null)
                 ));
@@ -65,20 +62,12 @@ public class GetLotTimeTypeChoicesCommand
     
     @Override
     protected BaseResult execute() {
-        var inventoryControl = (InventoryControl)Session.getModelController(InventoryControl.class);
+        var lotTimeControl = (LotTimeControl)Session.getModelController(LotTimeControl.class);
         GetLotTimeTypeChoicesResult result = InventoryResultFactory.getGetLotTimeTypeChoicesResult();
-        String lotTypeName = form.getLotTypeName();
-        LotType lotType = inventoryControl.getLotTypeByName(lotTypeName);
+        String defaultLotTimeTypeChoice = form.getDefaultLotTimeTypeChoice();
+        boolean allowNullChoice = Boolean.parseBoolean(form.getAllowNullChoice());
 
-        if(lotType != null) {
-            String defaultLotTimeTypeChoice = form.getDefaultLotTimeTypeChoice();
-            boolean allowNullChoice = Boolean.parseBoolean(form.getAllowNullChoice());
-
-            result.setLotTimeTypeChoices(inventoryControl.getLotTimeTypeChoices(defaultLotTimeTypeChoice, getPreferredLanguage(), allowNullChoice,
-                    lotType));
-        } else {
-            addExecutionError(ExecutionErrors.UnknownLotTypeName.name(), lotTypeName);
-        }
+        result.setLotTimeTypeChoices(lotTimeControl.getLotTimeTypeChoices(defaultLotTimeTypeChoice, getPreferredLanguage(), allowNullChoice));
 
         return result;
     }

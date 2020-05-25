@@ -17,18 +17,21 @@
 package com.echothree.control.user.payment.server.command;
 
 import com.echothree.control.user.payment.common.form.CreatePaymentProcessorTypeForm;
+import com.echothree.control.user.payment.common.result.PaymentResultFactory;
+import com.echothree.control.user.payment.common.result.CreatePaymentProcessorTypeResult;
+import com.echothree.model.control.payment.server.logic.PaymentProcessorTypeLogic;
 import com.echothree.model.control.party.common.PartyTypes;
-import com.echothree.model.control.payment.server.PaymentControl;
+import com.echothree.model.control.security.common.SecurityRoleGroups;
+import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.payment.server.entity.PaymentProcessorType;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
-import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
 import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.server.control.BaseSimpleCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
-import com.echothree.util.server.persistence.Session;
+import com.echothree.util.server.control.SecurityRoleDefinition;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -41,13 +44,17 @@ public class CreatePaymentProcessorTypeCommand
     
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null)
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
+                        new SecurityRoleDefinition(SecurityRoleGroups.PaymentProcessorType.name(), SecurityRoles.Create.name())
+                        )))
                 )));
-
+        
         FORM_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
                 new FieldDefinition("PaymentProcessorTypeName", FieldType.ENTITY_NAME, true, null, null),
                 new FieldDefinition("IsDefault", FieldType.BOOLEAN, true, null, null),
-                new FieldDefinition("SortOrder", FieldType.SIGNED_INTEGER, true, null, null)
+                new FieldDefinition("SortOrder", FieldType.SIGNED_INTEGER, true, null, null),
+                new FieldDefinition("Description", FieldType.STRING, false, 1L, 80L)
                 ));
     }
     
@@ -58,20 +65,21 @@ public class CreatePaymentProcessorTypeCommand
     
     @Override
     protected BaseResult execute() {
-        var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
+        CreatePaymentProcessorTypeResult result = PaymentResultFactory.getCreatePaymentProcessorTypeResult();
         String paymentProcessorTypeName = form.getPaymentProcessorTypeName();
-        PaymentProcessorType paymentProcessorType = paymentControl.getPaymentProcessorTypeByName(paymentProcessorTypeName);
-        
-        if(paymentProcessorType == null) {
-            Boolean isDefault = Boolean.valueOf(form.getIsDefault());
-            Integer sortOrder = Integer.valueOf(form.getSortOrder());
-            
-            paymentControl.createPaymentProcessorType(paymentProcessorTypeName, isDefault, sortOrder);
-        } else {
-            addExecutionError(ExecutionErrors.DuplicatePaymentProcessorTypeName.name(), paymentProcessorTypeName);
+        Boolean isDefault = Boolean.valueOf(form.getIsDefault());
+        Integer sortOrder = Integer.valueOf(form.getSortOrder());
+        String description = form.getDescription();
+
+        PaymentProcessorType paymentProcessorType = PaymentProcessorTypeLogic.getInstance().createPaymentProcessorType(this,
+                paymentProcessorTypeName, isDefault, sortOrder, getPreferredLanguage(), description, getPartyPK());
+
+        if(paymentProcessorType != null && !hasExecutionErrors()) {
+            result.setPaymentProcessorTypeName(paymentProcessorType.getLastDetail().getPaymentProcessorTypeName());
+            result.setEntityRef(paymentProcessorType.getPrimaryKey().getEntityRef());
         }
-        
-        return null;
+
+        return result;
     }
     
 }

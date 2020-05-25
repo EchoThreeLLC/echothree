@@ -16,7 +16,7 @@
 
 package com.echothree.model.control.inventory.server.transfer;
 
-import com.echothree.model.control.inventory.server.InventoryControl;
+import com.echothree.model.control.inventory.server.control.InventoryControl;
 import com.echothree.model.data.user.server.entity.UserVisit;
 import com.echothree.util.server.transfer.BaseTransferCaches;
 
@@ -35,8 +35,6 @@ public class InventoryTransferCaches
     protected InventoryConditionUseTransferCache inventoryKindUseTransferCache;
     protected InventoryConditionUseTypeTransferCache inventoryConditionUseTypeTransferCache;
     protected InventoryConditionGlAccountTransferCache inventoryConditionGlAccountTransferCache;
-    protected LotTypeTransferCache lotTypeTransferCache;
-    protected LotTypeDescriptionTransferCache lotTypeDescriptionTransferCache;
     protected LotAliasTypeTransferCache lotAliasTypeTransferCache;
     protected LotAliasTypeDescriptionTransferCache lotAliasTypeDescriptionTransferCache;
     protected LotAliasTransferCache lotAliasTransferCache;
@@ -123,20 +121,6 @@ public class InventoryTransferCaches
         return inventoryConditionGlAccountTransferCache;
     }
     
-    public LotTypeTransferCache getLotTypeTransferCache() {
-        if(lotTypeTransferCache == null)
-            lotTypeTransferCache = new LotTypeTransferCache(userVisit, inventoryControl);
-
-        return lotTypeTransferCache;
-    }
-
-    public LotTypeDescriptionTransferCache getLotTypeDescriptionTransferCache() {
-        if(lotTypeDescriptionTransferCache == null)
-            lotTypeDescriptionTransferCache = new LotTypeDescriptionTransferCache(userVisit, inventoryControl);
-
-        return lotTypeDescriptionTransferCache;
-    }
-
     public LotAliasTypeTransferCache getLotAliasTypeTransferCache() {
         if(lotAliasTypeTransferCache == null)
             lotAliasTypeTransferCache = new LotAliasTypeTransferCache(userVisit, inventoryControl);

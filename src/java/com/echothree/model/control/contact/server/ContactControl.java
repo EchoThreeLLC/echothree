@@ -19,15 +19,17 @@ package com.echothree.model.control.contact.server;
 import com.echothree.model.control.associate.server.AssociateControl;
 import com.echothree.model.control.communication.server.CommunicationControl;
 import com.echothree.model.control.contact.common.ContactMechanismTypes;
-import com.echothree.model.control.contact.common.workflow.EmailAddressStatusConstants;
-import com.echothree.model.control.contact.common.workflow.EmailAddressVerificationConstants;
 import com.echothree.model.control.contact.common.choice.ContactMechanismAliasTypeChoicesBean;
 import com.echothree.model.control.contact.common.choice.ContactMechanismChoicesBean;
 import com.echothree.model.control.contact.common.choice.ContactMechanismPurposeChoicesBean;
 import com.echothree.model.control.contact.common.choice.ContactMechanismTypeChoicesBean;
+import com.echothree.model.control.contact.common.choice.EmailAddressStatusChoicesBean;
+import com.echothree.model.control.contact.common.choice.EmailAddressVerificationChoicesBean;
 import com.echothree.model.control.contact.common.choice.PostalAddressElementTypeChoicesBean;
 import com.echothree.model.control.contact.common.choice.PostalAddressFormatChoicesBean;
 import com.echothree.model.control.contact.common.choice.PostalAddressStatusChoicesBean;
+import com.echothree.model.control.contact.common.choice.TelephoneStatusChoicesBean;
+import com.echothree.model.control.contact.common.choice.WebAddressStatusChoicesBean;
 import com.echothree.model.control.contact.common.transfer.ContactEmailAddressTransfer;
 import com.echothree.model.control.contact.common.transfer.ContactInet4AddressTransfer;
 import com.echothree.model.control.contact.common.transfer.ContactMechanismAliasTransfer;
@@ -48,6 +50,11 @@ import com.echothree.model.control.contact.common.transfer.PostalAddressFormatDe
 import com.echothree.model.control.contact.common.transfer.PostalAddressFormatTransfer;
 import com.echothree.model.control.contact.common.transfer.PostalAddressLineElementTransfer;
 import com.echothree.model.control.contact.common.transfer.PostalAddressLineTransfer;
+import com.echothree.model.control.contact.common.workflow.EmailAddressStatusConstants;
+import com.echothree.model.control.contact.common.workflow.EmailAddressVerificationConstants;
+import com.echothree.model.control.contact.common.workflow.PostalAddressStatusConstants;
+import com.echothree.model.control.contact.common.workflow.TelephoneStatusConstants;
+import com.echothree.model.control.contact.common.workflow.WebAddressStatusConstants;
 import com.echothree.model.control.contact.server.transfer.ContactMechanismAliasTransferCache;
 import com.echothree.model.control.contact.server.transfer.ContactMechanismAliasTypeDescriptionTransferCache;
 import com.echothree.model.control.contact.server.transfer.ContactMechanismAliasTypeTransferCache;
@@ -67,16 +74,9 @@ import com.echothree.model.control.core.common.EventTypes;
 import com.echothree.model.control.invoice.server.InvoiceControl;
 import com.echothree.model.control.letter.server.LetterControl;
 import com.echothree.model.control.order.server.OrderControl;
-import com.echothree.model.control.payment.server.PaymentControl;
+import com.echothree.model.control.payment.server.control.BillingControl;
+import com.echothree.model.control.payment.server.control.PartyPaymentMethodControl;
 import com.echothree.model.control.shipment.server.ShipmentControl;
-import com.echothree.model.control.contact.common.workflow.PostalAddressStatusConstants;
-import com.echothree.model.control.contact.common.workflow.TelephoneStatusConstants;
-import com.echothree.model.control.contact.common.workflow.WebAddressStatusConstants;
-import com.echothree.model.control.contact.common.choice.EmailAddressStatusChoicesBean;
-import com.echothree.model.control.contact.common.choice.EmailAddressVerificationChoicesBean;
-import com.echothree.model.control.contact.common.choice.TelephoneStatusChoicesBean;
-import com.echothree.model.control.contact.common.choice.WebAddressStatusChoicesBean;
-import com.echothree.model.control.workflow.server.WorkflowControl;
 import com.echothree.model.data.contact.common.pk.ContactMechanismAliasTypePK;
 import com.echothree.model.data.contact.common.pk.ContactMechanismPK;
 import com.echothree.model.data.contact.common.pk.ContactMechanismTypePK;
@@ -2645,23 +2645,24 @@ public class ContactControl
     
     public void deletePartyContactMechanism(PartyContactMechanism partyContactMechanism, BasePK deletedBy) {
         var associateControl = (AssociateControl)Session.getModelController(AssociateControl.class);
+        var billingControl = (BillingControl)Session.getModelController(BillingControl.class);
         var communicationControl = (CommunicationControl)Session.getModelController(CommunicationControl.class);
         var invoiceControl = (InvoiceControl)Session.getModelController(InvoiceControl.class);
         var letterControl = (LetterControl)Session.getModelController(LetterControl.class);
         var orderControl = (OrderControl)Session.getModelController(OrderControl.class);
-        var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
+        var partyPaymentMethodControl = (PartyPaymentMethodControl)Session.getModelController(PartyPaymentMethodControl.class);
         var shipmentControl = (ShipmentControl)Session.getModelController(ShipmentControl.class);
         
         deletePartyContactMechanismPurposesByPartyContactMechanism(partyContactMechanism, deletedBy);
         deletePartyContactMechanismRelationshipsByPartyContactMechanism(partyContactMechanism, deletedBy);
         
         associateControl.deleteAssociatePartyContactMechanismsByPartyContactMechanism(partyContactMechanism, deletedBy);
+        billingControl.deleteBillingAccountRolesByPartyContactMechanism(partyContactMechanism, deletedBy);
         communicationControl.deleteCommunicationEventsByPartyContactMechanism(partyContactMechanism, deletedBy);
         invoiceControl.deleteInvoiceRolesByPartyContactMechanism(partyContactMechanism, deletedBy);
         letterControl.deleteLetterSourcesByPartyContactMechanism(partyContactMechanism, deletedBy);
         orderControl.deleteOrderShipmentGroupsByPartyContactMechanism(partyContactMechanism, deletedBy);
-        paymentControl.deletePartyPaymentMethodCreditCardsByPartyContactMechanism(partyContactMechanism, deletedBy);
-        paymentControl.deleteBillingAccountRolesByPartyContactMechanism(partyContactMechanism, deletedBy);
+        partyPaymentMethodControl.deletePartyPaymentMethodCreditCardsByPartyContactMechanism(partyContactMechanism, deletedBy);
         shipmentControl.deleteShipmentsByPartyContactMechanism(partyContactMechanism, deletedBy);
         
         PartyContactMechanismDetail partyContactMechanismDetail = partyContactMechanism.getLastDetailForUpdate();

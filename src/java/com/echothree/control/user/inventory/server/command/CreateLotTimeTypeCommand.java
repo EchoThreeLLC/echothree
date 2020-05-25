@@ -17,18 +17,17 @@
 package com.echothree.control.user.inventory.server.command;
 
 import com.echothree.control.user.inventory.common.form.CreateLotTimeTypeForm;
-import com.echothree.model.control.inventory.server.InventoryControl;
+import com.echothree.model.control.inventory.server.control.LotTimeControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.inventory.server.entity.LotTimeType;
-import com.echothree.model.data.inventory.server.entity.LotType;
 import com.echothree.model.data.party.common.pk.PartyPK;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.server.control.BaseSimpleCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -53,7 +52,6 @@ public class CreateLotTimeTypeCommand
                 )));
         
         FORM_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
-                new FieldDefinition("LotTypeName", FieldType.ENTITY_NAME, true, null, null),
                 new FieldDefinition("LotTimeTypeName", FieldType.ENTITY_NAME, true, null, null),
                 new FieldDefinition("IsDefault", FieldType.BOOLEAN, true, null, null),
                 new FieldDefinition("SortOrder", FieldType.SIGNED_INTEGER, true, null, null),
@@ -68,30 +66,23 @@ public class CreateLotTimeTypeCommand
     
     @Override
     protected BaseResult execute() {
-        var inventoryControl = (InventoryControl)Session.getModelController(InventoryControl.class);
-        String lotTypeName = form.getLotTypeName();
-        LotType lotType = inventoryControl.getLotTypeByName(lotTypeName);
+        var lotTimeControl = (LotTimeControl)Session.getModelController(LotTimeControl.class);
+        String lotTimeTypeName = form.getLotTimeTypeName();
+        LotTimeType lotTimeType = lotTimeControl.getLotTimeTypeByName(lotTimeTypeName);
 
-        if(lotType != null) {
-            String lotTimeTypeName = form.getLotTimeTypeName();
-            LotTimeType lotTimeType = inventoryControl.getLotTimeTypeByName(lotType, lotTimeTypeName);
+        if(lotTimeType == null) {
+            PartyPK partyPK = getPartyPK();
+            Boolean isDefault = Boolean.valueOf(form.getIsDefault());
+            Integer sortOrder = Integer.valueOf(form.getSortOrder());
+            String description = form.getDescription();
 
-            if(lotTimeType == null) {
-                PartyPK partyPK = getPartyPK();
-                Boolean isDefault = Boolean.valueOf(form.getIsDefault());
-                Integer sortOrder = Integer.valueOf(form.getSortOrder());
-                String description = form.getDescription();
+            lotTimeType = lotTimeControl.createLotTimeType(lotTimeTypeName, isDefault, sortOrder, partyPK);
 
-                lotTimeType = inventoryControl.createLotTimeType(lotType, lotTimeTypeName, isDefault, sortOrder, partyPK);
-
-                if(description != null) {
-                    inventoryControl.createLotTimeTypeDescription(lotTimeType, getPreferredLanguage(), description, partyPK);
-                }
-            } else {
-                addExecutionError(ExecutionErrors.DuplicateLotTimeTypeName.name(), lotTypeName, lotTimeTypeName);
+            if(description != null) {
+                lotTimeControl.createLotTimeTypeDescription(lotTimeType, getPreferredLanguage(), description, partyPK);
             }
         } else {
-            addExecutionError(ExecutionErrors.UnknownLotTypeName.name(), lotTypeName);
+            addExecutionError(ExecutionErrors.DuplicateLotTimeTypeName.name(), lotTimeTypeName);
         }
 
         return null;

@@ -20,8 +20,10 @@ import com.echothree.control.user.payment.common.form.CreatePaymentMethodForm;
 import com.echothree.control.user.payment.common.result.CreatePaymentMethodResult;
 import com.echothree.control.user.payment.common.result.PaymentResultFactory;
 import com.echothree.model.control.party.common.PartyTypes;
-import com.echothree.model.control.payment.common.PaymentConstants;
-import com.echothree.model.control.payment.server.PaymentControl;
+import com.echothree.model.control.payment.common.PaymentMethodTypes;
+import com.echothree.model.control.payment.server.control.PaymentMethodControl;
+import com.echothree.model.control.payment.server.control.PaymentProcessorControl;
+import com.echothree.model.control.payment.server.logic.PaymentMethodTypeLogic;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.control.selector.common.SelectorConstants;
@@ -33,11 +35,11 @@ import com.echothree.model.data.payment.server.entity.PaymentMethodType;
 import com.echothree.model.data.payment.server.entity.PaymentProcessor;
 import com.echothree.model.data.selector.server.entity.Selector;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.BaseResult;
+import com.echothree.util.common.form.ValidationResult;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
-import com.echothree.util.common.form.ValidationResult;
 import com.echothree.util.server.control.BaseSimpleCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -112,9 +114,9 @@ public class CreatePaymentMethodCommand
         if(!validationResult.getHasErrors()) {
             String paymentMethodTypeName = form.getPaymentMethodTypeName();
             
-            if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CHECK)) {
+            if(paymentMethodTypeName.equals(PaymentMethodTypes.CHECK.name())) {
                 validationResult = validator.validate(form, formCheckFieldDefinitions);
-            } else if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CREDIT_CARD)) {
+            } else if(paymentMethodTypeName.equals(PaymentMethodTypes.CREDIT_CARD.name())) {
                 validationResult = validator.validate(form, formCreditCardFieldDefinitions);
             }
         }
@@ -124,18 +126,19 @@ public class CreatePaymentMethodCommand
     
     @Override
     protected BaseResult execute() {
-        var paymentControl = (PaymentControl)Session.getModelController(PaymentControl.class);
+        var paymentMethodControl = (PaymentMethodControl)Session.getModelController(PaymentMethodControl.class);
         CreatePaymentMethodResult result = PaymentResultFactory.getCreatePaymentMethodResult();
         String paymentMethodName = form.getPaymentMethodName();
-        PaymentMethod paymentMethod = paymentControl.getPaymentMethodByName(paymentMethodName);
+        PaymentMethod paymentMethod = paymentMethodControl.getPaymentMethodByName(paymentMethodName);
 
         if(paymentMethod == null) {
             String paymentMethodTypeName = form.getPaymentMethodTypeName();
-            PaymentMethodType paymentMethodType = paymentControl.getPaymentMethodTypeByName(paymentMethodTypeName);
+            PaymentMethodType paymentMethodType = PaymentMethodTypeLogic.getInstance().getPaymentMethodTypeByName(this, paymentMethodTypeName);
 
-            if(paymentMethodType != null) {
+            if(!hasExecutionErrors()) {
+                var paymentProcessorControl = (PaymentProcessorControl)Session.getModelController(PaymentProcessorControl.class);
                 String paymentProcessorName = form.getPaymentProcessorName();
-                PaymentProcessor paymentProcessor = paymentProcessorName == null ? null : paymentControl.getPaymentProcessorByName(paymentProcessorName);
+                PaymentProcessor paymentProcessor = paymentProcessorName == null ? null : paymentProcessorControl.getPaymentProcessorByName(paymentProcessorName);
 
                 if(paymentProcessorName == null || paymentProcessor != null) {
                     var selectorControl = (SelectorControl)Session.getModelController(SelectorControl.class);
@@ -155,15 +158,15 @@ public class CreatePaymentMethodCommand
                             Integer sortOrder = Integer.valueOf(form.getSortOrder());
                             String description = form.getDescription();
 
-                            paymentMethod = paymentControl.createPaymentMethod(paymentMethodName, paymentMethodType, paymentProcessor, itemSelector, salesOrderItemSelector,
+                            paymentMethod = paymentMethodControl.createPaymentMethod(paymentMethodName, paymentMethodType, paymentProcessor, itemSelector, salesOrderItemSelector,
                                     isDefault, sortOrder, partyPK);
 
-                            if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CHECK)) {
+                            if(paymentMethodTypeName.equals(PaymentMethodTypes.CHECK.name())) {
                                 Integer holdDays = Integer.valueOf(form.getHoldDays());
 
-                                paymentControl.createPaymentMethodCheck(paymentMethod, holdDays, partyPK);
+                                paymentMethodControl.createPaymentMethodCheck(paymentMethod, holdDays, partyPK);
                             } else {
-                                if(paymentMethodTypeName.equals(PaymentConstants.PaymentMethodType_CREDIT_CARD)) {
+                                if(paymentMethodTypeName.equals(PaymentMethodTypes.CREDIT_CARD.name())) {
                                     Boolean requestNameOnCard = Boolean.valueOf(form.getRequestNameOnCard());
                                     Boolean requireNameOnCard = Boolean.valueOf(form.getRequireNameOnCard());
                                     Boolean checkCardNumber = Boolean.valueOf(form.getCheckCardNumber());
@@ -181,7 +184,7 @@ public class CreatePaymentMethodCommand
                                     Boolean requestIssuer = Boolean.valueOf(form.getRequestIssuer());
                                     Boolean requireIssuer = Boolean.valueOf(form.getRequireIssuer());
 
-                                    paymentControl.createPaymentMethodCreditCard(paymentMethod, requestNameOnCard, requireNameOnCard,
+                                    paymentMethodControl.createPaymentMethodCreditCard(paymentMethod, requestNameOnCard, requireNameOnCard,
                                             checkCardNumber, requestExpirationDate, requireExpirationDate, checkExpirationDate, requestSecurityCode,
                                             requireSecurityCode, cardNumberValidationPattern, securityCodeValidationPattern, retainCreditCard,
                                             retainSecurityCode, requestBilling, requireBilling, requestIssuer, requireIssuer, partyPK);
@@ -191,15 +194,13 @@ public class CreatePaymentMethodCommand
                             if(description != null) {
                                 Language language = getPreferredLanguage();
 
-                                paymentControl.createPaymentMethodDescription(paymentMethod, language, description, partyPK);
+                                paymentMethodControl.createPaymentMethodDescription(paymentMethod, language, description, partyPK);
                             }
                         }
                     }
                 } else {
                     addExecutionError(ExecutionErrors.UnknownPaymentProcessorName.name(), paymentProcessorName);
                 }
-            } else {
-                addExecutionError(ExecutionErrors.UnknownPaymentMethodTypeName.name(), paymentMethodTypeName);
             }
         } else {
             addExecutionError(ExecutionErrors.DuplicatePaymentMethodName.name(), paymentMethodName);

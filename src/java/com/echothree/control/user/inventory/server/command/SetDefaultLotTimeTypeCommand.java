@@ -17,17 +17,16 @@
 package com.echothree.control.user.inventory.server.command;
 
 import com.echothree.control.user.inventory.common.form.SetDefaultLotTimeTypeForm;
-import com.echothree.model.control.inventory.server.InventoryControl;
+import com.echothree.model.control.inventory.server.control.LotTimeControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
-import com.echothree.model.data.inventory.server.entity.LotType;
 import com.echothree.model.data.inventory.server.value.LotTimeTypeDetailValue;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.server.control.BaseSimpleCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -51,7 +50,6 @@ public class SetDefaultLotTimeTypeCommand
                 )));
         
         FORM_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
-                new FieldDefinition("LotTypeName", FieldType.ENTITY_NAME, true, null, null),
                 new FieldDefinition("LotTimeTypeName", FieldType.ENTITY_NAME, true, null, null)
                 ));
     }
@@ -63,22 +61,15 @@ public class SetDefaultLotTimeTypeCommand
     
     @Override
     protected BaseResult execute() {
-        var inventoryControl = (InventoryControl)Session.getModelController(InventoryControl.class);
-        String lotTypeName = form.getLotTypeName();
-        LotType lotType = inventoryControl.getLotTypeByName(lotTypeName);
+        var lotTimeControl = (LotTimeControl)Session.getModelController(LotTimeControl.class);
+        String lotTimeTypeName = form.getLotTimeTypeName();
+        LotTimeTypeDetailValue lotTimeTypeDetailValue = lotTimeControl.getLotTimeTypeDetailValueByNameForUpdate(lotTimeTypeName);
 
-        if(lotType != null) {
-            String lotTimeTypeName = form.getLotTimeTypeName();
-            LotTimeTypeDetailValue lotTimeTypeDetailValue = inventoryControl.getLotTimeTypeDetailValueByNameForUpdate(lotType, lotTimeTypeName);
-
-            if(lotTimeTypeDetailValue != null) {
-                lotTimeTypeDetailValue.setIsDefault(Boolean.TRUE);
-                inventoryControl.updateLotTimeTypeFromValue(lotTimeTypeDetailValue, getPartyPK());
-            } else {
-                addExecutionError(ExecutionErrors.UnknownLotTimeTypeName.name(), lotTypeName, lotTimeTypeName);
-            }
+        if(lotTimeTypeDetailValue != null) {
+            lotTimeTypeDetailValue.setIsDefault(Boolean.TRUE);
+            lotTimeControl.updateLotTimeTypeFromValue(lotTimeTypeDetailValue, getPartyPK());
         } else {
-            addExecutionError(ExecutionErrors.UnknownLotTypeName.name(), lotTypeName);
+            addExecutionError(ExecutionErrors.UnknownLotTimeTypeName.name(), lotTimeTypeName);
         }
 
         return null;
