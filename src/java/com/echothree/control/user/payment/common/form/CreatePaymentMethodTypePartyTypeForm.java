@@ -16,16 +16,12 @@
 
 package com.echothree.control.user.payment.common.form;
 
-import com.echothree.control.user.party.common.spec.PartyTypeSpec;
-import com.echothree.control.user.payment.common.spec.PaymentMethodTypeSpec;
+import com.echothree.control.user.payment.common.edit.PaymentMethodTypePartyTypeEdit;
+import com.echothree.control.user.payment.common.spec.PaymentMethodTypePartyTypeSpec;
 
 public interface CreatePaymentMethodTypePartyTypeForm
-        extends PaymentMethodTypeSpec, PartyTypeSpec {
+        extends PaymentMethodTypePartyTypeSpec, PaymentMethodTypePartyTypeEdit {
     
-    String getPartyPaymentMethodWorkflowName();
-    void setPartyPaymentMethodWorkflowName(String partyPaymentMethodWorkflowName);
-    
-    String getContactMechanismWorkflowName();
-    void setContactMechanismWorkflowName(String contactMechanismWorkflowName);
+    // Nothing additional beyond PaymentMethodTypePartyTypeSpec, PaymentMethodTypePartyTypeEdit
     
 }

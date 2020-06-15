@@ -14,12 +14,13 @@
 // limitations under the License.
 // --------------------------------------------------------------------------------
 
-package com.echothree.model.control.term.common;
+package com.echothree.control.user.payment.common.spec;
 
-public interface TermConstants {
+import com.echothree.control.user.party.common.spec.PartyTypeSpec;
+
+public interface PaymentMethodTypePartyTypeSpec
+        extends PaymentMethodTypeSpec, PartyTypeSpec {
     
-    String TermType_DATE_DRIVEN = "DATE_DRIVEN";
-    String TermType_PREPAID     = "PREPAID";
-    String TermType_STANDARD    = "STANDARD";
+    // Nothing additional beyond PaymentMethodTypeSpec, PartyTypeSpec
     
 }

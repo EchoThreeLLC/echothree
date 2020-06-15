@@ -1645,6 +1645,15 @@
                 <securityRoleDescription languageIsoName="en" description="Purchase Order Search" />
             </securityRole>
         </securityRoleGroup>
+        <securityRoleGroup securityRoleGroupName="PurchaseOrderStatus" parentSecurityRoleGroupName="PurchaseComponent" isDefault="false" sortOrder="1">
+            <securityRoleGroupDescription languageIsoName="en" description="Purchase Order Status" />
+            <securityRole securityRoleName="Choices" isDefault="true" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Purchase Order Status Choices" />
+            </securityRole>
+            <securityRole securityRoleName="Entry" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Purchase Order Entry" />
+            </securityRole>
+        </securityRoleGroup>
         <securityRoleGroup securityRoleGroupName="SelectorComponent" parentSecurityRoleGroupName="ROOT" isDefault="false" sortOrder="1">
             <securityRoleGroupDescription languageIsoName="en" description="Selector Component" />
         </securityRoleGroup>
@@ -3637,6 +3646,30 @@
         <securityRoleGroup securityRoleGroupName="ShipmentComponent" parentSecurityRoleGroupName="ROOT" isDefault="false" sortOrder="1">
             <securityRoleGroupDescription languageIsoName="en" description="Shipment Component" />
         </securityRoleGroup>
+        <securityRoleGroup securityRoleGroupName="FreeOnBoard" parentSecurityRoleGroupName="ShipmentComponent" isDefault="false" sortOrder="1">
+            <securityRoleGroupDescription languageIsoName="en" description="Free On Board" />
+            <securityRole securityRoleName="Create" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Free On Board Create" />
+            </securityRole>
+            <securityRole securityRoleName="Edit" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Free On Board Edit" />
+            </securityRole>
+            <securityRole securityRoleName="Delete" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Free On Board Delete" />
+            </securityRole>
+            <securityRole securityRoleName="List" isDefault="true" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Free On Board List" />
+            </securityRole>
+            <securityRole securityRoleName="Review" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Free On Board Review" />
+            </securityRole>
+            <securityRole securityRoleName="Choices" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Free On Board Choices" />
+            </securityRole>
+            <securityRole securityRoleName="Description" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Free On Board Description" />
+            </securityRole>
+        </securityRoleGroup>
         <securityRoleGroup securityRoleGroupName="ShipmentType" parentSecurityRoleGroupName="ShipmentComponent" isDefault="false" sortOrder="1">
             <securityRoleGroupDescription languageIsoName="en" description="Shipment Type" />
             <securityRole securityRoleName="Create" isDefault="false" sortOrder="1">
@@ -5028,6 +5061,9 @@
             <securityRole securityRoleName="Description" isDefault="false" sortOrder="1">
                 <securityRoleDescription languageIsoName="en" description="Payment Method Type Description" />
             </securityRole>
+            <securityRole securityRoleName="PaymentMethodTypePartyType" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Payment Method Type Party Type" />
+            </securityRole>
         </securityRoleGroup>
         <securityRoleGroup securityRoleGroupName="PaymentMethod" parentSecurityRoleGroupName="PaymentComponent" isDefault="false" sortOrder="1">
             <securityRoleGroupDescription languageIsoName="en" description="Payment Method" />
@@ -5579,6 +5615,15 @@
             </securityRole>
             <securityRole securityRoleName="Choices" isDefault="false" sortOrder="1">
                 <securityRoleDescription languageIsoName="en" description="Party Document Choices" />
+            </securityRole>
+        </securityRoleGroup>
+        <securityRoleGroup securityRoleGroupName="Lot" parentSecurityRoleGroupName="InventoryComponent" isDefault="false" sortOrder="1">
+            <securityRoleGroupDescription languageIsoName="en" description="Lot" />
+            <securityRole securityRoleName="List" isDefault="true" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Lot List" />
+            </securityRole>
+            <securityRole securityRoleName="Review" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Lot Review" />
             </securityRole>
         </securityRoleGroup>
         <securityRoleGroup securityRoleGroupName="LotTimeType" parentSecurityRoleGroupName="InventoryComponent" isDefault="false" sortOrder="1">
@@ -7983,6 +8028,13 @@
             <partySecurityRoleTemplateRole securityRoleGroupName="PicklistAliasType" securityRoleName="List" />
             <partySecurityRoleTemplateRole securityRoleGroupName="PicklistAliasType" securityRoleName="Review" />
             <partySecurityRoleTemplateRole securityRoleGroupName="PicklistAliasType" securityRoleName="Description" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="FreeOnBoard" securityRoleName="Create" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="FreeOnBoard" securityRoleName="Edit" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="FreeOnBoard" securityRoleName="Delete" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="FreeOnBoard" securityRoleName="List" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="FreeOnBoard" securityRoleName="Review" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="FreeOnBoard" securityRoleName="Choices" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="FreeOnBoard" securityRoleName="Description" />
             <partySecurityRoleTemplateRole securityRoleGroupName="ShipmentType" securityRoleName="Create" />
             <partySecurityRoleTemplateRole securityRoleGroupName="ShipmentType" securityRoleName="Edit" />
             <partySecurityRoleTemplateRole securityRoleGroupName="ShipmentType" securityRoleName="Delete" />
@@ -8367,6 +8419,7 @@
             <partySecurityRoleTemplateRole securityRoleGroupName="PaymentMethodType" securityRoleName="Review" />
             <partySecurityRoleTemplateRole securityRoleGroupName="PaymentMethodType" securityRoleName="Choices" />
             <partySecurityRoleTemplateRole securityRoleGroupName="PaymentMethodType" securityRoleName="Description" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="PaymentMethodType" securityRoleName="PaymentMethodTypePartyType" />
             <partySecurityRoleTemplateRole securityRoleGroupName="PaymentMethod" securityRoleName="Create" />
             <partySecurityRoleTemplateRole securityRoleGroupName="PaymentMethod" securityRoleName="Edit" />
             <partySecurityRoleTemplateRole securityRoleGroupName="PaymentMethod" securityRoleName="Delete" />
@@ -8522,6 +8575,8 @@
             <partySecurityRoleTemplateRole securityRoleGroupName="PartyDocument" securityRoleName="List" />
             <partySecurityRoleTemplateRole securityRoleGroupName="PartyDocument" securityRoleName="Review" />
             <partySecurityRoleTemplateRole securityRoleGroupName="PartyDocument" securityRoleName="Choices" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="Lot" securityRoleName="List" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="Lot" securityRoleName="Review" />
             <partySecurityRoleTemplateRole securityRoleGroupName="LotTimeType" securityRoleName="Create" />
             <partySecurityRoleTemplateRole securityRoleGroupName="LotTimeType" securityRoleName="Edit" />
             <partySecurityRoleTemplateRole securityRoleGroupName="LotTimeType" securityRoleName="Delete" />

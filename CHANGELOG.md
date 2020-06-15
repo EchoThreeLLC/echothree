@@ -1,5 +1,36 @@
 # Changelog
 
+## 2020-06-14-01
+
+* Add FOB Terms and Conditions to OrderDetails [62](https://gitlab.echothree.com/echothree/echothree/-/issues/62)
+* Add FOB Terms and Conditions to InvoiceDetails [63](https://gitlab.echothree.com/echothree/echothree/-/issues/63)
+* Different ULIDs for Same Object When Generated [65](https://gitlab.echothree.com/echothree/echothree/-/issues/65)
+* WildFly 20.0.0 Upgrade [66](https://gitlab.echothree.com/echothree/echothree/-/issues/66)
+* Add Workflow for Purchase Orders [67](https://gitlab.echothree.com/echothree/echothree/-/issues/67)
+* Apache Lucene 8.5.2 Upgrade [68](https://gitlab.echothree.com/echothree/echothree/-/issues/68)
+* Implement DefaultFreeOnBoard for Customer Types [69](https://gitlab.echothree.com/echothree/echothree/-/issues/69)
+* Implement DefaultFreeOnBoard for Vendor Types [70](https://gitlab.echothree.com/echothree/echothree/-/issues/70)
+* jOOQ 3.13.2 Upgrade [72](https://gitlab.echothree.com/echothree/echothree/-/issues/72)
+* ICU4J 67.1 Upgrade [73](https://gitlab.echothree.com/echothree/echothree/-/issues/73)
+* ClassGraph 4.8.83 Upgrade [74](https://gitlab.echothree.com/echothree/echothree/-/issues/74)
+* graphql-java 15.0 Upgrade [75](https://gitlab.echothree.com/echothree/echothree/-/issues/75)
+
+## 2020-05-31-01
+
+* Add Payment Processor Transactions [9](https://gitlab.echothree.com/echothree/echothree/-/issues/9)
+* Add Payment Processor Transaction Codes [10](https://gitlab.echothree.com/echothree/echothree/-/issues/10)
+* Convert Payment Method Type Party Types to Versioned Entity [26](https://gitlab.echothree.com/echothree/echothree/-/issues/26)
+* Separate Lot Aliases from InventoryControl [53](https://gitlab.echothree.com/echothree/echothree/-/issues/53)
+* Basic Lot Implementation With Controller and TOs [54](https://gitlab.echothree.com/echothree/echothree/-/issues/54)
+* Separate Lot Times from InventoryControl [55](https://gitlab.echothree.com/echothree/echothree/-/issues/55)
+* Separate Payment Processors from PaymentControl [56](https://gitlab.echothree.com/echothree/echothree/-/issues/56)
+* Move Payment Method Type Party Types to PaymentMethodTypeControl from PaymentControl [57](https://gitlab.echothree.com/echothree/echothree/-/issues/57)
+* Separate Payment Methods from PaymentControl [58](https://gitlab.echothree.com/echothree/echothree/-/issues/58)
+* Separate Party Payment Methods from PaymentControl [59](https://gitlab.echothree.com/echothree/echothree/-/issues/59)
+* MySQL Connector/J 8.0.20 Upgrade [60](https://gitlab.echothree.com/echothree/echothree/-/issues/60)
+* Add FOB Terms and Conditions [61](https://gitlab.echothree.com/echothree/echothree/-/issues/61)
+* Additional Invoice Types [64](https://gitlab.echothree.com/echothree/echothree/-/issues/64)
+
 ## 2020-05-17-01
 
 * Add Payment Processor Type Actions [8](https://gitlab.echothree.com/echothree/echothree/-/issues/8)

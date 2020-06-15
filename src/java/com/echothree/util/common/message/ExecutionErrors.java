@@ -716,6 +716,7 @@ public enum ExecutionErrors {
     UnknownPartyCreditLimit,
     InvalidPartyType,
     UnknownPartyTerm,
+    UnknownPartyFreeOnBoard,
     DuplicatePartyInventoryLevel,
     UnknownPartyInventoryLevel,
     InvalidItemDescriptionType,
@@ -2204,5 +2205,13 @@ public enum ExecutionErrors {
     UnknownDefaultPaymentProcessor,
     DuplicatePaymentProcessorTransactionName,
     UnknownPaymentProcessorTransactionName,
+    UnknownPaymentMethodTypePartyType,
+    UnknownDefaultPaymentMethodTypePartyType,
+    DuplicateLotName,
+    DuplicateFreeOnBoardName,
+    UnknownFreeOnBoardName,
+    UnknownDefaultFreeOnBoard,
+    DuplicateFreeOnBoardDescription,
+    UnknownFreeOnBoardDescription,
 
 }

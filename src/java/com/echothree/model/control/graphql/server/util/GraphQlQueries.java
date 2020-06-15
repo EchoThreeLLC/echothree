@@ -74,6 +74,8 @@ import com.echothree.control.user.core.server.command.GetTextTransformationsComm
 import com.echothree.control.user.inventory.common.InventoryUtil;
 import com.echothree.control.user.inventory.server.command.GetInventoryConditionCommand;
 import com.echothree.control.user.inventory.server.command.GetInventoryConditionsCommand;
+import com.echothree.control.user.inventory.server.command.GetLotCommand;
+import com.echothree.control.user.inventory.server.command.GetLotsCommand;
 import com.echothree.control.user.item.common.ItemUtil;
 import com.echothree.control.user.item.server.command.GetItemCategoriesCommand;
 import com.echothree.control.user.item.server.command.GetItemCategoryCommand;
@@ -107,6 +109,9 @@ import com.echothree.control.user.queue.server.command.GetQueueTypeCommand;
 import com.echothree.control.user.queue.server.command.GetQueueTypesCommand;
 import com.echothree.control.user.search.common.SearchUtil;
 import com.echothree.control.user.search.server.command.GetCustomerResultsCommand;
+import com.echothree.control.user.shipment.common.ShipmentUtil;
+import com.echothree.control.user.shipment.server.command.GetFreeOnBoardCommand;
+import com.echothree.control.user.shipment.server.command.GetFreeOnBoardsCommand;
 import com.echothree.control.user.uom.common.UomUtil;
 import com.echothree.control.user.uom.server.command.GetUnitOfMeasureKindCommand;
 import com.echothree.control.user.uom.server.command.GetUnitOfMeasureKindUseCommand;
@@ -147,6 +152,7 @@ import com.echothree.model.control.core.server.graphql.MimeTypeUsageTypeObject;
 import com.echothree.model.control.core.server.graphql.TextDecorationObject;
 import com.echothree.model.control.core.server.graphql.TextTransformationObject;
 import com.echothree.model.control.inventory.server.graphql.InventoryConditionObject;
+import com.echothree.model.control.inventory.server.graphql.LotObject;
 import com.echothree.model.control.item.server.graphql.ItemCategoryObject;
 import com.echothree.model.control.item.server.graphql.ItemObject;
 import com.echothree.model.control.party.server.graphql.DateTimeFormatObject;
@@ -164,6 +170,7 @@ import com.echothree.model.control.payment.server.graphql.PaymentProcessorTypeCo
 import com.echothree.model.control.payment.server.graphql.PaymentProcessorTypeObject;
 import com.echothree.model.control.queue.server.graphql.QueueTypeObject;
 import com.echothree.model.control.search.server.graphql.CustomerResultsObject;
+import com.echothree.model.control.shipment.server.graphql.FreeOnBoardObject;
 import com.echothree.model.control.uom.server.graphql.UnitOfMeasureKindObject;
 import com.echothree.model.control.uom.server.graphql.UnitOfMeasureKindUseObject;
 import com.echothree.model.control.uom.server.graphql.UnitOfMeasureKindUseTypeObject;
@@ -199,6 +206,7 @@ import com.echothree.model.data.core.server.entity.MimeTypeUsageType;
 import com.echothree.model.data.core.server.entity.TextDecoration;
 import com.echothree.model.data.core.server.entity.TextTransformation;
 import com.echothree.model.data.inventory.server.entity.InventoryCondition;
+import com.echothree.model.data.inventory.server.entity.Lot;
 import com.echothree.model.data.item.server.entity.Item;
 import com.echothree.model.data.item.server.entity.ItemCategory;
 import com.echothree.model.data.party.server.entity.DateTimeFormat;
@@ -215,6 +223,7 @@ import com.echothree.model.data.payment.server.entity.PaymentProcessorType;
 import com.echothree.model.data.payment.server.entity.PaymentProcessorTypeCode;
 import com.echothree.model.data.payment.server.entity.PaymentProcessorTypeCodeType;
 import com.echothree.model.data.queue.server.entity.QueueType;
+import com.echothree.model.data.shipment.server.entity.FreeOnBoard;
 import com.echothree.model.data.uom.server.entity.UnitOfMeasureKind;
 import com.echothree.model.data.uom.server.entity.UnitOfMeasureKindUse;
 import com.echothree.model.data.uom.server.entity.UnitOfMeasureKindUseType;
@@ -235,6 +244,56 @@ import javax.naming.NamingException;
 @GraphQLName("query")
 public final class GraphQlQueries
         extends BaseGraphQl {
+
+    @GraphQLField
+    @GraphQLName("freeOnBoard")
+    public static FreeOnBoardObject freeOnBoard(final DataFetchingEnvironment env,
+            @GraphQLName("freeOnBoardName") final String freeOnBoardName,
+            @GraphQLName("id") final String id) {
+        FreeOnBoard freeOnBoard;
+
+        try {
+            var commandForm = ShipmentUtil.getHome().getGetFreeOnBoardForm();
+
+            commandForm.setFreeOnBoardName(freeOnBoardName);
+            commandForm.setUlid(id);
+
+            freeOnBoard = new GetFreeOnBoardCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return freeOnBoard == null ? null : new FreeOnBoardObject(freeOnBoard);
+    }
+
+    @GraphQLField
+    @GraphQLName("freeOnBoards")
+    public static Collection<FreeOnBoardObject> freeOnBoards(final DataFetchingEnvironment env) {
+        Collection<FreeOnBoard> freeOnBoards;
+        Collection<FreeOnBoardObject> freeOnBoardObjects;
+
+        try {
+            var commandForm = ShipmentUtil.getHome().getGetFreeOnBoardsForm();
+
+            freeOnBoards = new GetFreeOnBoardsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(freeOnBoards == null) {
+            freeOnBoardObjects = Collections.EMPTY_LIST;
+        } else {
+            freeOnBoardObjects = new ArrayList<>(freeOnBoards.size());
+
+            freeOnBoards.stream().map((freeOnBoard) -> {
+                return new FreeOnBoardObject(freeOnBoard);
+            }).forEachOrdered((freeOnBoardObject) -> {
+                freeOnBoardObjects.add(freeOnBoardObject);
+            });
+        }
+
+        return freeOnBoardObjects;
+    }
 
     @GraphQLField
     @GraphQLName("paymentProcessorTypeCodeType")
@@ -788,12 +847,12 @@ public final class GraphQlQueries
 
             commandForm.setInventoryConditionName(inventoryConditionName);
             commandForm.setUlid(id);
-        
+
             inventoryCondition = new GetInventoryConditionCommand(getUserVisitPK(env), commandForm).runForGraphQl();
         } catch (NamingException ex) {
             throw new RuntimeException(ex);
         }
-        
+
         return inventoryCondition == null ? null : new InventoryConditionObject(inventoryCondition);
     }
 
@@ -802,15 +861,15 @@ public final class GraphQlQueries
     public static Collection<InventoryConditionObject> inventoryConditions(final DataFetchingEnvironment env) {
         Collection<InventoryCondition> inventoryConditions;
         Collection<InventoryConditionObject> inventoryConditionObjects;
-        
+
         try {
             var commandForm = InventoryUtil.getHome().getGetInventoryConditionsForm();
-        
+
             inventoryConditions = new GetInventoryConditionsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
         } catch (NamingException ex) {
             throw new RuntimeException(ex);
         }
-        
+
         if(inventoryConditions == null) {
             inventoryConditionObjects = Collections.EMPTY_LIST;
         } else {
@@ -822,8 +881,58 @@ public final class GraphQlQueries
                 inventoryConditionObjects.add(inventoryConditionObject);
             });
         }
-        
+
         return inventoryConditionObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("lot")
+    public static LotObject lot(final DataFetchingEnvironment env,
+            @GraphQLName("lotName") final String lotName,
+            @GraphQLName("id") final String id) {
+        Lot lot;
+
+        try {
+            var commandForm = InventoryUtil.getHome().getGetLotForm();
+
+            commandForm.setLotName(lotName);
+            commandForm.setUlid(id);
+
+            lot = new GetLotCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return lot == null ? null : new LotObject(lot);
+    }
+
+    @GraphQLField
+    @GraphQLName("lots")
+    public static Collection<LotObject> lots(final DataFetchingEnvironment env) {
+        Collection<Lot> lots;
+        Collection<LotObject> lotObjects;
+
+        try {
+            var commandForm = InventoryUtil.getHome().getGetLotsForm();
+
+            lots = new GetLotsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(lots == null) {
+            lotObjects = Collections.EMPTY_LIST;
+        } else {
+            lotObjects = new ArrayList<>(lots.size());
+
+            lots.stream().map((lot) -> {
+                return new LotObject(lot);
+            }).forEachOrdered((lotObject) -> {
+                lotObjects.add(lotObject);
+            });
+        }
+
+        return lotObjects;
     }
 
     @GraphQLField
