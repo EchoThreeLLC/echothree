@@ -18,10 +18,10 @@ package com.echothree.cucumber.authentication;
 
 import com.echothree.control.user.authentication.common.AuthenticationService;
 import com.echothree.control.user.authentication.common.AuthenticationUtil;
-import com.echothree.cucumber.EmployeePersona;
-import com.echothree.cucumber.EmployeePersonas;
-import com.echothree.cucumber.LastCommandResult;
-import com.echothree.cucumber.user.CurrentPersona;
+import com.echothree.cucumber.util.persona.EmployeePersona;
+import com.echothree.cucumber.util.persona.EmployeePersonas;
+import com.echothree.cucumber.util.command.LastCommandResult;
+import com.echothree.cucumber.util.persona.CurrentPersona;
 import com.echothree.util.common.command.CommandResult;
 import io.cucumber.java8.En;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class EmployeeLoginSteps implements En {
 
     public EmployeeLoginSteps() {
         After(() -> {
-                    for(Map.Entry<String, EmployeePersona> employeePersona : EmployeePersonas.getEmployeePersonas()) {
+                    for(Map.Entry<String, EmployeePersona> employeePersona : EmployeePersonas.getPersonaEntries()) {
                         AuthenticationService authenticationService = AuthenticationUtil.getHome();
                         CommandResult commandResult = authenticationService.logout(employeePersona.getValue().userVisitPK);
 
