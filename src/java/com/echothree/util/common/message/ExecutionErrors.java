@@ -2214,5 +2214,13 @@ public enum ExecutionErrors {
     DuplicateFreeOnBoardDescription,
     UnknownFreeOnBoardDescription,
     FreeOnBoardNotAllowed,
+    UnknownPurchaseOrderStatusChoice,
+    InvalidPurchaseOrderStatus,
+    UnknownPurchaseOrderName,
+    PurchaseOrderReferenceRequired,
+    PurchaseOrderDuplicateReference,
+    InvalidPurchaseOrderReference,
+    DuplicateHandlingInPurchaseOrderStatusTransition,
+    UnhandledPurchaseOrderStatusTransition,
 
 }

@@ -1,5 +1,27 @@
 # Changelog
 
+## 2020-08-23-01
+
+* Create Purchase Order [38](https://gitlab.echothree.com/echothree/echothree/-/issues/38)
+* Add Offer Tests [84](https://gitlab.echothree.com/echothree/echothree/-/issues/84)
+* Add Offer Item Tests [85](https://gitlab.echothree.com/echothree/echothree/-/issues/85)
+* Allow Cancelation of a Purchase Order During Entry [110](https://gitlab.echothree.com/echothree/echothree/-/issues/110)
+* Add Script to Configure WildFly and Deploy Application [111](https://gitlab.echothree.com/echothree/echothree/-/issues/111)
+* Apache Lucene 8.6.1 Upgrade [112](https://gitlab.echothree.com/echothree/echothree/-/issues/112)
+* Rename Cancelled to Canceled [113](https://gitlab.echothree.com/echothree/echothree/-/issues/113)
+
+## 2020-08-09-01
+
+* jOOQ 3.13.4 Upgrade [105](https://gitlab.echothree.com/echothree/echothree/-/issues/105)
+* Apache Lucene 8.6.0 Upgrade [106](https://gitlab.echothree.com/echothree/echothree/-/issues/106)
+
+## 2020-07-26-01
+
+* Add Content Collection Tests [78](https://gitlab.echothree.com/echothree/echothree/-/issues/78)
+* Add Content Catalog Tests [79](https://gitlab.echothree.com/echothree/echothree/-/issues/79)
+* Add Content Category Tests [80](https://gitlab.echothree.com/echothree/echothree/-/issues/80)
+* Add Content Category Item Tests [81](https://gitlab.echothree.com/echothree/echothree/-/issues/81)
+
 ## 2020-07-12-01
 
 * NPE from CreatePurchaseInvoice UC [101](https://gitlab.echothree.com/echothree/echothree/-/issues/101)
