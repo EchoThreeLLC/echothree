@@ -17,7 +17,7 @@
 package com.echothree.control.user.offer.server.command;
 
 import com.echothree.control.user.offer.common.form.CreateUseTypeDescriptionForm;
-import com.echothree.model.control.offer.server.OfferControl;
+import com.echothree.model.control.offer.server.control.UseTypeControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
@@ -41,10 +41,10 @@ import java.util.List;
 
 public class CreateUseTypeDescriptionCommand
         extends BaseSimpleCommand<CreateUseTypeDescriptionForm> {
-
+    
     private final static CommandSecurityDefinition COMMAND_SECURITY_DEFINITION;
     private final static List<FieldDefinition> FORM_FIELD_DEFINITIONS;
-
+    
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
                 new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
@@ -67,9 +67,9 @@ public class CreateUseTypeDescriptionCommand
     
     @Override
     protected BaseResult execute() {
-        var offerControl = (OfferControl)Session.getModelController(OfferControl.class);
+        var useTypeControl = (UseTypeControl)Session.getModelController(UseTypeControl.class);
         String useTypeName = form.getUseTypeName();
-        UseType useType = offerControl.getUseTypeByName(useTypeName);
+        UseType useType = useTypeControl.getUseTypeByName(useTypeName);
         
         if(useType != null) {
             var partyControl = (PartyControl)Session.getModelController(PartyControl.class);
@@ -77,12 +77,12 @@ public class CreateUseTypeDescriptionCommand
             Language language = partyControl.getLanguageByIsoName(languageIsoName);
             
             if(language != null) {
-                UseTypeDescription useTypeDescription = offerControl.getUseTypeDescription(useType, language);
+                UseTypeDescription useTypeDescription = useTypeControl.getUseTypeDescription(useType, language);
                 
                 if(useTypeDescription == null) {
-                    String description = form.getDescription();
+                    var description = form.getDescription();
                     
-                    offerControl.createUseTypeDescription(useType, language, description, getPartyPK());
+                    useTypeControl.createUseTypeDescription(useType, language, description, getPartyPK());
                 } else {
                     addExecutionError(ExecutionErrors.DuplicateUseTypeDescription.name());
                 }

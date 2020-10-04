@@ -72,7 +72,7 @@ public class GetContentPageLayoutAreaCommand
                 ContentPage contentPage = contentControl.getContentPageByName(contentSection, contentPageName);
                 
                 if(contentPage != null) {
-                    Integer sortOrder = Integer.valueOf(form.getSortOrder());
+                    var sortOrder = Integer.valueOf(form.getSortOrder());
                     ContentPageLayout contentPageLayout = contentPage.getLastDetail().getContentPageLayout();
                     
                     contentPageLayoutArea = contentControl.getContentPageLayoutArea(contentPageLayout, sortOrder);
@@ -98,7 +98,7 @@ public class GetContentPageLayoutAreaCommand
         GetContentPageLayoutAreaResult result = ContentResultFactory.getGetContentPageLayoutAreaResult();
 
         if (contentPageLayoutArea != null) {
-            ContentControl contentControl = (ContentControl) Session.getModelController(ContentControl.class);
+            var contentControl = (ContentControl)Session.getModelController(ContentControl.class);
 
             result.setContentPageLayoutArea(contentControl.getContentPageLayoutAreaTransfer(getUserVisit(), contentPageLayoutArea));
         }

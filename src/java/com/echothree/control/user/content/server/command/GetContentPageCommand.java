@@ -90,7 +90,7 @@ public class GetContentPageCommand
             if(!hasExecutionErrors()) {
                 String contentSectionName = form.getContentSectionName();
                 String contentPageName = form.getContentPageName();
-                PartyPK partyPK = getPartyPK();
+                var partyPK = getPartyPK();
 
                 ContentSection contentSection = contentSectionName == null ? contentControl.getDefaultContentSection(contentCollection)
                         : contentControl.getContentSectionByName(contentCollection, contentSectionName);
@@ -127,7 +127,7 @@ public class GetContentPageCommand
         GetContentPageResult result = ContentResultFactory.getGetContentPageResult();
 
         if (contentPage != null) {
-            ContentControl contentControl = (ContentControl) Session.getModelController(ContentControl.class);
+            var contentControl = (ContentControl)Session.getModelController(ContentControl.class);
 
             result.setContentPage(contentControl.getContentPageTransfer(getUserVisit(), contentPage));
         }

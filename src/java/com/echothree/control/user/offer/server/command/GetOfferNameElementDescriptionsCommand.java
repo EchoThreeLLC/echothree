@@ -19,16 +19,16 @@ package com.echothree.control.user.offer.server.command;
 import com.echothree.control.user.offer.common.form.GetOfferNameElementDescriptionsForm;
 import com.echothree.control.user.offer.common.result.GetOfferNameElementDescriptionsResult;
 import com.echothree.control.user.offer.common.result.OfferResultFactory;
-import com.echothree.model.control.offer.server.OfferControl;
+import com.echothree.model.control.offer.server.control.OfferNameElementControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.offer.server.entity.OfferNameElement;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.server.control.BaseSimpleCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -59,19 +59,19 @@ public class GetOfferNameElementDescriptionsCommand
     
     /** Creates a new instance of GetOfferNameElementDescriptionsCommand */
     public GetOfferNameElementDescriptionsCommand(UserVisitPK userVisitPK, GetOfferNameElementDescriptionsForm form) {
-        super(userVisitPK, form, COMMAND_SECURITY_DEFINITION, FORM_FIELD_DEFINITIONS, true);
+        super(userVisitPK, form, COMMAND_SECURITY_DEFINITION, FORM_FIELD_DEFINITIONS, false);
     }
     
     @Override
     protected BaseResult execute() {
-        var offerControl = (OfferControl)Session.getModelController(OfferControl.class);
+        var offerNameElementControl = (OfferNameElementControl)Session.getModelController(OfferNameElementControl.class);
         GetOfferNameElementDescriptionsResult result = OfferResultFactory.getGetOfferNameElementDescriptionsResult();
         String offerNameElementName = form.getOfferNameElementName();
-        OfferNameElement offerNameElement = offerControl.getOfferNameElementByName(offerNameElementName);
+        OfferNameElement offerNameElement = offerNameElementControl.getOfferNameElementByName(offerNameElementName);
         
         if(offerNameElement != null) {
-            result.setOfferNameElement(offerControl.getOfferNameElementTransfer(getUserVisit(), offerNameElement));
-            result.setOfferNameElementDescriptions(offerControl.getOfferNameElementDescriptionTransfers(getUserVisit(), offerNameElement));
+            result.setOfferNameElement(offerNameElementControl.getOfferNameElementTransfer(getUserVisit(), offerNameElement));
+            result.setOfferNameElementDescriptions(offerNameElementControl.getOfferNameElementDescriptionTransfersByOfferNameElement(getUserVisit(), offerNameElement));
         } else {
             addExecutionError(ExecutionErrors.UnknownOfferNameElementName.name(), offerNameElementName);
         }

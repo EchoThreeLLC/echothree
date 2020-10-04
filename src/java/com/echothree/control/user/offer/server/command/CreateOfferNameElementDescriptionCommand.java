@@ -17,7 +17,7 @@
 package com.echothree.control.user.offer.server.command;
 
 import com.echothree.control.user.offer.common.form.CreateOfferNameElementDescriptionForm;
-import com.echothree.model.control.offer.server.OfferControl;
+import com.echothree.model.control.offer.server.control.OfferNameElementControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
@@ -41,10 +41,10 @@ import java.util.List;
 
 public class CreateOfferNameElementDescriptionCommand
         extends BaseSimpleCommand<CreateOfferNameElementDescriptionForm> {
-
+    
     private final static CommandSecurityDefinition COMMAND_SECURITY_DEFINITION;
     private final static List<FieldDefinition> FORM_FIELD_DEFINITIONS;
-
+    
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
                 new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
@@ -67,9 +67,9 @@ public class CreateOfferNameElementDescriptionCommand
     
     @Override
     protected BaseResult execute() {
-        var offerControl = (OfferControl)Session.getModelController(OfferControl.class);
+        var offerNameElementControl = (OfferNameElementControl)Session.getModelController(OfferNameElementControl.class);
         String offerNameElementName = form.getOfferNameElementName();
-        OfferNameElement offerNameElement = offerControl.getOfferNameElementByName(offerNameElementName);
+        OfferNameElement offerNameElement = offerNameElementControl.getOfferNameElementByName(offerNameElementName);
         
         if(offerNameElement != null) {
             var partyControl = (PartyControl)Session.getModelController(PartyControl.class);
@@ -77,13 +77,12 @@ public class CreateOfferNameElementDescriptionCommand
             Language language = partyControl.getLanguageByIsoName(languageIsoName);
             
             if(language != null) {
-                OfferNameElementDescription offerNameElementDescription = offerControl.getOfferNameElementDescription(offerNameElement,
-                        language);
+                OfferNameElementDescription offerNameElementDescription = offerNameElementControl.getOfferNameElementDescription(offerNameElement, language);
                 
                 if(offerNameElementDescription == null) {
-                    String description = form.getDescription();
+                    var description = form.getDescription();
                     
-                    offerControl.createOfferNameElementDescription(offerNameElement, language, description, getPartyPK());
+                    offerNameElementControl.createOfferNameElementDescription(offerNameElement, language, description, getPartyPK());
                 } else {
                     addExecutionError(ExecutionErrors.DuplicateOfferNameElementDescription.name());
                 }

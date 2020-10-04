@@ -21,8 +21,9 @@ import com.echothree.model.control.core.common.EntityTypes;
 import com.echothree.model.control.filter.server.evaluator.FilteredItemFixedPrice;
 import com.echothree.model.control.filter.server.evaluator.OfferItemPriceFilterEvaluator;
 import com.echothree.model.control.item.common.ItemPriceTypes;
-import com.echothree.model.control.offer.server.OfferControl;
-import com.echothree.model.control.offer.server.logic.OfferLogic;
+import com.echothree.model.control.offer.server.control.OfferControl;
+import com.echothree.model.control.offer.server.control.OfferItemControl;
+import com.echothree.model.control.offer.server.logic.OfferItemLogic;
 import com.echothree.model.data.accounting.server.entity.Currency;
 import com.echothree.model.data.core.server.entity.ComponentVendor;
 import com.echothree.model.data.core.server.entity.EntityInstance;
@@ -51,8 +52,9 @@ import java.util.List;
 
 public class OfferItemSelectorEvaluator
         extends BaseItemSelectorEvaluator {
-    
+
     protected OfferControl offerControl = (OfferControl)Session.getModelController(OfferControl.class);
+    protected OfferItemControl offerItemControl = (OfferItemControl)Session.getModelController(OfferItemControl.class);
     protected OfferItemPriceFilterEvaluator offerItemPriceFilterEvaluator;
     
     ItemPriceType fixedItemPriceType;
@@ -73,7 +75,7 @@ public class OfferItemSelectorEvaluator
         InventoryCondition inventoryCondition = itemPrice.getInventoryCondition();
         UnitOfMeasureType unitOfMeasureType = itemPrice.getUnitOfMeasureType();
         Currency currency = itemPrice.getCurrency();
-        OfferItemPrice offerItemPrice = OfferLogic.getInstance().createOfferItemPrice(offerItem, inventoryCondition, unitOfMeasureType, currency, evaluatedBy);
+        OfferItemPrice offerItemPrice = OfferItemLogic.getInstance().createOfferItemPrice(offerItem, inventoryCondition, unitOfMeasureType, currency, evaluatedBy);
         
         if(itemPriceType.equals(fixedItemPriceType)) {
             Item item = offerItem.getItem();
@@ -81,15 +83,15 @@ public class OfferItemSelectorEvaluator
             Filter filter = offer.getLastDetail().getOfferItemPriceFilter();
             FilteredItemFixedPrice filteredItemFixedPrice = offerItemPriceFilterEvaluator.evaluate(item, itemPrice, itemFixedPrice,
                     filter);
-            
-            OfferLogic.getInstance().createOfferItemFixedPrice(offerItemPrice, filteredItemFixedPrice.getUnitPrice(), evaluatedBy);
+
+            OfferItemLogic.getInstance().createOfferItemFixedPrice(offerItemPrice, filteredItemFixedPrice.getUnitPrice(), evaluatedBy);
         } else if(itemPriceType.equals(variableItemPriceType)) {
             ItemVariablePrice itemVariablePrice = itemControl.getItemVariablePrice(itemPrice);
             Long minimumUnitPrice = itemVariablePrice.getMinimumUnitPrice();
             Long maximumUnitPrice = itemVariablePrice.getMaximumUnitPrice();
             Long unitPriceIncrement = itemVariablePrice.getUnitPriceIncrement();
-            
-            OfferLogic.getInstance().createOfferItemVariablePrice(offerItemPrice, minimumUnitPrice, maximumUnitPrice, unitPriceIncrement, evaluatedBy);
+
+            OfferItemLogic.getInstance().createOfferItemVariablePrice(offerItemPrice, minimumUnitPrice, maximumUnitPrice, unitPriceIncrement, evaluatedBy);
         } else
             throw new IllegalArgumentException();
         
@@ -100,7 +102,7 @@ public class OfferItemSelectorEvaluator
             ItemPrice itemPrice) {
         if(itemPriceType.equals(fixedItemPriceType)) {
             Item item = offerItem.getItem();
-            OfferItemFixedPrice offerItemFixedPrice = offerControl.getOfferItemFixedPrice(offerItemPrice);
+            OfferItemFixedPrice offerItemFixedPrice = offerItemControl.getOfferItemFixedPrice(offerItemPrice);
             ItemFixedPrice itemFixedPrice = itemControl.getItemFixedPrice(itemPrice);
             Filter filter = offer.getLastDetail().getOfferItemPriceFilter();
             
@@ -109,14 +111,14 @@ public class OfferItemSelectorEvaluator
             Long unitPrice = filteredItemFixedPrice.getUnitPrice();
             
             if(!offerItemFixedPrice.getUnitPrice().equals(unitPrice)) {
-                OfferItemFixedPriceValue offerItemFixedPriceValue = offerControl.getOfferItemFixedPriceValueForUpdate(offerItemPrice);
+                OfferItemFixedPriceValue offerItemFixedPriceValue = offerItemControl.getOfferItemFixedPriceValueForUpdate(offerItemPrice);
 
                 offerItemFixedPriceValue.setUnitPrice(unitPrice);
 
-                OfferLogic.getInstance().updateOfferItemFixedPriceFromValue(offerItemFixedPriceValue, evaluatedBy);
+                OfferItemLogic.getInstance().updateOfferItemFixedPriceFromValue(offerItemFixedPriceValue, evaluatedBy);
             }
         } else if(itemPriceType.equals(variableItemPriceType)) {
-            OfferItemVariablePrice offerItemVariablePrice = offerControl.getOfferItemVariablePrice(offerItemPrice);
+            OfferItemVariablePrice offerItemVariablePrice = offerItemControl.getOfferItemVariablePrice(offerItemPrice);
             ItemVariablePrice itemVariablePrice = itemControl.getItemVariablePrice(itemPrice);
             Long minimumUnitPrice = itemVariablePrice.getMinimumUnitPrice();
             Long maximumUnitPrice = itemVariablePrice.getMaximumUnitPrice();
@@ -125,13 +127,13 @@ public class OfferItemSelectorEvaluator
             if(!offerItemVariablePrice.getMinimumUnitPrice().equals(minimumUnitPrice)
             || !offerItemVariablePrice.getMaximumUnitPrice().equals(maximumUnitPrice)
             || !offerItemVariablePrice.getUnitPriceIncrement().equals(unitPriceIncrement)) {
-                OfferItemVariablePriceValue offerItemVariablePriceValue = offerControl.getOfferItemVariablePriceValueForUpdate(offerItemPrice);
+                OfferItemVariablePriceValue offerItemVariablePriceValue = offerItemControl.getOfferItemVariablePriceValueForUpdate(offerItemPrice);
 
                 offerItemVariablePriceValue.setMinimumUnitPrice(minimumUnitPrice);
                 offerItemVariablePriceValue.setMaximumUnitPrice(maximumUnitPrice);
                 offerItemVariablePriceValue.setUnitPriceIncrement(unitPriceIncrement);
 
-                OfferLogic.getInstance().updateOfferItemVariablePriceFromValue(offerItemVariablePriceValue, evaluatedBy);
+                OfferItemLogic.getInstance().updateOfferItemVariablePriceFromValue(offerItemVariablePriceValue, evaluatedBy);
             }
         } else {
             throw new IllegalArgumentException();
@@ -146,23 +148,23 @@ public class OfferItemSelectorEvaluator
             log.info("--- OfferItemSelectorEvaluator.createItemInOffers(offers = " + offers + ", item = " + item + ")");
         
         offers.stream().forEach((offer) -> {
-            OfferItem offerItem = offerControl.getOfferItem(offer, item);
+            OfferItem offerItem = offerItemControl.getOfferItem(offer, item);
             ItemPriceType itemPriceType = item.getLastDetail().getItemPriceType();
             List<ItemPrice> itemPrices = itemControl.getItemPricesByItem(item);
             if (offerItem == null) {
                 // New item in this offer, create it, don't worry about sync'ing prices.
-                offerItem = OfferLogic.getInstance().createOfferItem(offer, item, evaluatedBy);
+                offerItem = OfferItemLogic.getInstance().createOfferItem(offer, item, evaluatedBy);
                 
                 for(ItemPrice itemPrice: itemPrices) {
                     createOfferItemPrice(offer, offerItem, itemPriceType, itemPrice);
                 }
             } else {
-                HashSet<OfferItemPrice> offerItemPrices = new HashSet<>(offerControl.getOfferItemPricesByOfferItem(offerItem));
+                HashSet<OfferItemPrice> offerItemPrices = new HashSet<>(offerItemControl.getOfferItemPricesByOfferItem(offerItem));
                 for(ItemPrice itemPrice: itemPrices) {
                     InventoryCondition inventoryCondition = itemPrice.getInventoryCondition();
                     UnitOfMeasureType unitOfMeasureType = itemPrice.getUnitOfMeasureType();
                     Currency currency = itemPrice.getCurrency();
-                    OfferItemPrice offerItemPrice = offerControl.getOfferItemPrice(offerItem, inventoryCondition, unitOfMeasureType,
+                    OfferItemPrice offerItemPrice = offerItemControl.getOfferItemPrice(offerItem, inventoryCondition, unitOfMeasureType,
                             currency);
                     
                     if(offerItemPrice == null) {
@@ -173,7 +175,7 @@ public class OfferItemSelectorEvaluator
                     }
                 }
                 offerItemPrices.stream().forEach((offerItemPrice) -> {
-                    OfferLogic.getInstance().deleteOfferItemPrice(offerItemPrice,  evaluatedBy);
+                    OfferItemLogic.getInstance().deleteOfferItemPrice(offerItemPrice,  evaluatedBy);
                 });
             }
         });
@@ -183,8 +185,8 @@ public class OfferItemSelectorEvaluator
         if(BaseSelectorEvaluatorDebugFlags.OfferItemSelectorEvaluator)
             log.info("--- OfferItemSelectorEvaluator.deleteItemFromOffers(offers = " + offers + ", item = " + item + ")");
         
-        offers.stream().map((offer) -> offerControl.getOfferItemForUpdate(offer, item)).filter((offerItem) -> (offerItem != null)).forEach((offerItem) -> {
-            OfferLogic.getInstance().deleteOfferItem(offerItem, evaluatedBy);
+        offers.stream().map((offer) -> offerItemControl.getOfferItemForUpdate(offer, item)).filter((offerItem) -> (offerItem != null)).forEach((offerItem) -> {
+            OfferItemLogic.getInstance().deleteOfferItem(offerItem, evaluatedBy);
         });
     }
     
@@ -323,7 +325,7 @@ public class OfferItemSelectorEvaluator
                         if(lastModifiedTime > lastEvaluationTime) {
                             if(BaseSelectorEvaluatorDebugFlags.OfferItemSelectorEvaluator)
                                 log.info("--- selector modified since last evaluation");
-                            offerControl.deleteOfferItemsByOffers(offers, evaluatedBy);
+                            OfferItemLogic.getInstance().deleteOfferItemsByOffers(offers, evaluatedBy);
                             
                             cachedSelectorWithTime.setLastEvaluationTime(null);
                             cachedSelectorWithTime.setMaxEntityCreatedTime(null);

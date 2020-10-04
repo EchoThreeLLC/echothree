@@ -14,7 +14,7 @@
         <dependency org="com.graphql-java" name="graphql-java" rev="15.0" conf="sources->sources" />
         <dependency org="com.ibm.icu" name="icu4j" rev="67.1" conf="sources->sources" />
         <dependency org="com.lowagie" name="itext" rev="2.0.8" conf="sources->sources" />
-        <dependency org="com.rometools" name="rome" rev="1.14.1" conf="sources->sources" />
+        <dependency org="com.rometools" name="rome" rev="1.15.0" conf="sources->sources" />
         <dependency org="com.sun.mail" name="javax.mail" rev="1.6.2" conf="sources->sources" />
         <dependency org="commons-beanutils" name="commons-beanutils" rev="1.9.4" conf="sources->sources" />
         <dependency org="commons-cli" name="commons-cli" rev="1.4" conf="sources->sources" />
@@ -30,10 +30,10 @@
         <dependency org="commons-net" name="commons-net" rev="3.6" conf="sources->sources" />
         <dependency org="de.odysseus.juel" name="juel-api" rev="2.2.7" conf="sources->sources" />
         <dependency org="de.odysseus.juel" name="juel-impl" rev="2.2.7" conf="sources->sources" />
-        <dependency org="io.cucumber" name="cucumber-java8" rev="6.2.2" conf="sources->sources" />
-        <dependency org="io.cucumber" name="cucumber-junit" rev="6.2.2" conf="sources->sources" />
-        <dependency org="io.github.classgraph" name="classgraph" rev="4.8.87" conf="sources->sources" />
-        <dependency org="io.github.graphql-java" name="graphql-java-annotations" rev="8.0.1" conf="sources->sources" />
+        <dependency org="io.cucumber" name="cucumber-java8" rev="6.7.0" conf="sources->sources" />
+        <dependency org="io.cucumber" name="cucumber-junit" rev="6.7.0" conf="sources->sources" />
+        <dependency org="io.github.classgraph" name="classgraph" rev="4.8.90" conf="sources->sources" />
+        <dependency org="io.github.graphql-java" name="graphql-java-annotations" rev="8.1" conf="sources->sources" />
         <dependency org="javax.activation" name="activation" rev="1.1.1" conf="sources->sources" />
         <dependency org="javax.annotation" name="javax.annotation-api" rev="1.3.2" conf="sources->sources" />
         <dependency org="javax.ejb" name="javax.ejb-api" rev="3.2.2" conf="sources->sources" />
@@ -44,9 +44,10 @@
         <dependency org="javax.validation" name="validation-api" rev="2.0.1.Final" conf="sources->sources" />
         <dependency org="jdom" name="jdom" rev="1.0" conf="sources->sources" />
         <dependency org="junit" name="junit" rev="4.12" conf="sources->sources" />
-        <dependency org="mysql" name="mysql-connector-java" rev="8.0.20" conf="sources->sources" />
+        <dependency org="mysql" name="mysql-connector-java" rev="8.0.21" conf="sources->sources" />
         <dependency org="net.sf.ezmorph" name="ezmorph" rev="1.0.6" conf="sources->sources" />
         <dependency org="net.sf.json-lib" name="json-lib" rev="2.4" conf="sources->sources" />
+        <dependency org="net.sf.saxon" name="Saxon-HE" rev="10.2" conf="sources->sources" />
         <dependency org="net.sf.textile4j" name="textile4j" rev="1.2" conf="sources->sources" />
         <dependency org="net.sourceforge.nekohtml" name="nekohtml" rev="1.9.22" conf="sources->sources" />
         <dependency org="org.antlr" name="antlr4-runtime" rev="4.5.1" conf="sources->sources" />
@@ -56,20 +57,20 @@
         <dependency org="org.apache.httpcomponents" name="httpclient-cache" rev="4.5.12" conf="sources->sources" />
         <dependency org="org.apache.httpcomponents" name="httpcore" rev="4.4.13" conf="sources->sources" />
         <dependency org="org.apache.httpcomponents" name="httpmime" rev="4.5.12" conf="sources->sources" />
-        <dependency org="org.apache.lucene" name="lucene-analyzers-common" rev="8.6.1" conf="sources->sources" />
-        <dependency org="org.apache.lucene" name="lucene-analyzers-kuromoji" rev="8.6.1" conf="sources->sources" />
-        <dependency org="org.apache.lucene" name="lucene-core" rev="8.6.1" conf="sources->sources" />
-        <dependency org="org.apache.lucene" name="lucene-queryparser" rev="8.6.1" conf="sources->sources" />
-        <dependency org="org.apache.lucene" name="lucene-suggest" rev="8.6.1" conf="sources->sources" />
+        <dependency org="org.apache.lucene" name="lucene-analyzers-common" rev="8.6.2" conf="sources->sources" />
+        <dependency org="org.apache.lucene" name="lucene-analyzers-kuromoji" rev="8.6.2" conf="sources->sources" />
+        <dependency org="org.apache.lucene" name="lucene-core" rev="8.6.2" conf="sources->sources" />
+        <dependency org="org.apache.lucene" name="lucene-queryparser" rev="8.6.2" conf="sources->sources" />
+        <dependency org="org.apache.lucene" name="lucene-suggest" rev="8.6.2" conf="sources->sources" />
         <dependency org="org.apache.poi" name="poi" rev="3.17" conf="sources->sources" />
         <dependency org="org.assertj" name="assertj-core" rev="3.14.0" conf="sources->sources" />
         <dependency org="org.assertj" name="assertj-guava" rev="3.3.0" conf="sources->sources" />
         <dependency org="org.freemarker" name="freemarker" rev="2.3.30" conf="sources->sources" />
         <dependency org="org.infinispan" name="infinispan-commons" rev="10.1.8.Final" conf="sources->sources" />
         <dependency org="org.infinispan" name="infinispan-core" rev="10.1.8.Final" conf="sources->sources" />
-        <dependency org="org.jacoco" name="org.jacoco.agent" rev="0.8.5" conf="sources->sources" />
-        <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.8.5" conf="sources->sources" />
-        <dependency org="org.jacoco" name="org.jacoco.report" rev="0.8.5" conf="sources->sources" />
+        <dependency org="org.jacoco" name="org.jacoco.agent" rev="0.8.6" conf="sources->sources" />
+        <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.8.6" conf="sources->sources" />
+        <dependency org="org.jacoco" name="org.jacoco.report" rev="0.8.6" conf="sources->sources" />
         <dependency org="org.javassist" name="javassist" rev="3.22.0-GA" conf="sources->sources" />
         <dependency org="org.jfree" name="jcommon" rev="1.0.24" conf="sources->sources" />
         <dependency org="org.jfree" name="jfreechart" rev="1.5.0" conf="sources->sources" />
@@ -78,12 +79,12 @@
         <dependency org="org.reactivestreams" name="reactive-streams" rev="1.0.3" conf="sources->sources" />
         <dependency org="org.slf4j" name="slf4j-api" rev="1.7.30" conf="sources->sources" />
         <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.30" conf="sources->sources" />
-        <dependency org="org.springframework" name="spring-beans" rev="5.0.15.RELEASE" conf="sources->sources" />
-        <dependency org="org.springframework" name="spring-context" rev="5.0.15.RELEASE" conf="sources->sources" />
-        <dependency org="org.springframework" name="spring-core" rev="5.0.15.RELEASE" conf="sources->sources" />
-        <dependency org="org.springframework" name="spring-expression" rev="5.0.15.RELEASE" conf="sources->sources" />
+        <dependency org="org.springframework" name="spring-beans" rev="5.2.9.RELEASE" conf="sources->sources" />
+        <dependency org="org.springframework" name="spring-context" rev="5.2.9.RELEASE" conf="sources->sources" />
+        <dependency org="org.springframework" name="spring-core" rev="5.2.9.RELEASE" conf="sources->sources" />
+        <dependency org="org.springframework" name="spring-expression" rev="5.2.9.RELEASE" conf="sources->sources" />
         <dependency org="org.springframework" name="spring-struts" rev="3.2.18.RELEASE" conf="sources->sources" />
-        <dependency org="org.springframework" name="spring-web" rev="5.0.15.RELEASE" conf="sources->sources" />
+        <dependency org="org.springframework" name="spring-web" rev="5.2.9.RELEASE" conf="sources->sources" />
         <dependency org="org.threeten" name="threeten-extra" rev="1.5.0" conf="sources->sources" />
         <dependency org="org.wildfly" name="wildfly-client-all" rev="20.0.1.Final" conf="sources->sources" />
         <dependency org="xalan" name="xalan" rev="2.7.2" conf="sources->sources" />
@@ -97,7 +98,7 @@
         <dependency org="com.graphql-java" name="graphql-java" rev="15.0" conf="javadoc->javadoc" />
         <dependency org="com.ibm.icu" name="icu4j" rev="67.1" conf="javadoc->javadoc" />
         <dependency org="com.lowagie" name="itext" rev="2.0.8" conf="javadoc->javadoc" />
-        <dependency org="com.rometools" name="rome" rev="1.14.1" conf="javadoc->javadoc" />
+        <dependency org="com.rometools" name="rome" rev="1.15.0" conf="javadoc->javadoc" />
         <dependency org="com.sun.mail" name="javax.mail" rev="1.6.2" conf="javadoc->javadoc" />
         <dependency org="commons-beanutils" name="commons-beanutils" rev="1.9.4" conf="javadoc->javadoc" />
         <dependency org="commons-cli" name="commons-cli" rev="1.4" conf="javadoc->javadoc" />
@@ -113,10 +114,10 @@
         <dependency org="commons-net" name="commons-net" rev="3.6" conf="javadoc->javadoc" />
         <dependency org="de.odysseus.juel" name="juel-api" rev="2.2.7" conf="javadoc->javadoc" />
         <dependency org="de.odysseus.juel" name="juel-impl" rev="2.2.7" conf="javadoc->javadoc" />
-        <dependency org="io.cucumber" name="cucumber-java8" rev="6.2.2" conf="javadoc->javadoc" />
-        <dependency org="io.cucumber" name="cucumber-junit" rev="6.2.2" conf="javadoc->javadoc" />
-        <dependency org="io.github.classgraph" name="classgraph" rev="4.8.87" conf="javadoc->javadoc" />
-        <dependency org="io.github.graphql-java" name="graphql-java-annotations" rev="8.0.1" conf="javadoc->javadoc" />
+        <dependency org="io.cucumber" name="cucumber-java8" rev="6.7.0" conf="javadoc->javadoc" />
+        <dependency org="io.cucumber" name="cucumber-junit" rev="6.7.0" conf="javadoc->javadoc" />
+        <dependency org="io.github.classgraph" name="classgraph" rev="4.8.90" conf="javadoc->javadoc" />
+        <dependency org="io.github.graphql-java" name="graphql-java-annotations" rev="8.1" conf="javadoc->javadoc" />
         <dependency org="javax.activation" name="activation" rev="1.1.1" conf="javadoc->javadoc" />
         <dependency org="javax.annotation" name="javax.annotation-api" rev="1.3.2" conf="javadoc->javadoc" />
         <dependency org="javax.ejb" name="javax.ejb-api" rev="3.2.2" conf="javadoc->javadoc" />
@@ -126,9 +127,10 @@
         <dependency org="javax.websocket" name="javax.websocket-api" rev="1.1" conf="javadoc->javadoc" />
         <dependency org="jdom" name="jdom" rev="1.0" conf="javadoc->javadoc" />
         <dependency org="junit" name="junit" rev="4.12" conf="javadoc->javadoc" />
-        <dependency org="mysql" name="mysql-connector-java" rev="8.0.20" conf="javadoc->javadoc" />
+        <dependency org="mysql" name="mysql-connector-java" rev="8.0.21" conf="javadoc->javadoc" />
         <dependency org="net.sf.ezmorph" name="ezmorph" rev="1.0.6" conf="javadoc->javadoc" />
         <dependency org="net.sf.json-lib" name="json-lib" rev="2.4" conf="javadoc->javadoc" />
+        <dependency org="net.sf.saxon" name="Saxon-HE" rev="10.2" conf="javadoc->javadoc" />
         <dependency org="net.sf.textile4j" name="textile4j" rev="1.2" conf="javadoc->javadoc" />
         <dependency org="net.sourceforge.nekohtml" name="nekohtml" rev="1.9.22" conf="javadoc->javadoc" />
         <dependency org="org.antlr" name="antlr4-runtime" rev="4.5.1" conf="javadoc->javadoc" />
@@ -138,20 +140,20 @@
         <dependency org="org.apache.httpcomponents" name="httpclient-cache" rev="4.5.12" conf="javadoc->javadoc" />
         <dependency org="org.apache.httpcomponents" name="httpcore" rev="4.4.13" conf="javadoc->javadoc" />
         <dependency org="org.apache.httpcomponents" name="httpmime" rev="4.5.12" conf="javadoc->javadoc" />
-        <dependency org="org.apache.lucene" name="lucene-analyzers-common" rev="8.6.1" conf="javadoc->javadoc" />
-        <dependency org="org.apache.lucene" name="lucene-analyzers-kuromoji" rev="8.6.1" conf="javadoc->javadoc" />
-        <dependency org="org.apache.lucene" name="lucene-core" rev="8.6.1" conf="javadoc->javadoc" />
-        <dependency org="org.apache.lucene" name="lucene-queryparser" rev="8.6.1" conf="javadoc->javadoc" />
-        <dependency org="org.apache.lucene" name="lucene-suggest" rev="8.6.1" conf="javadoc->javadoc" />
+        <dependency org="org.apache.lucene" name="lucene-analyzers-common" rev="8.6.2" conf="javadoc->javadoc" />
+        <dependency org="org.apache.lucene" name="lucene-analyzers-kuromoji" rev="8.6.2" conf="javadoc->javadoc" />
+        <dependency org="org.apache.lucene" name="lucene-core" rev="8.6.2" conf="javadoc->javadoc" />
+        <dependency org="org.apache.lucene" name="lucene-queryparser" rev="8.6.2" conf="javadoc->javadoc" />
+        <dependency org="org.apache.lucene" name="lucene-suggest" rev="8.6.2" conf="javadoc->javadoc" />
         <dependency org="org.apache.poi" name="poi" rev="3.17" conf="javadoc->javadoc" />
         <dependency org="org.assertj" name="assertj-core" rev="3.14.0" conf="javadoc->javadoc" />
         <dependency org="org.assertj" name="assertj-guava" rev="3.3.0" conf="javadoc->javadoc" />
         <dependency org="org.freemarker" name="freemarker" rev="2.3.30" conf="javadoc->javadoc" />
         <dependency org="org.infinispan" name="infinispan-commons" rev="10.1.8.Final" conf="javadoc->javadoc" />
         <dependency org="org.infinispan" name="infinispan-core" rev="10.1.8.Final" conf="javadoc->javadoc" />
-        <dependency org="org.jacoco" name="org.jacoco.agent" rev="0.8.5" conf="javadoc->javadoc" />
-        <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.8.5" conf="javadoc->javadoc" />
-        <dependency org="org.jacoco" name="org.jacoco.report" rev="0.8.5" conf="javadoc->javadoc" />
+        <dependency org="org.jacoco" name="org.jacoco.agent" rev="0.8.6" conf="javadoc->javadoc" />
+        <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.8.6" conf="javadoc->javadoc" />
+        <dependency org="org.jacoco" name="org.jacoco.report" rev="0.8.6" conf="javadoc->javadoc" />
         <dependency org="org.javassist" name="javassist" rev="3.22.0-GA" conf="javadoc->javadoc" />
         <dependency org="org.jfree" name="jcommon" rev="1.0.24" conf="javadoc->javadoc" />
         <dependency org="org.jfree" name="jfreechart" rev="1.5.0" conf="javadoc->javadoc" />
@@ -160,12 +162,12 @@
         <dependency org="org.reactivestreams" name="reactive-streams" rev="1.0.3" conf="javadoc->javadoc" />
         <dependency org="org.slf4j" name="slf4j-api" rev="1.7.30" conf="javadoc->javadoc" />
         <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.30" conf="javadoc->javadoc" />
-        <dependency org="org.springframework" name="spring-beans" rev="5.0.15.RELEASE" conf="javadoc->javadoc" />
-        <dependency org="org.springframework" name="spring-context" rev="5.0.15.RELEASE" conf="javadoc->javadoc" />
-        <dependency org="org.springframework" name="spring-core" rev="5.0.15.RELEASE" conf="javadoc->javadoc" />
-        <dependency org="org.springframework" name="spring-expression" rev="5.0.15.RELEASE" conf="javadoc->javadoc" />
+        <dependency org="org.springframework" name="spring-beans" rev="5.2.9.RELEASE" conf="javadoc->javadoc" />
+        <dependency org="org.springframework" name="spring-context" rev="5.2.9.RELEASE" conf="javadoc->javadoc" />
+        <dependency org="org.springframework" name="spring-core" rev="5.2.9.RELEASE" conf="javadoc->javadoc" />
+        <dependency org="org.springframework" name="spring-expression" rev="5.2.9.RELEASE" conf="javadoc->javadoc" />
         <dependency org="org.springframework" name="spring-struts" rev="3.2.18.RELEASE" conf="javadoc->javadoc" />
-        <dependency org="org.springframework" name="spring-web" rev="5.0.15.RELEASE" conf="javadoc->javadoc" />
+        <dependency org="org.springframework" name="spring-web" rev="5.2.9.RELEASE" conf="javadoc->javadoc" />
         <dependency org="org.threeten" name="threeten-extra" rev="1.5.0" conf="javadoc->javadoc" />
         <dependency org="org.wildfly" name="wildfly-client-all" rev="20.0.1.Final" conf="javadoc->javadoc" />
         <dependency org="xalan" name="xalan" rev="2.7.2" conf="javadoc->javadoc" />
@@ -181,7 +183,7 @@
         <dependency org="com.graphql-java" name="graphql-java" rev="15.0" conf="binaries->default" />
         <dependency org="com.ibm.icu" name="icu4j" rev="67.1" conf="binaries->default" />
         <dependency org="com.lowagie" name="itext" rev="2.0.8" conf="binaries->default" />
-        <dependency org="com.rometools" name="rome" rev="1.14.1" conf="binaries->default" />
+        <dependency org="com.rometools" name="rome" rev="1.15.0" conf="binaries->default" />
         <dependency org="com.sun.mail" name="javax.mail" rev="1.6.2" conf="binaries->default" />
         <dependency org="commons-beanutils" name="commons-beanutils" rev="1.9.4" conf="binaries->default" />
         <dependency org="commons-cli" name="commons-cli" rev="1.4" conf="binaries->default" />
@@ -197,10 +199,10 @@
         <dependency org="commons-net" name="commons-net" rev="3.6" conf="binaries->default" />
         <dependency org="de.odysseus.juel" name="juel-api" rev="2.2.7" conf="binaries->default" />
         <dependency org="de.odysseus.juel" name="juel-impl" rev="2.2.7" conf="binaries->default" />
-        <dependency org="io.cucumber" name="cucumber-java8" rev="6.2.2" conf="binaries->default" />
-        <dependency org="io.cucumber" name="cucumber-junit" rev="6.2.2" conf="binaries->default" />
-        <dependency org="io.github.classgraph" name="classgraph" rev="4.8.87" conf="binaries->default" />
-        <dependency org="io.github.graphql-java" name="graphql-java-annotations" rev="8.0.1" conf="binaries->default" />
+        <dependency org="io.cucumber" name="cucumber-java8" rev="6.7.0" conf="binaries->default" />
+        <dependency org="io.cucumber" name="cucumber-junit" rev="6.7.0" conf="binaries->default" />
+        <dependency org="io.github.classgraph" name="classgraph" rev="4.8.90" conf="binaries->default" />
+        <dependency org="io.github.graphql-java" name="graphql-java-annotations" rev="8.1" conf="binaries->default" />
         <dependency org="javax.activation" name="activation" rev="1.1.1" conf="binaries->default" />
         <dependency org="javax.annotation" name="javax.annotation-api" rev="1.3.2" conf="binaries->default" />
         <dependency org="javax.ejb" name="javax.ejb-api" rev="3.2.2" conf="binaries->default" />
@@ -211,11 +213,12 @@
         <dependency org="javax.websocket" name="javax.websocket-api" rev="1.1" conf="binaries->default" />
         <dependency org="jdom" name="jdom" rev="1.0" conf="binaries->default" />
         <dependency org="junit" name="junit" rev="4.12" conf="binaries->default" />
-        <dependency org="mysql" name="mysql-connector-java" rev="8.0.20" conf="binaries->default" />
+        <dependency org="mysql" name="mysql-connector-java" rev="8.0.21" conf="binaries->default" />
         <dependency org="net.sf.ezmorph" name="ezmorph" rev="1.0.6" conf="binaries->default" />
         <dependency org="net.sf.json-lib" name="json-lib" rev="2.4" conf="binaries->default">
             <artifact name="json-lib" e:classifier="jdk15" ext="jar"/>
         </dependency>
+        <dependency org="net.sf.saxon" name="Saxon-HE" rev="10.2" conf="binaries->default" />
         <dependency org="net.sf.textile4j" name="textile4j" rev="1.2" conf="binaries->default" />
         <dependency org="net.sourceforge.nekohtml" name="nekohtml" rev="1.9.22" conf="binaries->default" />
         <dependency org="org.antlr" name="antlr4-runtime" rev="4.5.1" conf="binaries->default" />
@@ -225,24 +228,24 @@
         <dependency org="org.apache.httpcomponents" name="httpclient-cache" rev="4.5.12" conf="binaries->default" />
         <dependency org="org.apache.httpcomponents" name="httpcore" rev="4.4.13" conf="binaries->default" />
         <dependency org="org.apache.httpcomponents" name="httpmime" rev="4.5.12" conf="binaries->default" />
-        <dependency org="org.apache.lucene" name="lucene-analyzers-common" rev="8.6.1" conf="binaries->default" />
-        <dependency org="org.apache.lucene" name="lucene-analyzers-kuromoji" rev="8.6.1" conf="binaries->default" />
-        <dependency org="org.apache.lucene" name="lucene-core" rev="8.6.1" conf="binaries->default" />
-        <dependency org="org.apache.lucene" name="lucene-queryparser" rev="8.6.1" conf="binaries->default" />
-        <dependency org="org.apache.lucene" name="lucene-suggest" rev="8.6.1" conf="binaries->default" />
+        <dependency org="org.apache.lucene" name="lucene-analyzers-common" rev="8.6.2" conf="binaries->default" />
+        <dependency org="org.apache.lucene" name="lucene-analyzers-kuromoji" rev="8.6.2" conf="binaries->default" />
+        <dependency org="org.apache.lucene" name="lucene-core" rev="8.6.2" conf="binaries->default" />
+        <dependency org="org.apache.lucene" name="lucene-queryparser" rev="8.6.2" conf="binaries->default" />
+        <dependency org="org.apache.lucene" name="lucene-suggest" rev="8.6.2" conf="binaries->default" />
         <dependency org="org.apache.poi" name="poi" rev="3.17" conf="binaries->default" />
         <dependency org="org.assertj" name="assertj-core" rev="3.14.0" conf="binaries->default" />
         <dependency org="org.assertj" name="assertj-guava" rev="3.3.0" conf="binaries->default" />
         <dependency org="org.freemarker" name="freemarker" rev="2.3.30" conf="binaries->default" />
         <dependency org="org.infinispan" name="infinispan-commons" rev="10.1.8.Final" conf="binaries->default" />
         <dependency org="org.infinispan" name="infinispan-core" rev="10.1.8.Final" conf="binaries->default" />
-        <dependency org="org.jacoco" name="org.jacoco.agent" rev="0.8.5" conf="binaries->default">
+        <dependency org="org.jacoco" name="org.jacoco.agent" rev="0.8.6" conf="binaries->default">
             <artifact name="org.jacoco.agent" e:classifier="runtime" ext="jar"/>
         </dependency>
-        <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.8.5" conf="binaries->default">
+        <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.8.6" conf="binaries->default">
             <artifact name="org.jacoco.ant" e:classifier="nodeps" ext="jar"/>
         </dependency>
-        <dependency org="org.jacoco" name="org.jacoco.report" rev="0.8.5" conf="binaries->default"/>
+        <dependency org="org.jacoco" name="org.jacoco.report" rev="0.8.6" conf="binaries->default"/>
         <dependency org="org.javassist" name="javassist" rev="3.22.0-GA" conf="binaries->default" />
         <dependency org="org.jfree" name="jcommon" rev="1.0.24" conf="binaries->default" />
         <dependency org="org.jfree" name="jfreechart" rev="1.5.0" conf="binaries->default" />
@@ -251,12 +254,12 @@
         <dependency org="org.reactivestreams" name="reactive-streams" rev="1.0.3" conf="binaries->default" />
         <dependency org="org.slf4j" name="slf4j-api" rev="1.7.30" conf="binaries->default" />
         <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.30" conf="binaries->default" />
-        <dependency org="org.springframework" name="spring-beans" rev="5.0.15.RELEASE" conf="binaries->default" />
-        <dependency org="org.springframework" name="spring-context" rev="5.0.15.RELEASE" conf="binaries->default" />
-        <dependency org="org.springframework" name="spring-core" rev="5.0.15.RELEASE" conf="binaries->default" />
-        <dependency org="org.springframework" name="spring-expression" rev="5.0.15.RELEASE" conf="binaries->default" />
+        <dependency org="org.springframework" name="spring-beans" rev="5.2.9.RELEASE" conf="binaries->default" />
+        <dependency org="org.springframework" name="spring-context" rev="5.2.9.RELEASE" conf="binaries->default" />
+        <dependency org="org.springframework" name="spring-core" rev="5.2.9.RELEASE" conf="binaries->default" />
+        <dependency org="org.springframework" name="spring-expression" rev="5.2.9.RELEASE" conf="binaries->default" />
         <dependency org="org.springframework" name="spring-struts" rev="3.2.18.RELEASE" conf="binaries->default" />
-        <dependency org="org.springframework" name="spring-web" rev="5.0.15.RELEASE" conf="binaries->default" />
+        <dependency org="org.springframework" name="spring-web" rev="5.2.9.RELEASE" conf="binaries->default" />
         <dependency org="org.threeten" name="threeten-extra" rev="1.5.0" conf="binaries->default" />
         <dependency org="org.wildfly" name="wildfly-client-all" rev="20.0.1.Final" conf="binaries->default" />
         <dependency org="xalan" name="xalan" rev="2.7.2" conf="binaries->default" />

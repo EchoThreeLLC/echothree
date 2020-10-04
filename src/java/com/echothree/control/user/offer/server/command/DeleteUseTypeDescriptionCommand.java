@@ -17,7 +17,7 @@
 package com.echothree.control.user.offer.server.command;
 
 import com.echothree.control.user.offer.common.form.DeleteUseTypeDescriptionForm;
-import com.echothree.model.control.offer.server.OfferControl;
+import com.echothree.model.control.offer.server.control.UseTypeControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
@@ -49,7 +49,7 @@ public class DeleteUseTypeDescriptionCommand
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
                 new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
                 new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
-                        new SecurityRoleDefinition(SecurityRoleGroups.GlAccountCategory.name(), SecurityRoles.Description.name())
+                        new SecurityRoleDefinition(SecurityRoleGroups.UseType.name(), SecurityRoles.Description.name())
                         )))
                 )));
         
@@ -66,9 +66,9 @@ public class DeleteUseTypeDescriptionCommand
     
     @Override
     protected BaseResult execute() {
-        var offerControl = (OfferControl)Session.getModelController(OfferControl.class);
+        var useTypeControl = (UseTypeControl)Session.getModelController(UseTypeControl.class);
         String useTypeName = form.getUseTypeName();
-        UseType useType = offerControl.getUseTypeByName(useTypeName);
+        UseType useType = useTypeControl.getUseTypeByName(useTypeName);
         
         if(useType != null) {
             var partyControl = (PartyControl)Session.getModelController(PartyControl.class);
@@ -76,10 +76,10 @@ public class DeleteUseTypeDescriptionCommand
             Language language = partyControl.getLanguageByIsoName(languageIsoName);
             
             if(language != null) {
-                UseTypeDescription useTypeDescription = offerControl.getUseTypeDescriptionForUpdate(useType, language);
+                UseTypeDescription useTypeDescription = useTypeControl.getUseTypeDescriptionForUpdate(useType, language);
                 
                 if(useTypeDescription != null) {
-                    offerControl.deleteUseTypeDescription(useTypeDescription, getPartyPK());
+                    useTypeControl.deleteUseTypeDescription(useTypeDescription, getPartyPK());
                 } else {
                     addExecutionError(ExecutionErrors.UnknownUseTypeDescription.name());
                 }

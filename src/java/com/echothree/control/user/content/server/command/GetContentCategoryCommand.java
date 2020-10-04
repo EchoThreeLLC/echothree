@@ -91,7 +91,7 @@ public class GetContentCategoryCommand
             if(!hasExecutionErrors()) {
                 String contentCatalogName = form.getContentCatalogName();
                 String contentCategoryName = form.getContentCategoryName();
-                PartyPK partyPK = getPartyPK();
+                var partyPK = getPartyPK();
 
                 ContentCatalog contentCatalog = contentCatalogName == null ? contentControl.getDefaultContentCatalog(contentCollection)
                         : contentControl.getContentCatalogByName(contentCollection, contentCatalogName);
@@ -128,7 +128,7 @@ public class GetContentCategoryCommand
         GetContentCategoryResult result = ContentResultFactory.getGetContentCategoryResult();
 
         if (contentCategory != null) {
-            ContentControl contentControl = (ContentControl) Session.getModelController(ContentControl.class);
+            var contentControl = (ContentControl)Session.getModelController(ContentControl.class);
 
             result.setContentCategory(contentControl.getContentCategoryTransfer(getUserVisit(), contentCategory));
         }

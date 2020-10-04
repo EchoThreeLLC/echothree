@@ -142,12 +142,17 @@ public class OfferBean
     public CommandResult createOfferChainType(UserVisitPK userVisitPK, CreateOfferChainTypeForm form) {
         return new CreateOfferChainTypeCommand(userVisitPK, form).run();
     }
-    
+
     @Override
     public CommandResult getOfferChainTypes(UserVisitPK userVisitPK, GetOfferChainTypesForm form) {
         return new GetOfferChainTypesCommand(userVisitPK, form).run();
     }
-    
+
+    @Override
+    public CommandResult getOfferChainType(UserVisitPK userVisitPK, GetOfferChainTypeForm form) {
+        return new GetOfferChainTypeCommand(userVisitPK, form).run();
+    }
+
     @Override
     public CommandResult editOfferChainType(UserVisitPK userVisitPK, EditOfferChainTypeForm form) {
         return new EditOfferChainTypeCommand(userVisitPK, form).run();
@@ -326,12 +331,17 @@ public class OfferBean
     public CommandResult createUseTypeDescription(UserVisitPK userVisitPK, CreateUseTypeDescriptionForm form) {
         return new CreateUseTypeDescriptionCommand(userVisitPK, form).run();
     }
-    
+
     @Override
     public CommandResult getUseTypeDescriptions(UserVisitPK userVisitPK, GetUseTypeDescriptionsForm form) {
         return new GetUseTypeDescriptionsCommand(userVisitPK, form).run();
     }
-    
+
+    @Override
+    public CommandResult getUseTypeDescription(UserVisitPK userVisitPK, GetUseTypeDescriptionForm form) {
+        return new GetUseTypeDescriptionCommand(userVisitPK, form).run();
+    }
+
     @Override
     public CommandResult editUseTypeDescription(UserVisitPK userVisitPK, EditUseTypeDescriptionForm form) {
         return new EditUseTypeDescriptionCommand(userVisitPK, form).run();
@@ -350,12 +360,17 @@ public class OfferBean
     public CommandResult createUseNameElement(UserVisitPK userVisitPK, CreateUseNameElementForm form) {
         return new CreateUseNameElementCommand(userVisitPK, form).run();
     }
-    
+
     @Override
     public CommandResult getUseNameElements(UserVisitPK userVisitPK, GetUseNameElementsForm form) {
         return new GetUseNameElementsCommand(userVisitPK, form).run();
     }
-    
+
+    @Override
+    public CommandResult getUseNameElement(UserVisitPK userVisitPK, GetUseNameElementForm form) {
+        return new GetUseNameElementCommand(userVisitPK, form).run();
+    }
+
     @Override
     public CommandResult editUseNameElement(UserVisitPK userVisitPK, EditUseNameElementForm form) {
         return new EditUseNameElementCommand(userVisitPK, form).run();
@@ -374,12 +389,17 @@ public class OfferBean
     public CommandResult createUseNameElementDescription(UserVisitPK userVisitPK, CreateUseNameElementDescriptionForm form) {
         return new CreateUseNameElementDescriptionCommand(userVisitPK, form).run();
     }
-    
+
     @Override
     public CommandResult getUseNameElementDescriptions(UserVisitPK userVisitPK, GetUseNameElementDescriptionsForm form) {
         return new GetUseNameElementDescriptionsCommand(userVisitPK, form).run();
     }
-    
+
+    @Override
+    public CommandResult getUseNameElementDescription(UserVisitPK userVisitPK, GetUseNameElementDescriptionForm form) {
+        return new GetUseNameElementDescriptionCommand(userVisitPK, form).run();
+    }
+
     @Override
     public CommandResult editUseNameElementDescription(UserVisitPK userVisitPK, EditUseNameElementDescriptionForm form) {
         return new EditUseNameElementDescriptionCommand(userVisitPK, form).run();
@@ -461,12 +481,17 @@ public class OfferBean
     public CommandResult createOfferNameElement(UserVisitPK userVisitPK, CreateOfferNameElementForm form) {
         return new CreateOfferNameElementCommand(userVisitPK, form).run();
     }
-    
+
     @Override
     public CommandResult getOfferNameElements(UserVisitPK userVisitPK, GetOfferNameElementsForm form) {
         return new GetOfferNameElementsCommand(userVisitPK, form).run();
     }
-    
+
+    @Override
+    public CommandResult getOfferNameElement(UserVisitPK userVisitPK, GetOfferNameElementForm form) {
+        return new GetOfferNameElementCommand(userVisitPK, form).run();
+    }
+
     @Override
     public CommandResult editOfferNameElement(UserVisitPK userVisitPK, EditOfferNameElementForm form) {
         return new EditOfferNameElementCommand(userVisitPK, form).run();
@@ -485,12 +510,17 @@ public class OfferBean
     public CommandResult createOfferNameElementDescription(UserVisitPK userVisitPK, CreateOfferNameElementDescriptionForm form) {
         return new CreateOfferNameElementDescriptionCommand(userVisitPK, form).run();
     }
-    
+
     @Override
     public CommandResult getOfferNameElementDescriptions(UserVisitPK userVisitPK, GetOfferNameElementDescriptionsForm form) {
         return new GetOfferNameElementDescriptionsCommand(userVisitPK, form).run();
     }
-    
+
+    @Override
+    public CommandResult getOfferNameElementDescription(UserVisitPK userVisitPK, GetOfferNameElementDescriptionForm form) {
+        return new GetOfferNameElementDescriptionCommand(userVisitPK, form).run();
+    }
+
     @Override
     public CommandResult editOfferNameElementDescription(UserVisitPK userVisitPK, EditOfferNameElementDescriptionForm form) {
         return new EditOfferNameElementDescriptionCommand(userVisitPK, form).run();

@@ -17,32 +17,31 @@
 package com.echothree.control.user.offer.server.command;
 
 import com.echothree.control.user.offer.common.form.CreateUseNameElementForm;
-import com.echothree.model.control.offer.server.OfferControl;
+import com.echothree.control.user.offer.common.result.CreateUseNameElementResult;
+import com.echothree.control.user.offer.common.result.OfferResultFactory;
+import com.echothree.model.control.offer.server.logic.UseNameElementLogic;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.offer.server.entity.UseNameElement;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
-import com.echothree.util.common.message.ExecutionErrors;
+import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
-import com.echothree.util.common.persistence.BasePK;
 import com.echothree.util.server.control.BaseSimpleCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
 import com.echothree.util.server.control.SecurityRoleDefinition;
-import com.echothree.util.server.persistence.Session;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class CreateUseNameElementCommand
         extends BaseSimpleCommand<CreateUseNameElementForm> {
-
+    
     private final static CommandSecurityDefinition COMMAND_SECURITY_DEFINITION;
     private final static List<FieldDefinition> FORM_FIELD_DEFINITIONS;
-
+    
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
                 new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
@@ -67,27 +66,23 @@ public class CreateUseNameElementCommand
     
     @Override
     protected BaseResult execute() {
-        var offerControl = (OfferControl)Session.getModelController(OfferControl.class);
+        CreateUseNameElementResult result = OfferResultFactory.getCreateUseNameElementResult();
         String useNameElementName = form.getUseNameElementName();
-        UseNameElement useNameElement = offerControl.getUseNameElementByName(useNameElementName);
-        
-        if(useNameElement == null) {
-            BasePK createdBy = getPartyPK();
-            Integer offset = Integer.valueOf(form.getOffset());
-            Integer length = Integer.valueOf(form.getLength());
-            String validationPattern = form.getValidationPattern();
-            String description = form.getDescription();
-            
-            useNameElement = offerControl.createUseNameElement(useNameElementName, offset, length, validationPattern, createdBy);
-            
-            if(description != null) {
-                offerControl.createUseNameElementDescription(useNameElement, getPreferredLanguage(), description, createdBy);
-            }
-        } else {
-            addExecutionError(ExecutionErrors.DuplicateUseNameElementName.name(), useNameElementName);
+        Integer offset = Integer.valueOf(form.getOffset());
+        Integer length = Integer.valueOf(form.getLength());
+        String validationPattern = form.getValidationPattern();
+        var description = form.getDescription();
+
+        UseNameElement useNameElement = UseNameElementLogic.getInstance().createUseNameElement(this,
+                useNameElementName, offset, length, validationPattern, getPreferredLanguage(), description,
+                getPartyPK());
+
+        if(useNameElement != null && !hasExecutionErrors()) {
+            result.setUseNameElementName(useNameElement.getLastDetail().getUseNameElementName());
+            result.setEntityRef(useNameElement.getPrimaryKey().getEntityRef());
         }
-        
-        return null;
+
+        return result;
     }
     
 }

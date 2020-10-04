@@ -17,7 +17,7 @@
 package com.echothree.control.user.offer.server.command;
 
 import com.echothree.control.user.offer.common.form.SetDefaultUseTypeForm;
-import com.echothree.model.control.offer.server.OfferControl;
+import com.echothree.model.control.offer.server.control.UseTypeControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
@@ -44,10 +44,9 @@ public class SetDefaultUseTypeCommand
     
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
                 new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
-                        new SecurityRoleDefinition(SecurityRoleGroups.UseType.name(), SecurityRoles.Edit.name())
-                        )))
+                    new SecurityRoleDefinition(SecurityRoleGroups.UseType.name(), SecurityRoles.Edit.name())
+                    )))
                 )));
         
         FORM_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
@@ -62,13 +61,13 @@ public class SetDefaultUseTypeCommand
     
     @Override
     protected BaseResult execute() {
-        var offerControl = (OfferControl)Session.getModelController(OfferControl.class);
+        var useTypeControl = (UseTypeControl)Session.getModelController(UseTypeControl.class);
         String useTypeName = form.getUseTypeName();
-        UseTypeDetailValue useTypeDetailValue = offerControl.getUseTypeDetailValueByNameForUpdate(useTypeName);
+        UseTypeDetailValue useTypeDetailValue = useTypeControl.getUseTypeDetailValueByNameForUpdate(useTypeName);
         
         if(useTypeDetailValue != null) {
             useTypeDetailValue.setIsDefault(Boolean.TRUE);
-            offerControl.updateUseTypeFromValue(useTypeDetailValue, getPartyPK());
+            useTypeControl.updateUseTypeFromValue(useTypeDetailValue, getPartyPK());
         } else {
             addExecutionError(ExecutionErrors.UnknownUseTypeName.name(), useTypeName);
         }

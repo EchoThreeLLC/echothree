@@ -22,7 +22,9 @@ import com.echothree.control.user.offer.common.form.EditUseForm;
 import com.echothree.control.user.offer.common.result.EditUseResult;
 import com.echothree.control.user.offer.common.result.OfferResultFactory;
 import com.echothree.control.user.offer.common.spec.UseSpec;
-import com.echothree.model.control.offer.server.OfferControl;
+import com.echothree.model.control.offer.server.control.UseControl;
+import com.echothree.model.control.offer.server.control.UseTypeControl;
+import com.echothree.model.control.offer.server.logic.UseLogic;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
@@ -32,13 +34,12 @@ import com.echothree.model.data.offer.server.entity.UseDetail;
 import com.echothree.model.data.offer.server.entity.UseType;
 import com.echothree.model.data.offer.server.value.UseDescriptionValue;
 import com.echothree.model.data.offer.server.value.UseDetailValue;
-import com.echothree.model.data.party.common.pk.PartyPK;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.BaseResult;
+import com.echothree.util.common.command.EditMode;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
-import com.echothree.util.common.command.EditMode;
 import com.echothree.util.server.control.BaseEditCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -83,18 +84,18 @@ public class EditUseCommand
     
     @Override
     protected BaseResult execute() {
-        var offerControl = (OfferControl)Session.getModelController(OfferControl.class);
+        var useControl = (UseControl)Session.getModelController(UseControl.class);
         EditUseResult result = OfferResultFactory.getEditUseResult();
         
         if(editMode.equals(EditMode.LOCK)) {
             String useName = spec.getUseName();
-            Use use = offerControl.getUseByName(useName);
+            Use use = useControl.getUseByName(useName);
             
             if(use != null) {
-                result.setUse(offerControl.getUseTransfer(getUserVisit(), use));
+                result.setUse(useControl.getUseTransfer(getUserVisit(), use));
                 
                 if(lockEntity(use)) {
-                    UseDescription useDescription = offerControl.getUseDescription(use, getPreferredLanguage());
+                    UseDescription useDescription = useControl.getUseDescription(use, getPreferredLanguage());
                     UseEdit edit = OfferEditFactory.getUseEdit();
                     UseDetail useDetail = use.getLastDetail();
                     
@@ -117,40 +118,41 @@ public class EditUseCommand
             }
         } else if(editMode.equals(EditMode.UPDATE)) {
             String useName = spec.getUseName();
-            Use use = offerControl.getUseByNameForUpdate(useName);
+            Use use = useControl.getUseByNameForUpdate(useName);
             
             if(use != null) {
                 useName = edit.getUseName();
-                Use duplicateUse = offerControl.getUseByName(useName);
+                Use duplicateUse = useControl.getUseByName(useName);
                 
                 if(duplicateUse == null || use.equals(duplicateUse)) {
+                    var useTypeControl = (UseTypeControl)Session.getModelController(UseTypeControl.class);
                     String useTypeName = edit.getUseTypeName();
-                    UseType useType = offerControl.getUseTypeByName(useTypeName);
+                    UseType useType = useTypeControl.getUseTypeByName(useTypeName);
                     
                     if(useType != null) {
                         if(lockEntityForUpdate(use)) {
                             try {
-                                PartyPK partyPK = getPartyPK();
-                                UseDetailValue useDetailValue = offerControl.getUseDetailValueForUpdate(use);
-                                UseDescription useDescription = offerControl.getUseDescriptionForUpdate(use, getPreferredLanguage());
+                                var partyPK = getPartyPK();
+                                UseDetailValue useDetailValue = useControl.getUseDetailValueForUpdate(use);
+                                UseDescription useDescription = useControl.getUseDescriptionForUpdate(use, getPreferredLanguage());
                                 String description = edit.getDescription();
                                 
                                 useDetailValue.setUseName(edit.getUseName());
                                 useDetailValue.setUseTypePK(useType.getPrimaryKey());
                                 useDetailValue.setIsDefault(Boolean.valueOf(edit.getIsDefault()));
                                 useDetailValue.setSortOrder(Integer.valueOf(edit.getSortOrder()));
-                                
-                                offerControl.updateUseFromValue(useDetailValue, partyPK);
+
+                                UseLogic.getInstance().updateUseFromValue(useDetailValue, partyPK);
                                 
                                 if(useDescription == null && description != null) {
-                                    offerControl.createUseDescription(use, getPreferredLanguage(), description, partyPK);
+                                    useControl.createUseDescription(use, getPreferredLanguage(), description, partyPK);
                                 } else if(useDescription != null && description == null) {
-                                    offerControl.deleteUseDescription(useDescription, partyPK);
+                                    useControl.deleteUseDescription(useDescription, partyPK);
                                 } else if(useDescription != null && description != null) {
-                                    UseDescriptionValue useDescriptionValue = offerControl.getUseDescriptionValue(useDescription);
+                                    UseDescriptionValue useDescriptionValue = useControl.getUseDescriptionValue(useDescription);
                                     
                                     useDescriptionValue.setDescription(description);
-                                    offerControl.updateUseDescriptionFromValue(useDescriptionValue, partyPK);
+                                    useControl.updateUseDescriptionFromValue(useDescriptionValue, partyPK);
                                 }
                             } finally {
                                 unlockEntity(use);

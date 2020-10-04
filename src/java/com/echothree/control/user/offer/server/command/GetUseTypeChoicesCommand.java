@@ -17,16 +17,15 @@
 package com.echothree.control.user.offer.server.command;
 
 import com.echothree.control.user.offer.common.form.GetUseTypeChoicesForm;
-import com.echothree.control.user.offer.common.result.GetUseTypeChoicesResult;
 import com.echothree.control.user.offer.common.result.OfferResultFactory;
-import com.echothree.model.control.offer.server.OfferControl;
+import com.echothree.model.control.offer.server.control.UseTypeControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.server.control.BaseSimpleCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -44,7 +43,6 @@ public class GetUseTypeChoicesCommand
     
     static {
         COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
-                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
                 new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
                         new SecurityRoleDefinition(SecurityRoleGroups.UseType.name(), SecurityRoles.Choices.name())
                         )))
@@ -63,14 +61,14 @@ public class GetUseTypeChoicesCommand
     
     @Override
     protected BaseResult execute() {
-        var offerControl = (OfferControl)Session.getModelController(OfferControl.class);
-        GetUseTypeChoicesResult result = OfferResultFactory.getGetUseTypeChoicesResult();
-        String defaultUseTypeChoice = form.getDefaultUseTypeChoice();
-        boolean allowNullChoice = Boolean.parseBoolean(form.getAllowNullChoice());
+        var useTypeControl = (UseTypeControl)Session.getModelController(UseTypeControl.class);
+        var result = OfferResultFactory.getGetUseTypeChoicesResult();
+        var defaultUseTypeChoice = form.getDefaultUseTypeChoice();
+        var allowNullChoice = Boolean.parseBoolean(form.getAllowNullChoice());
         
-        result.setUseTypeChoices(offerControl.getUseTypeChoices(defaultUseTypeChoice,
+        result.setUseTypeChoices(useTypeControl.getUseTypeChoices(defaultUseTypeChoice,
                 getPreferredLanguage(), allowNullChoice));
-        
+
         return result;
     }
     

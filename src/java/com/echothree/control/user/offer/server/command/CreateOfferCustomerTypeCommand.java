@@ -18,7 +18,7 @@ package com.echothree.control.user.offer.server.command;
 
 import com.echothree.control.user.offer.common.form.CreateOfferCustomerTypeForm;
 import com.echothree.model.control.customer.server.CustomerControl;
-import com.echothree.model.control.offer.server.OfferControl;
+import com.echothree.model.control.offer.server.control.OfferControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
@@ -81,8 +81,8 @@ public class CreateOfferCustomerTypeCommand
                 OfferCustomerType offerCustomerType = offerControl.getOfferCustomerType(offer, customerType);
 
                 if(offerCustomerType == null) {
-                    Boolean isDefault = Boolean.valueOf(form.getIsDefault());
-                    Integer sortOrder = Integer.valueOf(form.getSortOrder());
+                    var isDefault = Boolean.valueOf(form.getIsDefault());
+                    var sortOrder = Integer.valueOf(form.getSortOrder());
 
                     offerControl.createOfferCustomerType(offer, customerType, isDefault, sortOrder, getPartyPK());
                 } else {

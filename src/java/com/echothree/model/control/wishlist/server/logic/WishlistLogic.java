@@ -17,10 +17,10 @@
 package com.echothree.model.control.wishlist.server.logic;
 
 import com.echothree.model.control.item.common.ItemPriceTypes;
-import com.echothree.model.control.offer.server.OfferControl;
+import com.echothree.model.control.offer.server.control.OfferItemControl;
 import com.echothree.model.control.order.common.OrderRoleTypes;
 import com.echothree.model.control.order.common.OrderTypes;
-import com.echothree.model.control.order.server.OrderControl;
+import com.echothree.model.control.order.server.control.OrderRoleControl;
 import com.echothree.model.control.order.server.logic.OrderLogic;
 import com.echothree.model.control.party.server.PartyControl;
 import com.echothree.model.control.sales.server.logic.SalesOrderLineLogic;
@@ -92,7 +92,6 @@ public class WishlistLogic
         String itemPriceTypeName = item.getLastDetail().getItemPriceType().getItemPriceTypeName();
 
         if(itemPriceTypeName.equals(ItemPriceTypes.FIXED.name())) {
-            var orderControl = (OrderControl)Session.getModelController(OrderControl.class);
             var partyControl = (PartyControl)Session.getModelController(PartyControl.class);
             var wishlistControl = (WishlistControl)Session.getModelController(WishlistControl.class);
             OrderLogic orderLogic = OrderLogic.getInstance();
@@ -112,10 +111,12 @@ public class WishlistLogic
                     order = orderLogic.createOrder(ema, orderType, null, null, currency, null, null, null, null, null, null, null, null, null, null, null, createdBy);
 
                     if(!ema.hasExecutionErrors()) {
+                        var orderRoleControl = (OrderRoleControl)Session.getModelController(OrderRoleControl.class);
+
                         wishlistControl.createWishlist(order, getOrderOfferUse(userVisit, offerUse, companyParty), wishlistType, createdBy);
 
-                        orderControl.createOrderRoleUsingNames(order, companyParty, OrderRoleTypes.BILL_FROM.name(), createdBy);
-                        orderControl.createOrderRoleUsingNames(order, party, OrderRoleTypes.BILL_TO.name(), createdBy);
+                        orderRoleControl.createOrderRoleUsingNames(order, companyParty, OrderRoleTypes.BILL_FROM.name(), createdBy);
+                        orderRoleControl.createOrderRoleUsingNames(order, party, OrderRoleTypes.BILL_TO.name(), createdBy);
                     }
                 }
             }
@@ -126,8 +127,8 @@ public class WishlistLogic
                 OrderLine orderLine = wishlistControl.getWishlistLineByItemForUpdate(order, item, inventoryCondition, unitOfMeasureType);
 
                 if(orderLine == null) {
-                    var offerControl = (OfferControl)Session.getModelController(OfferControl.class);
-                    OfferItemFixedPrice offerItemFixedPrice = offerControl.getOfferItemFixedPrice(offerItemPrice);
+                    var offerItemControl = (OfferItemControl)Session.getModelController(OfferItemControl.class);
+                    OfferItemFixedPrice offerItemFixedPrice = offerItemControl.getOfferItemFixedPrice(offerItemPrice);
                     Long unitAmount = offerItemFixedPrice.getUnitPrice();
                     AssociateReferral associateReferral = userVisit.getAssociateReferral();
 

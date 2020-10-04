@@ -132,7 +132,7 @@ public class GetContentCategoryItemCommand
 
                             if(currency != null) {
                                 String contentCatalogName = form.getContentCatalogName();
-                                PartyPK partyPK = getPartyPK();
+                                var partyPK = getPartyPK();
                                 UserVisit userVisit = getUserVisitForUpdate();
 
                                 ContentCatalog contentCatalog = contentCatalogName == null ? contentControl.getDefaultContentCatalog(contentCollection)
@@ -229,7 +229,7 @@ public class GetContentCategoryItemCommand
         GetContentCategoryItemResult result = ContentResultFactory.getGetContentCategoryItemResult();
 
         if (contentCategoryItem != null) {
-            ContentControl contentControl = (ContentControl) Session.getModelController(ContentControl.class);
+            var contentControl = (ContentControl)Session.getModelController(ContentControl.class);
 
             result.setContentCategoryItem(contentControl.getContentCategoryItemTransfer(getUserVisit(), contentCategoryItem));
         }

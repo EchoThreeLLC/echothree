@@ -80,9 +80,11 @@ public interface OfferService
     // -------------------------------------------------------------------------
     
     CommandResult createOfferChainType(UserVisitPK userVisitPK, CreateOfferChainTypeForm form);
-    
+
     CommandResult getOfferChainTypes(UserVisitPK userVisitPK, GetOfferChainTypesForm form);
-    
+
+    CommandResult getOfferChainType(UserVisitPK userVisitPK, GetOfferChainTypeForm form);
+
     CommandResult editOfferChainType(UserVisitPK userVisitPK, EditOfferChainTypeForm form);
     
     CommandResult deleteOfferChainType(UserVisitPK userVisitPK, DeleteOfferChainTypeForm form);
@@ -168,9 +170,11 @@ public interface OfferService
     // -------------------------------------------------------------------------
     
     CommandResult createUseTypeDescription(UserVisitPK userVisitPK, CreateUseTypeDescriptionForm form);
-    
+
     CommandResult getUseTypeDescriptions(UserVisitPK userVisitPK, GetUseTypeDescriptionsForm form);
-    
+
+    CommandResult getUseTypeDescription(UserVisitPK userVisitPK, GetUseTypeDescriptionForm form);
+
     CommandResult editUseTypeDescription(UserVisitPK userVisitPK, EditUseTypeDescriptionForm form);
     
     CommandResult deleteUseTypeDescription(UserVisitPK userVisitPK, DeleteUseTypeDescriptionForm form);
@@ -180,9 +184,11 @@ public interface OfferService
     // -------------------------------------------------------------------------
     
     CommandResult createUseNameElement(UserVisitPK userVisitPK, CreateUseNameElementForm form);
-    
+
     CommandResult getUseNameElements(UserVisitPK userVisitPK, GetUseNameElementsForm form);
-    
+
+    CommandResult getUseNameElement(UserVisitPK userVisitPK, GetUseNameElementForm form);
+
     CommandResult editUseNameElement(UserVisitPK userVisitPK, EditUseNameElementForm form);
     
     CommandResult deleteUseNameElement(UserVisitPK userVisitPK, DeleteUseNameElementForm form);
@@ -192,9 +198,11 @@ public interface OfferService
     // -------------------------------------------------------------------------
     
     CommandResult createUseNameElementDescription(UserVisitPK userVisitPK, CreateUseNameElementDescriptionForm form);
-    
+
     CommandResult getUseNameElementDescriptions(UserVisitPK userVisitPK, GetUseNameElementDescriptionsForm form);
-    
+
+    CommandResult getUseNameElementDescription(UserVisitPK userVisitPK, GetUseNameElementDescriptionForm form);
+
     CommandResult editUseNameElementDescription(UserVisitPK userVisitPK, EditUseNameElementDescriptionForm form);
     
     CommandResult deleteUseNameElementDescription(UserVisitPK userVisitPK, DeleteUseNameElementDescriptionForm form);
@@ -234,9 +242,11 @@ public interface OfferService
     // -------------------------------------------------------------------------
     
     CommandResult createOfferNameElement(UserVisitPK userVisitPK, CreateOfferNameElementForm form);
-    
+
     CommandResult getOfferNameElements(UserVisitPK userVisitPK, GetOfferNameElementsForm form);
-    
+
+    CommandResult getOfferNameElement(UserVisitPK userVisitPK, GetOfferNameElementForm form);
+
     CommandResult editOfferNameElement(UserVisitPK userVisitPK, EditOfferNameElementForm form);
     
     CommandResult deleteOfferNameElement(UserVisitPK userVisitPK, DeleteOfferNameElementForm form);
@@ -246,9 +256,11 @@ public interface OfferService
     // -------------------------------------------------------------------------
     
     CommandResult createOfferNameElementDescription(UserVisitPK userVisitPK, CreateOfferNameElementDescriptionForm form);
-    
+
     CommandResult getOfferNameElementDescriptions(UserVisitPK userVisitPK, GetOfferNameElementDescriptionsForm form);
-    
+
+    CommandResult getOfferNameElementDescription(UserVisitPK userVisitPK, GetOfferNameElementDescriptionForm form);
+
     CommandResult editOfferNameElementDescription(UserVisitPK userVisitPK, EditOfferNameElementDescriptionForm form);
     
     CommandResult deleteOfferNameElementDescription(UserVisitPK userVisitPK, DeleteOfferNameElementDescriptionForm form);

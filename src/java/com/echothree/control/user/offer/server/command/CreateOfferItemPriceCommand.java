@@ -21,8 +21,9 @@ import com.echothree.model.control.accounting.server.AccountingControl;
 import com.echothree.model.control.inventory.server.control.InventoryControl;
 import com.echothree.model.control.item.common.ItemPriceTypes;
 import com.echothree.model.control.item.server.ItemControl;
-import com.echothree.model.control.offer.server.OfferControl;
-import com.echothree.model.control.offer.server.logic.OfferLogic;
+import com.echothree.model.control.offer.server.control.OfferControl;
+import com.echothree.model.control.offer.server.control.OfferItemControl;
+import com.echothree.model.control.offer.server.logic.OfferItemLogic;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
@@ -37,11 +38,11 @@ import com.echothree.model.data.offer.server.entity.OfferItem;
 import com.echothree.model.data.offer.server.entity.OfferItemPrice;
 import com.echothree.model.data.uom.server.entity.UnitOfMeasureType;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.message.ExecutionErrors;
+import com.echothree.util.common.persistence.BasePK;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
-import com.echothree.util.common.persistence.BasePK;
 import com.echothree.util.server.control.BaseSimpleCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
@@ -95,7 +96,8 @@ public class CreateOfferItemPriceCommand
             Item item = itemControl.getItemByName(itemName);
             
             if(item != null) {
-                OfferItem offerItem = offerControl.getOfferItem(offer, item);
+                var offerItemControl = (OfferItemControl)Session.getModelController(OfferItemControl.class);
+                OfferItem offerItem = offerItemControl.getOfferItem(offer, item);
                 
                 if(offerItem != null) {
                     var inventoryControl = (InventoryControl)Session.getModelController(InventoryControl.class);
@@ -118,7 +120,7 @@ public class CreateOfferItemPriceCommand
                                 ItemPrice itemPrice = itemControl.getItemPrice(item, inventoryCondition, unitOfMeasureType, currency);
                                 
                                 if(itemPrice != null) {
-                                    OfferItemPrice offerItemPrice = offerControl.getOfferItemPrice(offerItem, inventoryCondition,
+                                    OfferItemPrice offerItemPrice = offerItemControl.getOfferItemPrice(offerItem, inventoryCondition,
                                             unitOfMeasureType, currency);
                                     
                                     if(offerItemPrice == null) {
@@ -131,9 +133,9 @@ public class CreateOfferItemPriceCommand
                                             if(strUnitPrice != null) {
                                                 Long unitPrice = Long.valueOf(strUnitPrice);
                                                 
-                                                offerItemPrice = OfferLogic.getInstance().createOfferItemPrice(offerItem, inventoryCondition,
+                                                offerItemPrice = OfferItemLogic.getInstance().createOfferItemPrice(offerItem, inventoryCondition,
                                                         unitOfMeasureType, currency, createdBy);
-                                                OfferLogic.getInstance().createOfferItemFixedPrice(offerItemPrice, unitPrice, createdBy);
+                                                OfferItemLogic.getInstance().createOfferItemFixedPrice(offerItemPrice, unitPrice, createdBy);
                                             } else {
                                                 addExecutionError(ExecutionErrors.MissingUnitPrice.name());
                                             }
@@ -164,9 +166,9 @@ public class CreateOfferItemPriceCommand
                                             }
                                             
                                             if(minimumUnitPrice != null && maximumUnitPrice != null && unitPriceIncrement != null) {
-                                                offerItemPrice = OfferLogic.getInstance().createOfferItemPrice(offerItem, inventoryCondition,
+                                                offerItemPrice = OfferItemLogic.getInstance().createOfferItemPrice(offerItem, inventoryCondition,
                                                         unitOfMeasureType, currency, createdBy);
-                                                OfferLogic.getInstance().createOfferItemVariablePrice(offerItemPrice, minimumUnitPrice, maximumUnitPrice,
+                                                OfferItemLogic.getInstance().createOfferItemVariablePrice(offerItemPrice, minimumUnitPrice, maximumUnitPrice,
                                                         unitPriceIncrement, createdBy);
                                             }
                                         } else {
