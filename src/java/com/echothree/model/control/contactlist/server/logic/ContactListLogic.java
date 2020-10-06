@@ -103,7 +103,7 @@ public class ContactListLogic
                     || contactListControl.countPartyTypeContactListsByContactList(contactList) == 0;
         }
 
-        // Customers have some special checks based on Customer Type, if access still has no yet been granted.
+        // Customers have some special checks based on Customer Type, if access still has not yet been granted.
         if(!hasAccess && partyTypeName.equals(PartyTypes.CUSTOMER.name())) {
             var customerControl = (CustomerControl)Session.getModelController(CustomerControl.class);
             var customerType = customerControl.getCustomer(executingParty).getCustomerType();
@@ -113,9 +113,10 @@ public class ContactListLogic
 
             // If access hasn't been granted, allow access if the Customer Type has been explicitly given access to the
             // Contact List, or if the Contact List has no further restrictions.
-            if(!hasAccess)
+            if(!hasAccess) {
                 hasAccess = contactListControl.customerTypeContactListExists(customerType, contactList)
                         || contactListControl.countCustomerTypeContactListsByContactList(contactList) == 0;
+            }
         }
 
         return hasAccess;
@@ -130,9 +131,11 @@ public class ContactListLogic
         var entityInstance = coreControl.getEntityInstanceByBasePK(partyContactList.getPrimaryKey());
         var workflowEntrance = contactList.getLastDetail().getDefaultPartyContactListStatus();
         var workflowEntranceName = workflowEntrance.getLastDetail().getWorkflowEntranceName();
-        
+
+        // Add the PartyContactList to the DefaultPartyContactListStatus for the Contact List.
         workflowControl.addEntityToWorkflow(workflowEntrance, entityInstance, null, null, createdBy);
-        
+
+        // Based on the DefaultPartyContactListStatus, add the PartyContactList to a Chain.
         if(workflowEntranceName.equals(PartyContactListStatusConstants.WorkflowEntrance_NEW_AWAITING_VERIFICATION)) {
             ContactListChainLogic.getInstance().createContactListConfirmationChainInstance(eea, party, partyContactList, createdBy);
         } else if(workflowEntranceName.equals(PartyContactListStatusConstants.WorkflowEntrance_NEW_ACTIVE)) {
@@ -149,7 +152,9 @@ public class ContactListLogic
         var entityInstance = coreControl.getEntityInstanceByBasePK(partyContactList.getPrimaryKey());
         var workflowEntityStatus = workflowControl.getWorkflowEntityStatusByEntityInstanceForUpdateUsingNames(PartyContactListStatusConstants.Workflow_PARTY_CONTACT_LIST_STATUS, entityInstance);
         var workflowStepName = workflowEntityStatus.getWorkflowStep().getLastDetail().getWorkflowStepName();
-        
+
+        // If they were an active subscriber, add them to an appropriate Chain when unsubscribing. If they haven't
+        // confirmed, we'll skip any follow-up.
         if(workflowStepName.equals(PartyContactListStatusConstants.WorkflowStep_ACTIVE)) {
             ContactListChainLogic.getInstance().createContactListUnsubscribeChainInstance(eea, partyContactList.getLastDetail().getParty(), partyContactList, deletedBy);
         }
@@ -173,6 +178,8 @@ public class ContactListLogic
                 .forEach((partyTypeContactListGroup) -> contactLists.addAll(contactListControl.getContactListsByContactListGroup(partyTypeContactListGroup.getContactListGroup()))
         );
 
+        // If the party is a CUSTOMER, check to see if their CustomerType is tied to any specific ContactLists
+        // or ContactListGroups.
         if(PartyLogic.getInstance().isPartyType(party, PartyTypes.CUSTOMER.name())) {
             var customerControl = (CustomerControl)Session.getModelController(CustomerControl.class);
             var customerType = customerControl.getCustomer(party).getCustomerType();
