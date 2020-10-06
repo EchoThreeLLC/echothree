@@ -28,7 +28,11 @@ import com.echothree.model.control.workflow.server.WorkflowControl;
 import com.echothree.model.data.contact.server.entity.ContactMechanismPurpose;
 import com.echothree.model.data.contactlist.server.entity.ContactList;
 import com.echothree.model.data.contactlist.server.entity.ContactListContactMechanismPurpose;
+import com.echothree.model.data.contactlist.server.entity.CustomerTypeContactList;
+import com.echothree.model.data.contactlist.server.entity.CustomerTypeContactListGroup;
 import com.echothree.model.data.contactlist.server.entity.PartyContactList;
+import com.echothree.model.data.contactlist.server.entity.PartyTypeContactList;
+import com.echothree.model.data.contactlist.server.entity.PartyTypeContactListGroup;
 import com.echothree.model.data.customer.server.entity.CustomerType;
 import com.echothree.model.data.party.server.entity.Party;
 import com.echothree.util.common.message.ExecutionErrors;
@@ -159,27 +163,33 @@ public class ContactListLogic
         var partyType = party.getLastDetail().getPartyType();
         var contactLists = new HashSet<ContactList>();
 
-        contactListControl.getPartyTypeContactListsByPartyType(partyType).stream().filter((partyTypeContactList) -> partyTypeContactList.getAddWhenCreated()).map((partyTypeContactList) -> partyTypeContactList.getContactList()).forEach((contactList) -> {
-            contactLists.add(contactList);
-        });
-        contactListControl.getPartyTypeContactListGroupsByPartyType(partyType).stream().filter((partyTypeContactListGroup) -> partyTypeContactListGroup.getAddWhenCreated()).forEach((partyTypeContactListGroup) -> {
-            contactLists.addAll(contactListControl.getContactListsByContactListGroup(partyTypeContactListGroup.getContactListGroup()));
-        });
+        contactListControl.getPartyTypeContactListsByPartyType(partyType).stream()
+                .filter(PartyTypeContactList::getAddWhenCreated)
+                .map(PartyTypeContactList::getContactList)
+                .forEach(contactLists::add);
+
+        contactListControl.getPartyTypeContactListGroupsByPartyType(partyType).stream()
+                .filter(PartyTypeContactListGroup::getAddWhenCreated)
+                .forEach((partyTypeContactListGroup) -> contactLists.addAll(contactListControl.getContactListsByContactListGroup(partyTypeContactListGroup.getContactListGroup()))
+        );
 
         if(PartyLogic.getInstance().isPartyType(party, PartyTypes.CUSTOMER.name())) {
             var customerControl = (CustomerControl)Session.getModelController(CustomerControl.class);
-            CustomerType customerType = customerControl.getCustomer(party).getCustomerType();
+            var customerType = customerControl.getCustomer(party).getCustomerType();
 
-            contactListControl.getCustomerTypeContactListsByCustomerType(customerType).stream().filter((customerTypeContactList) -> customerTypeContactList.getAddWhenCreated()).map((customerTypeContactList) -> customerTypeContactList.getContactList()).forEach((contactList) -> {
-                contactLists.add(contactList);
-            });
-            contactListControl.getCustomerTypeContactListGroupsByCustomerType(customerType).stream().filter((customerTypeContactListGroup) -> customerTypeContactListGroup.getAddWhenCreated()).forEach((customerTypeContactListGroup) -> {
-                contactLists.addAll(contactListControl.getContactListsByContactListGroup(customerTypeContactListGroup.getContactListGroup()));
-            });
+            contactListControl.getCustomerTypeContactListsByCustomerType(customerType).stream()
+                    .filter(CustomerTypeContactList::getAddWhenCreated)
+                    .map(CustomerTypeContactList::getContactList)
+                    .forEach(contactLists::add);
+
+            contactListControl.getCustomerTypeContactListGroupsByCustomerType(customerType).stream()
+                    .filter(CustomerTypeContactListGroup::getAddWhenCreated)
+                    .forEach((customerTypeContactListGroup) -> contactLists.addAll(contactListControl.getContactListsByContactListGroup(customerTypeContactListGroup.getContactListGroup()))
+            );
         }
 
         if(!hasExecutionErrors(eea)) {
-            contactLists.stream().forEach((contactList) -> {
+            contactLists.forEach((contactList) -> {
                 addContactListToParty(eea, party, contactList, null, createdBy);
             });
         }
