@@ -2229,5 +2229,7 @@ public enum ExecutionErrors {
     UnknownDefaultOffer,
     UnknownDefaultUse,
     CannotDeleteOfferUseInUse,
+    UnknownDefaultContactListGroup,
+    UnknownDefaultContactList,
 
 }

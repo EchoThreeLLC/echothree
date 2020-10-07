@@ -16,11 +16,17 @@
 
 package com.echothree.model.control.contactlist.server.logic;
 
+import com.echothree.control.user.contactlist.common.spec.ContactListUniversalSpec;
 import com.echothree.model.control.contactlist.common.exception.UnknownContactListContactMechanismPurposeException;
 import com.echothree.model.control.contactlist.common.exception.UnknownContactListNameException;
+import com.echothree.model.control.contactlist.common.exception.UnknownDefaultContactListException;
 import com.echothree.model.control.contactlist.common.workflow.PartyContactListStatusConstants;
 import com.echothree.model.control.contactlist.server.ContactListControl;
+import com.echothree.model.control.core.common.ComponentVendors;
+import com.echothree.model.control.core.common.EntityTypes;
+import com.echothree.model.control.core.common.exception.InvalidParameterCountException;
 import com.echothree.model.control.core.server.CoreControl;
+import com.echothree.model.control.core.server.logic.EntityInstanceLogic;
 import com.echothree.model.control.customer.server.CustomerControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.logic.PartyLogic;
@@ -33,12 +39,13 @@ import com.echothree.model.data.contactlist.server.entity.CustomerTypeContactLis
 import com.echothree.model.data.contactlist.server.entity.PartyContactList;
 import com.echothree.model.data.contactlist.server.entity.PartyTypeContactList;
 import com.echothree.model.data.contactlist.server.entity.PartyTypeContactListGroup;
-import com.echothree.model.data.customer.server.entity.CustomerType;
+import com.echothree.model.data.core.server.entity.EntityInstance;
 import com.echothree.model.data.party.server.entity.Party;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.persistence.BasePK;
 import com.echothree.util.server.control.BaseLogic;
 import com.echothree.util.server.message.ExecutionErrorAccumulator;
+import com.echothree.util.server.persistence.EntityPermission;
 import com.echothree.util.server.persistence.Session;
 import java.util.HashSet;
 
@@ -56,10 +63,11 @@ public class ContactListLogic
     public static ContactListLogic getInstance() {
         return ContactListLogicHolder.instance;
     }
-    
-    public ContactList getContactListByName(final ExecutionErrorAccumulator eea, final String contactListName) {
+
+    public ContactList getContactListByName(final ExecutionErrorAccumulator eea, final String contactListName,
+            final EntityPermission entityPermission) {
         var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
-        var contactList = contactListControl.getContactListByName(contactListName);
+        ContactList contactList = contactListControl.getContactListByName(contactListName, entityPermission);
 
         if(contactList == null) {
             handleExecutionError(UnknownContactListNameException.class, eea, ExecutionErrors.UnknownContactListName.name(), contactListName);
@@ -67,7 +75,64 @@ public class ContactListLogic
 
         return contactList;
     }
-    
+
+    public ContactList getContactListByName(final ExecutionErrorAccumulator eea, final String contactListName) {
+        return getContactListByName(eea, contactListName, EntityPermission.READ_ONLY);
+    }
+
+    public ContactList getContactListByNameForUpdate(final ExecutionErrorAccumulator eea, final String contactListName) {
+        return getContactListByName(eea, contactListName, EntityPermission.READ_WRITE);
+    }
+
+    public ContactList getContactListByUniversalSpec(final ExecutionErrorAccumulator eea,
+            final ContactListUniversalSpec universalSpec, boolean allowDefault, final EntityPermission entityPermission) {
+        ContactList contactList = null;
+        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        String contactListName = universalSpec.getContactListName();
+        int parameterCount = (contactListName == null ? 0 : 1) + EntityInstanceLogic.getInstance().countPossibleEntitySpecs(universalSpec);
+
+        switch(parameterCount) {
+            case 0:
+                if(allowDefault) {
+                    contactList = contactListControl.getDefaultContactList(entityPermission);
+
+                    if(contactList == null) {
+                        handleExecutionError(UnknownDefaultContactListException.class, eea, ExecutionErrors.UnknownDefaultContactList.name());
+                    }
+                } else {
+                    handleExecutionError(InvalidParameterCountException.class, eea, ExecutionErrors.InvalidParameterCount.name());
+                }
+                break;
+            case 1:
+                if(contactListName == null) {
+                    EntityInstance entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, universalSpec,
+                            ComponentVendors.ECHOTHREE.name(), EntityTypes.ContactList.name());
+
+                    if(!eea.hasExecutionErrors()) {
+                        contactList = contactListControl.getContactListByEntityInstance(entityInstance, entityPermission);
+                    }
+                } else {
+                    contactList = getContactListByName(eea, contactListName, entityPermission);
+                }
+                break;
+            default:
+                handleExecutionError(InvalidParameterCountException.class, eea, ExecutionErrors.InvalidParameterCount.name());
+                break;
+        }
+
+        return contactList;
+    }
+
+    public ContactList getContactListByUniversalSpec(final ExecutionErrorAccumulator eea,
+            final ContactListUniversalSpec universalSpec, boolean allowDefault) {
+        return getContactListByUniversalSpec(eea, universalSpec, allowDefault, EntityPermission.READ_ONLY);
+    }
+
+    public ContactList getContactListByUniversalSpecForUpdate(final ExecutionErrorAccumulator eea,
+            final ContactListUniversalSpec universalSpec, boolean allowDefault) {
+        return getContactListByUniversalSpec(eea, universalSpec, allowDefault, EntityPermission.READ_WRITE);
+    }
+
     public ContactListContactMechanismPurpose getContactListContactMechanismPurpose(final ExecutionErrorAccumulator eea, final ContactList contactList,
             final ContactMechanismPurpose contactMechanismPurpose) {
         var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);

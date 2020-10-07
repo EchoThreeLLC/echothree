@@ -37,6 +37,7 @@ import com.echothree.model.control.contactlist.common.transfer.CustomerTypeConta
 import com.echothree.model.control.contactlist.common.transfer.PartyContactListTransfer;
 import com.echothree.model.control.contactlist.common.transfer.PartyTypeContactListGroupTransfer;
 import com.echothree.model.control.contactlist.common.transfer.PartyTypeContactListTransfer;
+import com.echothree.model.control.contactlist.common.workflow.PartyContactListStatusConstants;
 import com.echothree.model.control.contactlist.server.transfer.ContactListContactMechanismPurposeTransferCache;
 import com.echothree.model.control.contactlist.server.transfer.ContactListFrequencyTransferCache;
 import com.echothree.model.control.contactlist.server.transfer.ContactListGroupTransferCache;
@@ -50,7 +51,6 @@ import com.echothree.model.control.contactlist.server.transfer.PartyTypeContactL
 import com.echothree.model.control.contactlist.server.transfer.PartyTypeContactListTransferCache;
 import com.echothree.model.control.core.common.EventTypes;
 import com.echothree.model.control.letter.server.LetterControl;
-import com.echothree.model.control.contactlist.common.workflow.PartyContactListStatusConstants;
 import com.echothree.model.data.chain.common.pk.ChainPK;
 import com.echothree.model.data.chain.server.entity.Chain;
 import com.echothree.model.data.contact.common.pk.ContactMechanismPurposePK;
@@ -724,6 +724,22 @@ public class ContactListControl
         return contactListGroup;
     }
 
+    /** Assume that the entityInstance passed to this function is a ECHOTHREE.ContactListGroup */
+    public ContactListGroup getContactListGroupByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
+        var pk = new ContactListGroupPK(entityInstance.getEntityUniqueId());
+        var useType = ContactListGroupFactory.getInstance().getEntityFromPK(entityPermission, pk);
+
+        return useType;
+    }
+
+    public ContactListGroup getContactListGroupByEntityInstance(EntityInstance entityInstance) {
+        return getContactListGroupByEntityInstance(entityInstance, EntityPermission.READ_ONLY);
+    }
+
+    public ContactListGroup getContactListGroupByEntityInstanceForUpdate(EntityInstance entityInstance) {
+        return getContactListGroupByEntityInstance(entityInstance, EntityPermission.READ_WRITE);
+    }
+
     private static final Map<EntityPermission, String> getContactListGroupByNameQueries;
 
     static {
@@ -741,7 +757,7 @@ public class ContactListControl
         getContactListGroupByNameQueries = Collections.unmodifiableMap(queryMap);
     }
 
-    private ContactListGroup getContactListGroupByName(String contactListGroupName, EntityPermission entityPermission) {
+    public ContactListGroup getContactListGroupByName(String contactListGroupName, EntityPermission entityPermission) {
         return ContactListGroupFactory.getInstance().getEntityFromQuery(entityPermission, getContactListGroupByNameQueries,
                 contactListGroupName);
     }
@@ -779,7 +795,7 @@ public class ContactListControl
         getDefaultContactListGroupQueries = Collections.unmodifiableMap(queryMap);
     }
 
-    private ContactListGroup getDefaultContactListGroup(EntityPermission entityPermission) {
+    public ContactListGroup getDefaultContactListGroup(EntityPermission entityPermission) {
         return ContactListGroupFactory.getInstance().getEntityFromQuery(entityPermission, getDefaultContactListGroupQueries);
     }
 
@@ -1538,6 +1554,22 @@ public class ContactListControl
         return contactList;
     }
 
+    /** Assume that the entityInstance passed to this function is a ECHOTHREE.ContactList */
+    public ContactList getContactListByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
+        var pk = new ContactListPK(entityInstance.getEntityUniqueId());
+        var useType = ContactListFactory.getInstance().getEntityFromPK(entityPermission, pk);
+
+        return useType;
+    }
+
+    public ContactList getContactListByEntityInstance(EntityInstance entityInstance) {
+        return getContactListByEntityInstance(entityInstance, EntityPermission.READ_ONLY);
+    }
+
+    public ContactList getContactListByEntityInstanceForUpdate(EntityInstance entityInstance) {
+        return getContactListByEntityInstance(entityInstance, EntityPermission.READ_WRITE);
+    }
+
     private static final Map<EntityPermission, String> getContactListByNameQueries;
 
     static {
@@ -1555,7 +1587,7 @@ public class ContactListControl
         getContactListByNameQueries = Collections.unmodifiableMap(queryMap);
     }
 
-    private ContactList getContactListByName(String contactListName, EntityPermission entityPermission) {
+    public ContactList getContactListByName(String contactListName, EntityPermission entityPermission) {
         return ContactListFactory.getInstance().getEntityFromQuery(entityPermission, getContactListByNameQueries,
                 contactListName);
     }
@@ -1593,7 +1625,7 @@ public class ContactListControl
         getDefaultContactListQueries = Collections.unmodifiableMap(queryMap);
     }
 
-    private ContactList getDefaultContactList(EntityPermission entityPermission) {
+    public ContactList getDefaultContactList(EntityPermission entityPermission) {
         return ContactListFactory.getInstance().getEntityFromQuery(entityPermission, getDefaultContactListQueries);
     }
 
