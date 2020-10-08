@@ -20,6 +20,7 @@ import com.echothree.control.user.contactlist.common.form.GetContactListForm;
 import com.echothree.control.user.contactlist.common.result.ContactListResultFactory;
 import com.echothree.control.user.contactlist.common.result.GetContactListResult;
 import com.echothree.model.control.contactlist.server.ContactListControl;
+import com.echothree.model.control.contactlist.server.logic.ContactListLogic;
 import com.echothree.model.control.core.common.EventTypes;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
@@ -71,7 +72,7 @@ public class GetContactListCommand
         ContactList contactList = contactListControl.getContactListByName(contactListName);
         
         if(contactList != null) {
-            result.setContactList(contactListControl.getContactListTransfer(getUserVisit(), contactList));
+            result.setContactList(ContactListLogic.getInstance().getContactListTransfer(getUserVisit(), contactList));
             
             sendEventUsingNames(contactList.getPrimaryKey(), EventTypes.READ.name(), null, null, getPartyPK());
         } else {

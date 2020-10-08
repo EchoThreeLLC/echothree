@@ -20,6 +20,7 @@ import com.echothree.control.user.contactlist.common.spec.ContactListUniversalSp
 import com.echothree.model.control.contactlist.common.exception.UnknownContactListContactMechanismPurposeException;
 import com.echothree.model.control.contactlist.common.exception.UnknownContactListNameException;
 import com.echothree.model.control.contactlist.common.exception.UnknownDefaultContactListException;
+import com.echothree.model.control.contactlist.common.transfer.ContactListTransfer;
 import com.echothree.model.control.contactlist.common.workflow.PartyContactListStatusConstants;
 import com.echothree.model.control.contactlist.server.ContactListControl;
 import com.echothree.model.control.core.common.ComponentVendors;
@@ -41,6 +42,7 @@ import com.echothree.model.data.contactlist.server.entity.PartyTypeContactList;
 import com.echothree.model.data.contactlist.server.entity.PartyTypeContactListGroup;
 import com.echothree.model.data.core.server.entity.EntityInstance;
 import com.echothree.model.data.party.server.entity.Party;
+import com.echothree.model.data.user.server.entity.UserVisit;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.persistence.BasePK;
 import com.echothree.util.server.control.BaseLogic;
@@ -48,6 +50,7 @@ import com.echothree.util.server.message.ExecutionErrorAccumulator;
 import com.echothree.util.server.persistence.EntityPermission;
 import com.echothree.util.server.persistence.Session;
 import java.util.HashSet;
+import java.util.List;
 
 public class ContactListLogic
     extends BaseLogic {
@@ -266,5 +269,17 @@ public class ContactListLogic
             });
         }
     }
-    
+
+    public ContactListTransfer getContactListTransfer(UserVisit userVisit, ContactList contactList) {
+        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+
+        return contactListControl.getContactListTransfer(userVisit, contactList);
+    }
+
+    public List<ContactListTransfer> getContactListTransfers(UserVisit userVisit) {
+        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+
+        return contactListControl.getContactListTransfers(userVisit);
+    }
+
 }

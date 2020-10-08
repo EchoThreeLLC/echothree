@@ -19,6 +19,7 @@ package com.echothree.model.control.contactlist.server.logic;
 import com.echothree.control.user.contactlist.common.spec.ContactListGroupUniversalSpec;
 import com.echothree.model.control.contactlist.common.exception.UnknownContactListGroupNameException;
 import com.echothree.model.control.contactlist.common.exception.UnknownDefaultContactListGroupException;
+import com.echothree.model.control.contactlist.common.transfer.ContactListGroupTransfer;
 import com.echothree.model.control.contactlist.server.ContactListControl;
 import com.echothree.model.control.core.common.ComponentVendors;
 import com.echothree.model.control.core.common.EntityTypes;
@@ -26,11 +27,13 @@ import com.echothree.model.control.core.common.exception.InvalidParameterCountEx
 import com.echothree.model.control.core.server.logic.EntityInstanceLogic;
 import com.echothree.model.data.contactlist.server.entity.ContactListGroup;
 import com.echothree.model.data.core.server.entity.EntityInstance;
+import com.echothree.model.data.user.server.entity.UserVisit;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.server.control.BaseLogic;
 import com.echothree.util.server.message.ExecutionErrorAccumulator;
 import com.echothree.util.server.persistence.EntityPermission;
 import com.echothree.util.server.persistence.Session;
+import java.util.List;
 
 public class ContactListGroupLogic
     extends BaseLogic {
@@ -115,5 +118,17 @@ public class ContactListGroupLogic
             final ContactListGroupUniversalSpec universalSpec, boolean allowDefault) {
         return getContactListGroupByUniversalSpec(eea, universalSpec, allowDefault, EntityPermission.READ_WRITE);
     }
-    
+
+    public ContactListGroupTransfer getContactListGroupTransfer(UserVisit userVisit, ContactListGroup contactListGroup) {
+        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+
+        return contactListControl.getContactListGroupTransfer(userVisit, contactListGroup);
+    }
+
+    public List<ContactListGroupTransfer> getContactListGroupTransfers(UserVisit userVisit) {
+        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+
+        return contactListControl.getContactListGroupTransfers(userVisit);
+    }
+
 }

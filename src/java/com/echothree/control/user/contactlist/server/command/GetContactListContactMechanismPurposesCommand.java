@@ -73,7 +73,7 @@ public class GetContactListContactMechanismPurposesCommand
             var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
             UserVisit userVisit = getUserVisit();
             
-            result.setContactList(contactListControl.getContactListTransfer(userVisit, contactList));
+            result.setContactList(ContactListLogic.getInstance().getContactListTransfer(userVisit, contactList));
             result.setContactListContactMechanismPurposes(contactListControl.getContactListContactMechanismPurposeTransfersByContactList(userVisit, contactList));
         }
         
