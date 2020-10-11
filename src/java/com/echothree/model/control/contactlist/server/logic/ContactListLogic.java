@@ -22,7 +22,7 @@ import com.echothree.model.control.contactlist.common.exception.UnknownContactLi
 import com.echothree.model.control.contactlist.common.exception.UnknownDefaultContactListException;
 import com.echothree.model.control.contactlist.common.transfer.ContactListTransfer;
 import com.echothree.model.control.contactlist.common.workflow.PartyContactListStatusConstants;
-import com.echothree.model.control.contactlist.server.ContactListControl;
+import com.echothree.model.control.contactlist.server.control.ContactListControl;
 import com.echothree.model.control.core.common.ComponentVendors;
 import com.echothree.model.control.core.common.EntityTypes;
 import com.echothree.model.control.core.common.exception.InvalidParameterCountException;

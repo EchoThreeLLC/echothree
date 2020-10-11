@@ -20,7 +20,7 @@ import com.echothree.control.user.contactlist.common.spec.ContactListGroupUniver
 import com.echothree.model.control.contactlist.common.exception.UnknownContactListGroupNameException;
 import com.echothree.model.control.contactlist.common.exception.UnknownDefaultContactListGroupException;
 import com.echothree.model.control.contactlist.common.transfer.ContactListGroupTransfer;
-import com.echothree.model.control.contactlist.server.ContactListControl;
+import com.echothree.model.control.contactlist.server.control.ContactListControl;
 import com.echothree.model.control.core.common.ComponentVendors;
 import com.echothree.model.control.core.common.EntityTypes;
 import com.echothree.model.control.core.common.exception.InvalidParameterCountException;

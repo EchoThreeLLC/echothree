@@ -19,7 +19,7 @@ package com.echothree.model.control.contactlist.server.logic;
 import com.echothree.model.control.contact.server.ContactControl;
 import com.echothree.model.control.contactlist.common.exception.DuplicatePartyContactListException;
 import com.echothree.model.control.contactlist.common.exception.UnknownPreferredContactMechanismPurposeNameException;
-import com.echothree.model.control.contactlist.server.ContactListControl;
+import com.echothree.model.control.contactlist.server.control.ContactListControl;
 import com.echothree.model.control.party.server.logic.PartyLogic;
 import com.echothree.model.data.contact.server.entity.ContactMechanismPurpose;
 import com.echothree.model.data.contactlist.server.entity.ContactListContactMechanismPurpose;
