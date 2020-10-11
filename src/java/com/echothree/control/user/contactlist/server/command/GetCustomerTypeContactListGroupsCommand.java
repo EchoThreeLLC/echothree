@@ -21,7 +21,7 @@ import com.echothree.control.user.contactlist.common.result.ContactListResultFac
 import com.echothree.control.user.contactlist.common.result.GetCustomerTypeContactListGroupsResult;
 import com.echothree.model.control.contactlist.server.ContactListControl;
 import com.echothree.model.control.contactlist.server.logic.ContactListGroupLogic;
-import com.echothree.model.control.customer.server.CustomerControl;
+import com.echothree.model.control.customer.server.control.CustomerControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
