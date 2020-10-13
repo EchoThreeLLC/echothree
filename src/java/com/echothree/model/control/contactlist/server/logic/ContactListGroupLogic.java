@@ -25,8 +25,11 @@ import com.echothree.model.control.core.common.ComponentVendors;
 import com.echothree.model.control.core.common.EntityTypes;
 import com.echothree.model.control.core.common.exception.InvalidParameterCountException;
 import com.echothree.model.control.core.server.logic.EntityInstanceLogic;
+import com.echothree.model.control.customer.server.control.CustomerControl;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.data.contactlist.server.entity.ContactListGroup;
 import com.echothree.model.data.core.server.entity.EntityInstance;
+import com.echothree.model.data.party.server.entity.Party;
 import com.echothree.model.data.user.server.entity.UserVisit;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.server.control.BaseLogic;
@@ -129,6 +132,55 @@ public class ContactListGroupLogic
         var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
 
         return contactListControl.getContactListGroupTransfers(userVisit);
+    }
+
+    public boolean hasContactListGroupAccess(final Party executingParty, final ContactListGroup contactListGroup) {
+        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var partyType = executingParty.getLastDetail().getPartyType();
+        var partyTypeName = partyType.getPartyTypeName();
+
+        // Employees may do anything they want with list groups.
+        var hasAccess = partyTypeName.equals(PartyTypes.EMPLOYEE.name());
+
+        // If the Contact List Group Group that the Contact List Group is in has been explicitly given access to the Party Type,
+        // then allow access.
+        if(!hasAccess) {
+            hasAccess = contactListControl.partyTypeContactListGroupExists(partyType, contactListGroup);
+        }
+
+        // If access hasn't been granted, allow access if the Party Type has been explicitly given access to the
+        // Contact List Group, or if the Contact List Group has no further restrictions.
+        if(!hasAccess) {
+            hasAccess = contactListControl.partyTypeContactListGroupExists(partyType, contactListGroup)
+                    || contactListControl.countPartyTypeContactListGroupsByContactListGroup(contactListGroup) == 0;
+        }
+
+        // Customers have some special checks based on Customer Type, if access still has not yet been granted.
+        if(!hasAccess && partyTypeName.equals(PartyTypes.CUSTOMER.name())) {
+            var customerControl = (CustomerControl)Session.getModelController(CustomerControl.class);
+            var customerType = customerControl.getCustomer(executingParty).getCustomerType();
+
+            // If the Contact List Group is in has been explicitly given access to the Party Type, then allow access.
+            hasAccess = contactListControl.customerTypeContactListGroupExists(customerType, contactListGroup);
+
+            // If access hasn't been granted, allow access if the Customer Type has been explicitly given access to the
+            // Contact List Group, or if the Contact List Group has no further restrictions.
+            if(!hasAccess) {
+                hasAccess = contactListControl.customerTypeContactListGroupExists(customerType, contactListGroup)
+                        || contactListControl.countCustomerTypeContactListGroupsByContactListGroup(contactListGroup) == 0;
+            }
+        }
+
+        // If the executingParty has access to any of the ContactLists in the ContactListGroup, then they have access to
+        // the ContactListGroup.
+        if(!hasAccess) {
+            hasAccess = contactListControl.getContactListsByContactListGroup(contactListGroup).stream()
+                    .map(contactList -> ContactListLogic.getInstance().hasContactListAccess(executingParty, contactList))
+                    .reduce(Boolean::logicalOr)
+                    .orElse(false);
+        }
+
+        return hasAccess;
     }
 
 }
