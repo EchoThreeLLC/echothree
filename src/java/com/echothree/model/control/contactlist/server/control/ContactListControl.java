@@ -40,8 +40,6 @@ import com.echothree.model.control.contactlist.common.transfer.PartyTypeContactL
 import com.echothree.model.control.contactlist.common.workflow.PartyContactListStatusConstants;
 import com.echothree.model.control.contactlist.server.transfer.ContactListContactMechanismPurposeTransferCache;
 import com.echothree.model.control.contactlist.server.transfer.ContactListFrequencyTransferCache;
-import com.echothree.model.control.contactlist.server.transfer.ContactListGroupTransferCache;
-import com.echothree.model.control.contactlist.server.transfer.ContactListTransferCache;
 import com.echothree.model.control.contactlist.server.transfer.ContactListTransferCaches;
 import com.echothree.model.control.contactlist.server.transfer.ContactListTypeTransferCache;
 import com.echothree.model.control.contactlist.server.transfer.CustomerTypeContactListGroupTransferCache;
@@ -51,7 +49,6 @@ import com.echothree.model.control.contactlist.server.transfer.PartyTypeContactL
 import com.echothree.model.control.contactlist.server.transfer.PartyTypeContactListTransferCache;
 import com.echothree.model.control.core.common.EventTypes;
 import com.echothree.model.control.letter.server.control.LetterControl;
-import com.echothree.model.control.contactlist.common.workflow.PartyContactListStatusConstants;
 import com.echothree.model.data.chain.common.pk.ChainPK;
 import com.echothree.model.data.chain.server.entity.Chain;
 import com.echothree.model.data.contact.common.pk.ContactMechanismPurposePK;
@@ -880,16 +877,19 @@ public class ContactListControl
         return getContactListTransferCaches(userVisit).getContactListGroupTransferCache().getContactListGroupTransfer(contactListGroup);
     }
 
-    public List<ContactListGroupTransfer> getContactListGroupTransfers(UserVisit userVisit) {
-        List<ContactListGroup> contactListGroups = getContactListGroups();
-        List<ContactListGroupTransfer> contactListGroupTransfers = new ArrayList<>(contactListGroups.size());
-        ContactListGroupTransferCache contactListGroupTransferCache = getContactListTransferCaches(userVisit).getContactListGroupTransferCache();
+    public List<ContactListGroupTransfer> getContactListGroupTransfers(UserVisit userVisit, List<ContactListGroup> contactListGroups) {
+        var contactListGroupTransfers = new ArrayList<ContactListGroupTransfer>(contactListGroups.size());
+        var contactListGroupTransferCache = getContactListTransferCaches(userVisit).getContactListGroupTransferCache();
 
         contactListGroups.stream().forEach((contactListGroup) -> {
             contactListGroupTransfers.add(contactListGroupTransferCache.getContactListGroupTransfer(contactListGroup));
         });
 
         return contactListGroupTransfers;
+    }
+
+    public List<ContactListGroupTransfer> getContactListGroupTransfers(UserVisit userVisit) {
+        return getContactListGroupTransfers(userVisit, getContactListGroups());
     }
 
     private void updateContactListGroupFromValue(ContactListGroupDetailValue contactListGroupDetailValue, boolean checkDefault, BasePK updatedBy) {
@@ -1842,16 +1842,19 @@ public class ContactListControl
         return getContactListTransferCaches(userVisit).getContactListTransferCache().getContactListTransfer(contactList);
     }
 
-    public List<ContactListTransfer> getContactListTransfers(UserVisit userVisit) {
-        List<ContactList> contactLists = getContactLists();
-        List<ContactListTransfer> contactListTransfers = new ArrayList<>(contactLists.size());
-        ContactListTransferCache contactListTransferCache = getContactListTransferCaches(userVisit).getContactListTransferCache();
+    public List<ContactListTransfer> getContactListTransfers(UserVisit userVisit, List<ContactList> contactLists) {
+        var contactListTransfers = new ArrayList<ContactListTransfer>(contactLists.size());
+        var contactListTransferCache = getContactListTransferCaches(userVisit).getContactListTransferCache();
 
         contactLists.stream().forEach((contactList) -> {
             contactListTransfers.add(contactListTransferCache.getContactListTransfer(contactList));
         });
 
         return contactListTransfers;
+    }
+
+    public List<ContactListTransfer> getContactListTransfers(UserVisit userVisit) {
+        return getContactListTransfers(userVisit, getContactLists());
     }
 
     private void updateContactListFromValue(ContactListDetailValue contactListDetailValue, boolean checkDefault, BasePK updatedBy) {
