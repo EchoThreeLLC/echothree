@@ -63,7 +63,7 @@ public class ContactListGroupSteps implements En {
                     persona.createContactListGroupForm = null;
                 });
 
-        When("^the user begins deleting an contact list group",
+        When("^the user begins deleting a contact list group",
                 () -> {
                     var persona = CurrentPersona.persona;
 
@@ -86,7 +86,7 @@ public class ContactListGroupSteps implements En {
                     persona.deleteContactListGroupForm = null;
                 });
 
-        When("^the user begins specifying an contact list group to edit$",
+        When("^the user begins specifying a contact list group to edit$",
                 () -> {
                     var persona = CurrentPersona.persona;
 
