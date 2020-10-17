@@ -17,6 +17,7 @@
 package com.echothree.control.user.contactlist.server.command;
 
 import com.echothree.control.user.contactlist.common.form.CreateContactListFrequencyForm;
+import com.echothree.control.user.contactlist.common.result.ContactListResultFactory;
 import com.echothree.model.control.contactlist.server.control.ContactListControl;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
@@ -65,9 +66,10 @@ public class CreateContactListFrequencyCommand
     
     @Override
     protected BaseResult execute() {
+        var result = ContactListResultFactory.getCreateContactListFrequencyResult();
         var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
-        String contactListFrequencyName = form.getContactListFrequencyName();
-        ContactListFrequency contactListFrequency = contactListControl.getContactListFrequencyByName(contactListFrequencyName);
+        var contactListFrequencyName = form.getContactListFrequencyName();
+        var contactListFrequency = contactListControl.getContactListFrequencyByName(contactListFrequencyName);
         
         if(contactListFrequency == null) {
             var partyPK = getPartyPK();
@@ -83,8 +85,13 @@ public class CreateContactListFrequencyCommand
         } else {
             addExecutionError(ExecutionErrors.DuplicateContactListFrequencyName.name(), contactListFrequencyName);
         }
+
+        if(contactListFrequency != null && !hasExecutionErrors()) {
+            result.setContactListFrequencyName(contactListFrequency.getLastDetail().getContactListFrequencyName());
+            result.setEntityRef(contactListFrequency.getPrimaryKey().getEntityRef());
+        }
         
-        return null;
+        return result;
     }
     
 }
