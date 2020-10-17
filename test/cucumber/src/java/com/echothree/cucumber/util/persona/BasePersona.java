@@ -26,11 +26,15 @@ import com.echothree.control.user.contact.common.form.CreateContactTelephoneForm
 import com.echothree.control.user.contact.common.form.CreateContactWebAddressForm;
 import com.echothree.control.user.contact.common.spec.PartyContactMechanismSpec;
 import com.echothree.control.user.contactlist.common.edit.ContactListEdit;
+import com.echothree.control.user.contactlist.common.edit.ContactListFrequencyEdit;
 import com.echothree.control.user.contactlist.common.edit.ContactListGroupEdit;
 import com.echothree.control.user.contactlist.common.form.CreateContactListForm;
+import com.echothree.control.user.contactlist.common.form.CreateContactListFrequencyForm;
 import com.echothree.control.user.contactlist.common.form.CreateContactListGroupForm;
 import com.echothree.control.user.contactlist.common.form.DeleteContactListForm;
+import com.echothree.control.user.contactlist.common.form.DeleteContactListFrequencyForm;
 import com.echothree.control.user.contactlist.common.form.DeleteContactListGroupForm;
+import com.echothree.control.user.contactlist.common.spec.ContactListFrequencySpec;
 import com.echothree.control.user.contactlist.common.spec.ContactListGroupSpec;
 import com.echothree.control.user.contactlist.common.spec.ContactListSpec;
 import com.echothree.control.user.content.common.edit.ContentCatalogEdit;
@@ -170,14 +174,20 @@ public class BasePersona {
     public ContactListSpec contactListSpec;
     public ContactListEdit contactListEdit;
 
+    public CreateContactListFrequencyForm createContactListFrequencyForm;
+    public DeleteContactListFrequencyForm deleteContactListFrequencyForm;
+    public ContactListFrequencySpec contactListFrequencySpec;
+    public ContactListFrequencyEdit contactListFrequencyEdit;
+
     public CreateContactListGroupForm createContactListGroupForm;
     public DeleteContactListGroupForm deleteContactListGroupForm;
     public ContactListGroupSpec contactListGroupSpec;
     public ContactListGroupEdit contactListGroupEdit;
 
     public String lastContactListName;
+    public String lastContactListFrequencyName;
     public String lastContactListGroupName;
-    
+
     // Content
     public CreateContentCollectionForm createContentCollectionForm;
     public DeleteContentCollectionForm deleteContentCollectionForm;
