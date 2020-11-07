@@ -19,7 +19,9 @@ package com.echothree.model.control.offer.server.control;
 import com.echothree.model.control.core.common.EventTypes;
 import com.echothree.model.control.offer.common.choice.UseChoicesBean;
 import com.echothree.model.control.offer.common.transfer.UseDescriptionTransfer;
+import com.echothree.model.control.offer.common.transfer.UseResultTransfer;
 import com.echothree.model.control.offer.common.transfer.UseTransfer;
+import com.echothree.model.control.search.common.SearchOptions;
 import com.echothree.model.data.core.server.entity.EntityInstance;
 import com.echothree.model.data.offer.common.pk.UsePK;
 import com.echothree.model.data.offer.common.pk.UseTypePK;
@@ -33,6 +35,8 @@ import com.echothree.model.data.offer.server.factory.UseFactory;
 import com.echothree.model.data.offer.server.value.UseDescriptionValue;
 import com.echothree.model.data.offer.server.value.UseDetailValue;
 import com.echothree.model.data.party.server.entity.Language;
+import com.echothree.model.data.search.server.entity.UserVisitSearch;
+import com.echothree.model.data.search.server.factory.SearchResultFactory;
 import com.echothree.model.data.user.server.entity.UserVisit;
 import com.echothree.util.common.exception.PersistenceDatabaseException;
 import com.echothree.util.common.persistence.BasePK;
@@ -44,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class UseControl
         extends BaseOfferControl {
@@ -301,7 +306,7 @@ public class UseControl
             labels.add(label == null? value: label);
             values.add(value);
 
-            boolean usingDefaultChoice = defaultUseChoice == null? false: defaultUseChoice.equals(value);
+            boolean usingDefaultChoice = defaultUseChoice != null && defaultUseChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && useDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -377,7 +382,7 @@ public class UseControl
                 if(iter.hasNext()) {
                     defaultUse = iter.next();
                 }
-                UseDetailValue useDetailValue = defaultUse.getLastDetailForUpdate().getUseDetailValue().clone();
+                UseDetailValue useDetailValue = Objects.requireNonNull(defaultUse).getLastDetailForUpdate().getUseDetailValue().clone();
 
                 useDetailValue.setIsDefault(Boolean.TRUE);
                 updateUseFromValue(useDetailValue, false, deletedBy);
@@ -388,9 +393,9 @@ public class UseControl
     }
 
     public void deleteUses(List<Use> uses, BasePK deletedBy) {
-        uses.stream().forEach((use) -> {
-            deleteUse(use, deletedBy);
-        });
+        uses.forEach((use) -> 
+                deleteUse(use, deletedBy)
+        );
     }
 
     public void deleteUsesByUseType(UseType useType, BasePK deletedBy) {
@@ -459,7 +464,7 @@ public class UseControl
     }
 
     private List<UseDescription> getUseDescriptionsByUse(Use use, EntityPermission entityPermission) {
-        List<UseDescription> useDescriptions = null;
+        List<UseDescription> useDescriptions;
 
         try {
             String query = null;
@@ -558,9 +563,52 @@ public class UseControl
     public void deleteUseDescriptionsByUse(Use use, BasePK deletedBy) {
         List<UseDescription> useDescriptions = getUseDescriptionsByUseForUpdate(use);
 
-        useDescriptions.stream().forEach((useDescription) -> {
-            deleteUseDescription(useDescription, deletedBy);
-        });
+        useDescriptions.forEach((useDescription) -> 
+                deleteUseDescription(useDescription, deletedBy)
+        );
+    }
+
+    // --------------------------------------------------------------------------------
+    //   Use Searches
+    // --------------------------------------------------------------------------------
+
+    public List<UseResultTransfer> getUseResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
+        var search = userVisitSearch.getSearch();
+        var useResultTransfers = new ArrayList<UseResultTransfer>();
+        var includeUse = false;
+
+        var options = session.getOptions();
+        if(options != null) {
+            includeUse = options.contains(SearchOptions.UseResultIncludeUse);
+        }
+
+        try {
+            var useControl = (UseControl)Session.getModelController(UseControl.class);
+            var ps = SearchResultFactory.getInstance().prepareStatement(
+                    "SELECT eni_entityuniqueid " +
+                            "FROM searchresults, entityinstances " +
+                            "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
+                            "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
+                            "_LIMIT_");
+
+            ps.setLong(1, search.getPrimaryKey().getEntityId());
+
+            try (var rs = ps.executeQuery()) {
+                while(rs.next()) {
+                    var use = UseFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new UsePK(rs.getLong(1)));
+                    var useDetail = use.getLastDetail();
+
+                    useResultTransfers.add(new UseResultTransfer(useDetail.getUseName(),
+                            includeUse ? useControl.getUseTransfer(userVisit, use) : null));
+                }
+            } catch (SQLException se) {
+                throw new PersistenceDatabaseException(se);
+            }
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return useResultTransfers;
     }
 
 }

@@ -206,7 +206,7 @@ public class ForumControl
     //   Forum Transfer Caches
     // --------------------------------------------------------------------------------
     
-    private ForumTransferCaches forumTransferCaches = null;
+    private ForumTransferCaches forumTransferCaches;
     
     public ForumTransferCaches getForumTransferCaches(UserVisit userVisit) {
         if(forumTransferCaches == null) {
@@ -263,7 +263,7 @@ public class ForumControl
     }
     
     private ForumGroup getForumGroupByName(String forumGroupName, EntityPermission entityPermission) {
-        ForumGroup forumGroup = null;
+        ForumGroup forumGroup;
         
         try {
             String query = null;
@@ -332,7 +332,7 @@ public class ForumControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultForumGroupChoice == null? false: defaultForumGroupChoice.equals(value);
+            boolean usingDefaultChoice = defaultForumGroupChoice != null && defaultForumGroupChoice.equals(value);
             if(usingDefaultChoice || defaultValue == null)
                 defaultValue = value;
         }
@@ -348,9 +348,9 @@ public class ForumControl
         List<ForumGroupTransfer> forumGroupTransfers = new ArrayList<>(forumGroups.size());
         ForumGroupTransferCache forumGroupTransferCache = getForumTransferCaches(userVisit).getForumGroupTransferCache();
         
-        forumGroups.stream().forEach((forumGroup) -> {
-            forumGroupTransfers.add(forumGroupTransferCache.getForumGroupTransfer(forumGroup));
-        });
+        forumGroups.forEach((forumGroup) ->
+                forumGroupTransfers.add(forumGroupTransferCache.getForumGroupTransfer(forumGroup))
+        );
         
         return forumGroupTransfers;
     }
@@ -410,7 +410,7 @@ public class ForumControl
     
     private ForumGroupDescription getForumGroupDescription(ForumGroup forumGroup, Language language,
             EntityPermission entityPermission) {
-        ForumGroupDescription forumGroupDescription = null;
+        ForumGroupDescription forumGroupDescription;
         
         try {
             String query = null;
@@ -458,7 +458,7 @@ public class ForumControl
     
     private List<ForumGroupDescription> getForumGroupDescriptionsByForumGroup(ForumGroup forumGroup,
             EntityPermission entityPermission) {
-        List<ForumGroupDescription> forumGroupDescriptions = null;
+        List<ForumGroupDescription> forumGroupDescriptions;
         
         try {
             String query = null;
@@ -565,9 +565,9 @@ public class ForumControl
     public void deleteForumGroupDescriptionsByForumGroup(ForumGroup forumGroup, BasePK deletedBy) {
         List<ForumGroupDescription> forumGroupDescriptions = getForumGroupDescriptionsByForumGroupForUpdate(forumGroup);
         
-        forumGroupDescriptions.stream().forEach((forumGroupDescription) -> {
-            deleteForumGroupDescription(forumGroupDescription, deletedBy);
-        });
+        forumGroupDescriptions.forEach((forumGroupDescription) -> 
+                deleteForumGroupDescription(forumGroupDescription, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -618,7 +618,7 @@ public class ForumControl
     }
     
     private Forum getForumByName(String forumName, EntityPermission entityPermission) {
-        Forum forum = null;
+        Forum forum;
         
         try {
             String query = null;
@@ -691,7 +691,7 @@ public class ForumControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultForumChoice == null? false: defaultForumChoice.equals(value);
+            boolean usingDefaultChoice = defaultForumChoice != null && defaultForumChoice.equals(value);
             if(usingDefaultChoice || defaultValue == null)
                 defaultValue = value;
         }
@@ -703,9 +703,9 @@ public class ForumControl
         List<ForumTransfer> forumTransfers = new ArrayList<>(forums.size());
         ForumTransferCache forumTransferCache = getForumTransferCaches(userVisit).getForumTransferCache();
         
-        forums.stream().forEach((forum) -> {
-            forumTransfers.add(forumTransferCache.getForumTransfer(forum));
-        });
+        forums.forEach((forum) ->
+                forumTransfers.add(forumTransferCache.getForumTransfer(forum))
+        );
         
         return forumTransfers;
     }
@@ -763,9 +763,9 @@ public class ForumControl
     }
     
     public void deleteForums(List<Forum> forums, BasePK deletedBy) {
-        forums.stream().forEach((forum) -> {
-            deleteForum(forum, deletedBy);
-        });
+        forums.forEach((forum) -> 
+                deleteForum(forum, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -782,7 +782,7 @@ public class ForumControl
     }
     
     private ForumDescription getForumDescription(Forum forum, Language language, EntityPermission entityPermission) {
-        ForumDescription forumDescription = null;
+        ForumDescription forumDescription;
         
         try {
             String query = null;
@@ -829,7 +829,7 @@ public class ForumControl
     }
     
     private List<ForumDescription> getForumDescriptionsByForum(Forum forum, EntityPermission entityPermission) {
-        List<ForumDescription> forumDescriptions = null;
+        List<ForumDescription> forumDescriptions;
         
         try {
             String query = null;
@@ -933,9 +933,9 @@ public class ForumControl
     public void deleteForumDescriptionsByForum(Forum forum, BasePK deletedBy) {
         List<ForumDescription> forumDescriptions = getForumDescriptionsByForumForUpdate(forum);
         
-        forumDescriptions.stream().forEach((forumDescription) -> {
-            deleteForumDescription(forumDescription, deletedBy);
-        });
+        forumDescriptions.forEach((forumDescription) -> 
+                deleteForumDescription(forumDescription, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -973,7 +973,7 @@ public class ForumControl
     }
 
     private ForumGroupForum getForumGroupForum(ForumGroup forumGroup, Forum forum, EntityPermission entityPermission) {
-        ForumGroupForum forumGroupForum = null;
+        ForumGroupForum forumGroupForum;
         
         try {
             String query = null;
@@ -1020,7 +1020,7 @@ public class ForumControl
     }
     
     private ForumGroupForum getDefaultForumGroupForum(Forum forum, EntityPermission entityPermission) {
-        ForumGroupForum forumGroupForum = null;
+        ForumGroupForum forumGroupForum;
         
         try {
             String query = null;
@@ -1064,7 +1064,7 @@ public class ForumControl
     }
     
     private List<ForumGroupForum> getForumGroupForumsByForumGroup(ForumGroup forumGroup, EntityPermission entityPermission) {
-        List<ForumGroupForum> forumGroupForums = null;
+        List<ForumGroupForum> forumGroupForums;
         
         try {
             String query = null;
@@ -1104,7 +1104,7 @@ public class ForumControl
     }
     
     private List<ForumGroupForum> getForumGroupForumsByForum(Forum forum, EntityPermission entityPermission) {
-        List<ForumGroupForum> forumGroupForums = null;
+        List<ForumGroupForum> forumGroupForums;
         
         try {
             String query = null;
@@ -1147,9 +1147,9 @@ public class ForumControl
         List<ForumGroupForumTransfer> forumGroupForumTransfers = new ArrayList<>(forumGroupForums.size());
         ForumGroupForumTransferCache forumGroupForumTransferCache = getForumTransferCaches(userVisit).getForumGroupForumTransferCache();
         
-        forumGroupForums.stream().forEach((forumGroupForum) -> {
-            forumGroupForumTransfers.add(forumGroupForumTransferCache.getForumGroupForumTransfer(forumGroupForum));
-        });
+        forumGroupForums.forEach((forumGroupForum) ->
+                forumGroupForumTransfers.add(forumGroupForumTransferCache.getForumGroupForumTransfer(forumGroupForum))
+        );
         
         return forumGroupForumTransfers;
     }
@@ -1232,9 +1232,9 @@ public class ForumControl
     }
     
     public void deleteForumGroupForums(List<ForumGroupForum> forumGroupForums, BasePK deletedBy) {
-        forumGroupForums.stream().forEach((forumGroupForum) -> {
-            deleteForumGroupForum(forumGroupForum, deletedBy);
-        });
+        forumGroupForums.forEach((forumGroupForum) -> 
+                deleteForumGroupForum(forumGroupForum, deletedBy)
+        );
     }
     
     public void deleteForumGroupForumsByForumGroup(ForumGroup forumGroup, BasePK deletedBy) {
@@ -1254,7 +1254,7 @@ public class ForumControl
     }
     
     public ForumRoleType getForumRoleTypeByName(String forumRoleTypeName) {
-        ForumRoleType forumRoleType = null;
+        ForumRoleType forumRoleType;
         
         try {
             PreparedStatement ps = ForumRoleTypeFactory.getInstance().prepareStatement(
@@ -1305,7 +1305,7 @@ public class ForumControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultForumRoleTypeChoice == null? false: defaultForumRoleTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultForumRoleTypeChoice != null && defaultForumRoleTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && forumRoleType.getIsDefault()))
                 defaultValue = value;
         }
@@ -1327,7 +1327,7 @@ public class ForumControl
     }
     
     public ForumRoleTypeDescription getForumRoleTypeDescription(ForumRoleType forumRoleType, Language language) {
-        ForumRoleTypeDescription forumRoleTypeDescription = null;
+        ForumRoleTypeDescription forumRoleTypeDescription;
         
         try {
             PreparedStatement ps = ForumRoleTypeDescriptionFactory.getInstance().prepareStatement(
@@ -1373,7 +1373,7 @@ public class ForumControl
     }
     
     public ForumType getForumTypeByName(String forumTypeName) {
-        ForumType forumType = null;
+        ForumType forumType;
         
         try {
             PreparedStatement ps = ForumTypeFactory.getInstance().prepareStatement(
@@ -1423,7 +1423,7 @@ public class ForumControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultForumTypeChoice == null? false: defaultForumTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultForumTypeChoice != null && defaultForumTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && forumType.getIsDefault()))
                 defaultValue = value;
         }
@@ -1444,7 +1444,7 @@ public class ForumControl
     }
     
     public ForumTypeDescription getForumTypeDescription(ForumType forumType, Language language) {
-        ForumTypeDescription forumTypeDescription = null;
+        ForumTypeDescription forumTypeDescription;
         
         try {
             PreparedStatement ps = ForumTypeDescriptionFactory.getInstance().prepareStatement(
@@ -1508,7 +1508,7 @@ public class ForumControl
     }
     
     private ForumMimeType getForumMimeType(Forum forum, MimeType mimeType, EntityPermission entityPermission) {
-        ForumMimeType forumMimeType = null;
+        ForumMimeType forumMimeType;
         
         try {
             String query = null;
@@ -1555,7 +1555,7 @@ public class ForumControl
     }
     
     private ForumMimeType getDefaultForumMimeType(Forum forum, EntityPermission entityPermission) {
-        ForumMimeType forumMimeType = null;
+        ForumMimeType forumMimeType;
         
         try {
             String query = null;
@@ -1599,7 +1599,7 @@ public class ForumControl
     }
     
     private List<ForumMimeType> getForumMimeTypesByForum(Forum forum, EntityPermission entityPermission) {
-        List<ForumMimeType> forumMimeTypes = null;
+        List<ForumMimeType> forumMimeTypes;
         
         try {
             String query = null;
@@ -1639,7 +1639,7 @@ public class ForumControl
     }
     
     private List<ForumMimeType> getForumMimeTypesByMimeType(MimeType mimeType, EntityPermission entityPermission) {
-        List<ForumMimeType> forumMimeTypes = null;
+        List<ForumMimeType> forumMimeTypes;
         
         try {
             String query = null;
@@ -1704,7 +1704,7 @@ public class ForumControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultMimeTypeChoice == null? false: defaultMimeTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultMimeTypeChoice != null && defaultMimeTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && forumMimeType.getIsDefault())) {
                 defaultValue = value;
             }
@@ -1717,9 +1717,9 @@ public class ForumControl
         List<ForumMimeTypeTransfer> forumMimeTypeTransfers = new ArrayList<>(forumMimeTypes.size());
         ForumMimeTypeTransferCache forumMimeTypeTransferCache = getForumTransferCaches(userVisit).getForumMimeTypeTransferCache();
         
-        forumMimeTypes.stream().forEach((forumMimeType) -> {
-            forumMimeTypeTransfers.add(forumMimeTypeTransferCache.getForumMimeTypeTransfer(forumMimeType));
-        });
+        forumMimeTypes.forEach((forumMimeType) ->
+                forumMimeTypeTransfers.add(forumMimeTypeTransferCache.getForumMimeTypeTransfer(forumMimeType))
+        );
         
         return forumMimeTypeTransfers;
     }
@@ -1803,9 +1803,9 @@ public class ForumControl
     }
     
     public void deleteForumMimeTypes(List<ForumMimeType> forumMimeTypes, BasePK deletedBy) {
-        forumMimeTypes.stream().forEach((forumMimeType) -> {
-            deleteForumMimeType(forumMimeType, deletedBy);
-        });
+        forumMimeTypes.forEach((forumMimeType) -> 
+                deleteForumMimeType(forumMimeType, deletedBy)
+        );
     }
     
     public void deleteForumMimeTypesByForum(Forum forum, BasePK deletedBy) {
@@ -1846,7 +1846,7 @@ public class ForumControl
     }
 
     private List<ForumPartyRole> getForumPartyRolesByForum(Forum forum, EntityPermission entityPermission) {
-        List<ForumPartyRole> forumPartyRoles = null;
+        List<ForumPartyRole> forumPartyRoles;
         
         try {
             String query = null;
@@ -1887,7 +1887,7 @@ public class ForumControl
     }
     
     private List<ForumPartyRole> getForumPartyRolesByParty(Party party, EntityPermission entityPermission) {
-        List<ForumPartyRole> forumPartyRoles = null;
+        List<ForumPartyRole> forumPartyRoles;
         
         try {
             String query = null;
@@ -1928,7 +1928,7 @@ public class ForumControl
     }
     
     private ForumPartyRole getForumPartyRole(Forum forum, Party party, ForumRoleType forumRoleType, EntityPermission entityPermission) {
-        ForumPartyRole forumPartyRole = null;
+        ForumPartyRole forumPartyRole;
         
         try {
             String query = null;
@@ -1999,9 +1999,9 @@ public class ForumControl
     public void deleteForumPartyRolesByForum(Forum forum, BasePK deletedBy) {
         List<ForumPartyRole> forumPartyRoles = getForumPartyRolesByForumForUpdate(forum);
         
-        forumPartyRoles.stream().forEach((forumPartyRole) -> {
-            deleteForumPartyRole(forumPartyRole, deletedBy);
-        });
+        forumPartyRoles.forEach((forumPartyRole) -> 
+                deleteForumPartyRole(forumPartyRole, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -2035,7 +2035,7 @@ public class ForumControl
     }
 
     private List<ForumPartyTypeRole> getForumPartyTypeRolesByForum(Forum forum, EntityPermission entityPermission) {
-        List<ForumPartyTypeRole> forumPartyTypeRoles = null;
+        List<ForumPartyTypeRole> forumPartyTypeRoles;
         
         try {
             String query = null;
@@ -2076,7 +2076,7 @@ public class ForumControl
     }
     
     private ForumPartyTypeRole getForumPartyTypeRole(Forum forum, PartyType partyType, ForumRoleType forumRoleType, EntityPermission entityPermission) {
-        ForumPartyTypeRole forumPartyTypeRole = null;
+        ForumPartyTypeRole forumPartyTypeRole;
         
         try {
             String query = null;
@@ -2147,9 +2147,9 @@ public class ForumControl
     public void deleteForumPartyTypeRolesByForum(Forum forum, BasePK deletedBy) {
         List<ForumPartyTypeRole> forumPartyTypeRoles = getForumPartyTypeRolesByForumForUpdate(forum);
         
-        forumPartyTypeRoles.stream().forEach((forumPartyTypeRole) -> {
-            deleteForumPartyTypeRole(forumPartyTypeRole, deletedBy);
-        });
+        forumPartyTypeRoles.forEach((forumPartyTypeRole) -> 
+                deleteForumPartyTypeRole(forumPartyTypeRole, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -2162,7 +2162,7 @@ public class ForumControl
     }
     
     private List<ForumTypeMessageType> getForumTypeMessageTypesByForumType(ForumType forumType, EntityPermission entityPermission) {
-        List<ForumTypeMessageType> forumTypeMessageTypes = null;
+        List<ForumTypeMessageType> forumTypeMessageTypes;
         
         try {
             String query = null;
@@ -2302,7 +2302,7 @@ public class ForumControl
     }
     
     private ForumForumThread getForumForumThread(Forum forum, ForumThread forumThread, EntityPermission entityPermission) {
-        ForumForumThread forumForumThread = null;
+        ForumForumThread forumForumThread;
         
         try {
             String query = null;
@@ -2349,7 +2349,7 @@ public class ForumControl
     }
     
     private ForumForumThread getDefaultForumForumThread(ForumThread forumThread, EntityPermission entityPermission) {
-        ForumForumThread forumForumThread = null;
+        ForumForumThread forumForumThread;
         
         try {
             String query = null;
@@ -2393,7 +2393,7 @@ public class ForumControl
     }
     
     private List<ForumForumThread> getForumForumThreadsByForum(Forum forum, EntityPermission entityPermission) {
-        List<ForumForumThread> forumForumThreads = null;
+        List<ForumForumThread> forumForumThreads;
         
         try {
             String query = null;
@@ -2433,7 +2433,7 @@ public class ForumControl
     }
     
     private List<ForumForumThread> getForumForumThreadsByForumThread(ForumThread forumThread, EntityPermission entityPermission) {
-        List<ForumForumThread> forumForumThreads = null;
+        List<ForumForumThread> forumForumThreads;
         
         try {
             String query = null;
@@ -2476,9 +2476,9 @@ public class ForumControl
         List<ForumForumThreadTransfer> forumForumThreadTransfers = new ArrayList<>(forumForumThreads.size());
         ForumForumThreadTransferCache forumForumThreadTransferCache = getForumTransferCaches(userVisit).getForumForumThreadTransferCache();
         
-        forumForumThreads.stream().forEach((forumForumThread) -> {
-            forumForumThreadTransfers.add(forumForumThreadTransferCache.getForumForumThreadTransfer(forumForumThread));
-        });
+        forumForumThreads.forEach((forumForumThread) ->
+                forumForumThreadTransfers.add(forumForumThreadTransferCache.getForumForumThreadTransfer(forumForumThread))
+        );
         
         return forumForumThreadTransfers;
     }
@@ -2627,7 +2627,7 @@ public class ForumControl
     }
 
     private ForumThread getForumThreadByName(String forumThreadName, EntityPermission entityPermission) {
-        ForumThread forumThread = null;
+        ForumThread forumThread;
         
         try {
             String query = null;
@@ -2695,7 +2695,7 @@ public class ForumControl
     }
     
     private List<ForumThread> getForumThreadsByForum(Forum forum, boolean includeFutureForumThreads, EntityPermission entityPermission) {
-        List<ForumThread> forumThreads = null;
+        List<ForumThread> forumThreads;
         
         try {
             String query = null;
@@ -2756,9 +2756,9 @@ public class ForumControl
         List<ForumThreadTransfer> forumThreadTransfers = new ArrayList<>(forumThreads.size());
         ForumThreadTransferCache forumThreadTransferCache = getForumTransferCaches(userVisit).getForumThreadTransferCache();
         
-        forumThreads.stream().forEach((forumThread) -> {
-            forumThreadTransfers.add(forumThreadTransferCache.getForumThreadTransfer(forumThread));
-        });
+        forumThreads.forEach((forumThread) ->
+                forumThreadTransfers.add(forumThreadTransferCache.getForumThreadTransfer(forumThread))
+        );
         
         return forumThreadTransfers;
     }
@@ -2805,9 +2805,9 @@ public class ForumControl
     }
     
     public void deleteForumThreads(List<ForumThread> forumThreads, BasePK deletedBy) {
-        forumThreads.stream().forEach((forumThread) -> {
-            deleteForumThread(forumThread, deletedBy);
-        });
+        forumThreads.forEach((forumThread) -> 
+                deleteForumThread(forumThread, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -2869,7 +2869,7 @@ public class ForumControl
     }
 
     private ForumMessage getForumMessageByName(String forumMessageName, EntityPermission entityPermission) {
-        ForumMessage forumMessage = null;
+        ForumMessage forumMessage;
         
         try {
             String query = null;
@@ -2922,7 +2922,7 @@ public class ForumControl
     }
     
     private List<ForumMessage> getForumMessagesByForumThread(ForumThread forumThread, EntityPermission entityPermission) {
-        List<ForumMessage> forumMessages = null;
+        List<ForumMessage> forumMessages;
         
         try {
             String query = null;
@@ -3001,9 +3001,9 @@ public class ForumControl
         List<ForumMessageTransfer> forumMessageTransfers = new ArrayList<>(forumMessages.size());
         ForumMessageTransferCache forumMessageTransferCache = getForumTransferCaches(userVisit).getForumMessageTransferCache();
         
-        forumMessages.stream().forEach((forumMessage) -> {
-            forumMessageTransfers.add(forumMessageTransferCache.getForumMessageTransfer(forumMessage));
-        });
+        forumMessages.forEach((forumMessage) ->
+                forumMessageTransfers.add(forumMessageTransferCache.getForumMessageTransfer(forumMessage))
+        );
         
         return forumMessageTransfers;
     }
@@ -3056,9 +3056,9 @@ public class ForumControl
     }
     
     public void deleteForumMessages(List<ForumMessage> forumMessages, BasePK deletedBy) {
-        forumMessages.stream().forEach((forumMessage) -> {
-            deleteForumMessage(forumMessage, deletedBy);
-        });
+        forumMessages.forEach((forumMessage) -> 
+                deleteForumMessage(forumMessage, deletedBy)
+        );
     }
 
     private void deleteForumMessagesByParentForumMessage(ForumMessage parentForumMessage, BasePK deletedBy) {
@@ -3226,9 +3226,9 @@ public class ForumControl
         List<ForumMessageAttachmentTransfer> forumMessageAttachmentTransfers = new ArrayList<>(forumMessageAttachments.size());
         ForumMessageAttachmentTransferCache forumMessageAttachmentTransferCache = getForumTransferCaches(userVisit).getForumMessageAttachmentTransferCache();
 
-        forumMessageAttachments.stream().forEach((forumMessageAttachment) -> {
-            forumMessageAttachmentTransfers.add(forumMessageAttachmentTransferCache.getForumMessageAttachmentTransfer(forumMessageAttachment));
-        });
+        forumMessageAttachments.forEach((forumMessageAttachment) ->
+                forumMessageAttachmentTransfers.add(forumMessageAttachmentTransferCache.getForumMessageAttachmentTransfer(forumMessageAttachment))
+        );
 
         return forumMessageAttachmentTransfers;
     }
@@ -3280,9 +3280,9 @@ public class ForumControl
     }
 
     public void deleteForumMessageAttachments(List<ForumMessageAttachment> forumMessageAttachments, BasePK deletedBy) {
-        forumMessageAttachments.stream().forEach((forumMessageAttachment) -> {
-            deleteForumMessageAttachment(forumMessageAttachment, deletedBy);
-        });
+        forumMessageAttachments.forEach((forumMessageAttachment) -> 
+                deleteForumMessageAttachment(forumMessageAttachment, deletedBy)
+        );
     }
 
     public void deleteForumMessageAttachmentsByForumMessage(ForumMessage forumMessage, BasePK deletedBy) {
@@ -3618,9 +3618,9 @@ public class ForumControl
     public void deleteForumMessageAttachmentDescriptionsByForumMessageAttachment(ForumMessageAttachment forumMessageAttachment, BasePK deletedBy) {
         List<ForumMessageAttachmentDescription> forumMessageAttachmentDescriptions = getForumMessageAttachmentDescriptionsByForumMessageAttachmentForUpdate(forumMessageAttachment);
 
-        forumMessageAttachmentDescriptions.stream().forEach((forumMessageAttachmentDescription) -> {
-            deleteForumMessageAttachmentDescription(forumMessageAttachmentDescription, deletedBy);
-        });
+        forumMessageAttachmentDescriptions.forEach((forumMessageAttachmentDescription) -> 
+                deleteForumMessageAttachmentDescription(forumMessageAttachmentDescription, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -3638,7 +3638,7 @@ public class ForumControl
     }
     
     private ForumMessageRole getForumMessageRole(ForumMessage forumMessage, ForumRoleType forumRoleType, Party party, EntityPermission entityPermission) {
-        ForumMessageRole forumMessageRole = null;
+        ForumMessageRole forumMessageRole;
         
         try {
             String query = null;
@@ -3678,7 +3678,7 @@ public class ForumControl
     }
     
     private List<ForumMessageRole> getForumMessageRolesByForumMessage(ForumMessage forumMessage, EntityPermission entityPermission) {
-        List<ForumMessageRole> forumMessageRoles = null;
+        List<ForumMessageRole> forumMessageRoles;
         
         try {
             String query = null;
@@ -3726,9 +3726,9 @@ public class ForumControl
         List<ForumMessageRoleTransfer> forumMessageRoleTransfers = new ArrayList<>(forumMessageRoles.size());
         ForumMessageRoleTransferCache forumMessageRoleTransferCache = getForumTransferCaches(userVisit).getForumMessageRoleTransferCache();
         
-        forumMessageRoles.stream().forEach((forumMessageRole) -> {
-            forumMessageRoleTransfers.add(forumMessageRoleTransferCache.getForumMessageRoleTransfer(forumMessageRole));
-        });
+        forumMessageRoles.forEach((forumMessageRole) ->
+                forumMessageRoleTransfers.add(forumMessageRoleTransferCache.getForumMessageRoleTransfer(forumMessageRole))
+        );
         
         return forumMessageRoleTransfers;
     }
@@ -3744,9 +3744,9 @@ public class ForumControl
     }
     
     public void deleteForumMessageRoles(List<ForumMessageRole> forumMessageRoles, BasePK deletedBy) {
-        forumMessageRoles.stream().forEach((forumMessageRole) -> {
-            deleteForumMessageRole(forumMessageRole, deletedBy);
-        });
+        forumMessageRoles.forEach((forumMessageRole) -> 
+                deleteForumMessageRole(forumMessageRole, deletedBy)
+        );
     }
     
     public void deleteForumMessageRolesByForumMessage(ForumMessage forumMessage, BasePK deletedBy) {
@@ -3779,7 +3779,7 @@ public class ForumControl
     
     private ForumMessagePart getForumMessagePart(ForumMessage forumMessage, ForumMessagePartType forumMessagePartType,
             Language language, EntityPermission entityPermission) {
-        ForumMessagePart forumMessagePart = null;
+        ForumMessagePart forumMessagePart;
         
         try {
             String query = null;
@@ -3831,7 +3831,7 @@ public class ForumControl
     }
     
     public List<ForumMessagePart> getForumMessagePartsByForumMessageForUpdate(ForumMessage forumMessage) {
-        List<ForumMessagePart> forumMessageParts = null;
+        List<ForumMessagePart> forumMessageParts;
         
         try {
             PreparedStatement ps = ForumMessagePartFactory.getInstance().prepareStatement(
@@ -3870,9 +3870,9 @@ public class ForumControl
         List<ForumMessagePartTransfer> forumMessagePartTransfers = new ArrayList<>(forumMessageParts.size());
         ForumMessagePartTransferCache forumMessagePartTransferCache = getForumTransferCaches(userVisit).getForumMessagePartTransferCache();
         
-        forumMessageParts.stream().forEach((forumMessagePart) -> {
-            forumMessagePartTransfers.add(forumMessagePartTransferCache.getForumMessagePartTransfer(forumMessagePart));
-        });
+        forumMessageParts.forEach((forumMessagePart) ->
+                forumMessagePartTransfers.add(forumMessagePartTransferCache.getForumMessagePartTransfer(forumMessagePart))
+        );
         
         return forumMessagePartTransfers;
     }
@@ -3938,9 +3938,9 @@ public class ForumControl
     }
     
     public void deleteForumMessageParts(List<ForumMessagePart> forumMessageParts, BasePK deletedBy) {
-        forumMessageParts.stream().forEach((forumMessagePart) -> {
-            deleteForumMessagePart(forumMessagePart, deletedBy);
-        });
+        forumMessageParts.forEach((forumMessagePart) -> 
+                deleteForumMessagePart(forumMessagePart, deletedBy)
+        );
     }
     
     public void deleteForumMessagePartsByForumMessage(ForumMessage forumMessage, BasePK deletedBy) {
@@ -3961,7 +3961,7 @@ public class ForumControl
     }
     
     private ForumStringMessagePart getForumStringMessagePart(ForumMessagePart forumMessagePart, EntityPermission entityPermission) {
-        ForumStringMessagePart forumStringMessagePart = null;
+        ForumStringMessagePart forumStringMessagePart;
         
         try {
             String query = null;
@@ -4054,7 +4054,7 @@ public class ForumControl
     }
     
     private ForumClobMessagePart getForumClobMessagePart(ForumMessagePart forumMessagePart, EntityPermission entityPermission) {
-        ForumClobMessagePart forumClobMessagePart = null;
+        ForumClobMessagePart forumClobMessagePart;
         
         try {
             String query = null;
@@ -4145,7 +4145,7 @@ public class ForumControl
     }
     
     private ForumBlobMessagePart getForumBlobMessagePart(ForumMessagePart forumMessagePart, EntityPermission entityPermission) {
-        ForumBlobMessagePart forumBlobMessagePart = null;
+        ForumBlobMessagePart forumBlobMessagePart;
         
         try {
             String query = null;
@@ -4232,7 +4232,7 @@ public class ForumControl
     }
     
     public ForumMessagePartType getForumMessagePartTypeByName(String forumMessagePartTypeName) {
-        ForumMessagePartType forumMessagePartType = null;
+        ForumMessagePartType forumMessagePartType;
         
         try {
             PreparedStatement ps = ForumMessagePartTypeFactory.getInstance().prepareStatement(
@@ -4275,7 +4275,7 @@ public class ForumControl
     
     public ForumMessagePartTypeDescription getForumMessagePartTypeDescription(ForumMessagePartType forumMessagePartType,
             Language language) {
-        ForumMessagePartTypeDescription forumMessagePartTypeDescription = null;
+        ForumMessagePartTypeDescription forumMessagePartTypeDescription;
         
         try {
             PreparedStatement ps = ForumMessagePartTypeDescriptionFactory.getInstance().prepareStatement(
@@ -4323,7 +4323,7 @@ public class ForumControl
     }
     
     public ForumMessageType getForumMessageTypeByName(String forumMessageTypeName) {
-        ForumMessageType forumMessageType = null;
+        ForumMessageType forumMessageType;
         
         try {
             PreparedStatement ps = ForumMessageTypeFactory.getInstance().prepareStatement(
@@ -4374,7 +4374,7 @@ public class ForumControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultForumMessageTypeChoice == null? false: defaultForumMessageTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultForumMessageTypeChoice != null && defaultForumMessageTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && forumMessageType.getIsDefault()))
                 defaultValue = value;
         }
@@ -4396,7 +4396,7 @@ public class ForumControl
     }
     
     public ForumMessageTypeDescription getForumMessageTypeDescription(ForumMessageType forumMessageType, Language language) {
-        ForumMessageTypeDescription forumMessageTypeDescription = null;
+        ForumMessageTypeDescription forumMessageTypeDescription;
         
         try {
             PreparedStatement ps = ForumMessageTypeDescriptionFactory.getInstance().prepareStatement(
@@ -4443,7 +4443,7 @@ public class ForumControl
     }
     
     public ForumMessageTypePartType getForumMessageTypePartType(ForumMessageType forumMessageType, Integer sortOrder) {
-        ForumMessageTypePartType forumMessageTypePartType = null;
+        ForumMessageTypePartType forumMessageTypePartType;
         
         try {
             PreparedStatement ps = ForumMessageTypePartTypeFactory.getInstance().prepareStatement(
@@ -4464,7 +4464,7 @@ public class ForumControl
     }
     
     public ForumMessageTypePartType getIndexDefaultForumMessageTypePartType(ForumMessageType forumMessageType) {
-        ForumMessageTypePartType forumMessageTypePartType = null;
+        ForumMessageTypePartType forumMessageTypePartType;
         
         try {
             PreparedStatement ps = ForumMessageTypePartTypeFactory.getInstance().prepareStatement(
@@ -4483,7 +4483,7 @@ public class ForumControl
     }
     
     public List<ForumMessageTypePartType> getForumMessageTypePartTypesByForumMessageType(ForumMessageType forumMessageType) {
-        List<ForumMessageTypePartType> forumMessageTypePartTypes = null;
+        List<ForumMessageTypePartType> forumMessageTypePartTypes;
         
         try {
             PreparedStatement ps = ForumMessageTypePartTypeFactory.getInstance().prepareStatement(
@@ -4503,7 +4503,7 @@ public class ForumControl
     }
     
     public List<ForumMessageTypePartType> getForumMessageTypePartTypesByForumMessageTypeAndIncludeInIndex(ForumMessageType forumMessageType) {
-        List<ForumMessageTypePartType> forumMessageTypePartTypes = null;
+        List<ForumMessageTypePartType> forumMessageTypePartTypes;
         
         try {
             PreparedStatement ps = ForumMessageTypePartTypeFactory.getInstance().prepareStatement(

@@ -58,7 +58,7 @@ public class OrderRoleControl
     }
     
     public OrderRoleType getOrderRoleTypeByName(String orderRoleTypeName) {
-        OrderRoleType orderRoleType = null;
+        OrderRoleType orderRoleType;
         
         try {
             PreparedStatement ps = OrderRoleTypeFactory.getInstance().prepareStatement(
@@ -90,7 +90,7 @@ public class OrderRoleControl
     }
     
     public OrderRoleTypeDescription getOrderRoleTypeDescription(OrderRoleType orderRoleType, Language language) {
-        OrderRoleTypeDescription orderRoleTypeDescription = null;
+        OrderRoleTypeDescription orderRoleTypeDescription;
         
         try {
             PreparedStatement ps = OrderRoleTypeDescriptionFactory.getInstance().prepareStatement(
@@ -278,9 +278,9 @@ public class OrderRoleControl
     }
 
     public void deleteOrderRoles(List<OrderRole> orderRoles, BasePK deletedBy) {
-        orderRoles.stream().forEach((orderRole) -> {
-            deleteOrderRole(orderRole, deletedBy);
-        });
+        orderRoles.forEach((orderRole) -> 
+                deleteOrderRole(orderRole, deletedBy)
+        );
     }
 
     public void deleteOrderRolesByOrder(Order order, BasePK deletedBy) {

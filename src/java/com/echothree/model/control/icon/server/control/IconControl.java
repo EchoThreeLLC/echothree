@@ -57,6 +57,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class IconControl
         extends BaseModelControl {
@@ -70,7 +71,7 @@ public class IconControl
     //   Icon Transfer Caches
     // --------------------------------------------------------------------------------
     
-    private IconTransferCaches iconTransferCaches = null;
+    private IconTransferCaches iconTransferCaches;
     
     public IconTransferCaches getIconTransferCaches(UserVisit userVisit) {
         if(iconTransferCaches == null) {
@@ -129,7 +130,7 @@ public class IconControl
     }
     
     private Icon getIconByName(String iconName, EntityPermission entityPermission) {
-        Icon icon = null;
+        Icon icon;
         
         try {
             String query = null;
@@ -189,7 +190,7 @@ public class IconControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultIconChoice == null? false: defaultIconChoice.equals(value);
+            boolean usingDefaultChoice = defaultIconChoice != null && defaultIconChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && iconUsage.getIsDefault()))
                 defaultValue = value;
         }
@@ -257,7 +258,7 @@ public class IconControl
     }
     
     private IconUsageType getIconUsageTypeByName(String iconUsageTypeName, EntityPermission entityPermission) {
-        IconUsageType iconUsageType = null;
+        IconUsageType iconUsageType;
         
         try {
             String query = null;
@@ -385,7 +386,7 @@ public class IconControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultIconUsageTypeChoice == null? false: defaultIconUsageTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultIconUsageTypeChoice != null && defaultIconUsageTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && iconUsageTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -403,9 +404,9 @@ public class IconControl
         List<IconUsageTypeTransfer> iconUsageTypeTransfers = new ArrayList<>(iconUsageTypes.size());
         IconUsageTypeTransferCache iconUsageTypeTransferCache = getIconTransferCaches(userVisit).getIconUsageTypeTransferCache();
         
-        iconUsageTypes.stream().forEach((iconUsageType) -> {
-            iconUsageTypeTransfers.add(iconUsageTypeTransferCache.getIconUsageTypeTransfer(iconUsageType));
-        });
+        iconUsageTypes.forEach((iconUsageType) ->
+                iconUsageTypeTransfers.add(iconUsageTypeTransferCache.getIconUsageTypeTransfer(iconUsageType))
+        );
         
         return iconUsageTypeTransfers;
     }
@@ -471,7 +472,7 @@ public class IconControl
                 if(iter.hasNext()) {
                     defaultIconUsageType = iter.next();
                 }
-                IconUsageTypeDetailValue iconUsageTypeDetailValue = defaultIconUsageType.getLastDetailForUpdate().getIconUsageTypeDetailValue().clone();
+                IconUsageTypeDetailValue iconUsageTypeDetailValue = Objects.requireNonNull(defaultIconUsageType).getLastDetailForUpdate().getIconUsageTypeDetailValue().clone();
                 
                 iconUsageTypeDetailValue.setIsDefault(Boolean.TRUE);
                 updateIconUsageTypeFromValue(iconUsageTypeDetailValue, false, deletedBy);
@@ -496,7 +497,7 @@ public class IconControl
     }
     
     private IconUsageTypeDescription getIconUsageTypeDescription(IconUsageType iconUsageType, Language language, EntityPermission entityPermission) {
-        IconUsageTypeDescription iconUsageTypeDescription = null;
+        IconUsageTypeDescription iconUsageTypeDescription;
         
         try {
             String query = null;
@@ -543,7 +544,7 @@ public class IconControl
     }
     
     private List<IconUsageTypeDescription> getIconUsageTypeDescriptionsByIconUsageType(IconUsageType iconUsageType, EntityPermission entityPermission) {
-        List<IconUsageTypeDescription> iconUsageTypeDescriptions = null;
+        List<IconUsageTypeDescription> iconUsageTypeDescriptions;
         
         try {
             String query = null;
@@ -642,9 +643,9 @@ public class IconControl
     public void deleteIconUsageTypeDescriptionsByIconUsageType(IconUsageType iconUsageType, BasePK deletedBy) {
         List<IconUsageTypeDescription> iconUsageTypeDescriptions = getIconUsageTypeDescriptionsByIconUsageTypeForUpdate(iconUsageType);
         
-        iconUsageTypeDescriptions.stream().forEach((iconUsageTypeDescription) -> {
-            deleteIconUsageTypeDescription(iconUsageTypeDescription, deletedBy);
-        });
+        iconUsageTypeDescriptions.forEach((iconUsageTypeDescription) -> 
+                deleteIconUsageTypeDescription(iconUsageTypeDescription, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -674,7 +675,7 @@ public class IconControl
     }
     
     private IconUsage getIconUsage(IconUsageType iconUsageType, Icon icon, EntityPermission entityPermission) {
-        IconUsage iconUsage = null;
+        IconUsage iconUsage;
         
         try {
             String query = null;
@@ -719,7 +720,7 @@ public class IconControl
     }
     
     private IconUsage getDefaultIconUsage(IconUsageType iconUsageType, EntityPermission entityPermission) {
-        IconUsage iconUsage = null;
+        IconUsage iconUsage;
         
         try {
             String query = null;
@@ -763,7 +764,7 @@ public class IconControl
     }
     
     private List<IconUsage> getIconUsagesByIconUsageType(IconUsageType iconUsageType, EntityPermission entityPermission) {
-        List<IconUsage> iconUsages = null;
+        List<IconUsage> iconUsages;
         
         try {
             String query = null;
@@ -803,7 +804,7 @@ public class IconControl
     }
     
     private List<IconUsage> getIconUsagesByIcon(Icon icon, EntityPermission entityPermission) {
-        List<IconUsage> iconUsages = null;
+        List<IconUsage> iconUsages;
         
         try {
             String query = null;
@@ -847,9 +848,9 @@ public class IconControl
         List<IconUsageTransfer> iconUsageTransfers = new ArrayList<>(iconUsages.size());
         IconUsageTransferCache iconUsageTransferCache = getIconTransferCaches(userVisit).getIconUsageTransferCache();
         
-        iconUsages.stream().forEach((iconUsage) -> {
-            iconUsageTransfers.add(iconUsageTransferCache.getIconUsageTransfer(iconUsage));
-        });
+        iconUsages.forEach((iconUsage) ->
+                iconUsageTransfers.add(iconUsageTransferCache.getIconUsageTransfer(iconUsage))
+        );
         
         return iconUsageTransfers;
     }
@@ -933,9 +934,9 @@ public class IconControl
     }
     
     public void deleteIconUsages(List<IconUsage> iconUsages, BasePK deletedBy) {
-        iconUsages.stream().forEach((iconUsage) -> {
-            deleteIconUsage(iconUsage, deletedBy);
-        });
+        iconUsages.forEach((iconUsage) -> 
+                deleteIconUsage(iconUsage, deletedBy)
+        );
     }
     
     public void deleteIconUsagesByIconUsageType(IconUsageType iconUsageType, BasePK deletedBy) {

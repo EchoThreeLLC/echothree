@@ -71,6 +71,9 @@ import com.echothree.control.user.core.server.command.GetTextDecorationCommand;
 import com.echothree.control.user.core.server.command.GetTextDecorationsCommand;
 import com.echothree.control.user.core.server.command.GetTextTransformationCommand;
 import com.echothree.control.user.core.server.command.GetTextTransformationsCommand;
+import com.echothree.control.user.filter.common.FilterUtil;
+import com.echothree.control.user.filter.server.command.GetFilterKindCommand;
+import com.echothree.control.user.filter.server.command.GetFilterKindsCommand;
 import com.echothree.control.user.inventory.common.InventoryUtil;
 import com.echothree.control.user.inventory.server.command.GetInventoryConditionCommand;
 import com.echothree.control.user.inventory.server.command.GetInventoryConditionsCommand;
@@ -84,6 +87,8 @@ import com.echothree.control.user.offer.common.OfferUtil;
 import com.echothree.control.user.offer.server.command.GetOfferCommand;
 import com.echothree.control.user.offer.server.command.GetOfferNameElementCommand;
 import com.echothree.control.user.offer.server.command.GetOfferNameElementsCommand;
+import com.echothree.control.user.offer.server.command.GetOfferUseCommand;
+import com.echothree.control.user.offer.server.command.GetOfferUsesCommand;
 import com.echothree.control.user.offer.server.command.GetOffersCommand;
 import com.echothree.control.user.offer.server.command.GetUseCommand;
 import com.echothree.control.user.offer.server.command.GetUseNameElementCommand;
@@ -120,6 +125,14 @@ import com.echothree.control.user.queue.server.command.GetQueueTypeCommand;
 import com.echothree.control.user.queue.server.command.GetQueueTypesCommand;
 import com.echothree.control.user.search.common.SearchUtil;
 import com.echothree.control.user.search.server.command.GetCustomerResultsCommand;
+import com.echothree.control.user.selector.common.SelectorUtil;
+import com.echothree.control.user.selector.server.command.GetSelectorKindCommand;
+import com.echothree.control.user.selector.server.command.GetSelectorKindsCommand;
+import com.echothree.control.user.sequence.common.SequenceUtil;
+import com.echothree.control.user.sequence.server.command.GetSequenceChecksumTypeCommand;
+import com.echothree.control.user.sequence.server.command.GetSequenceChecksumTypesCommand;
+import com.echothree.control.user.sequence.server.command.GetSequenceEncoderTypeCommand;
+import com.echothree.control.user.sequence.server.command.GetSequenceEncoderTypesCommand;
 import com.echothree.control.user.shipment.common.ShipmentUtil;
 import com.echothree.control.user.shipment.server.command.GetFreeOnBoardCommand;
 import com.echothree.control.user.shipment.server.command.GetFreeOnBoardsCommand;
@@ -162,12 +175,14 @@ import com.echothree.model.control.core.server.graphql.MimeTypeObject;
 import com.echothree.model.control.core.server.graphql.MimeTypeUsageTypeObject;
 import com.echothree.model.control.core.server.graphql.TextDecorationObject;
 import com.echothree.model.control.core.server.graphql.TextTransformationObject;
+import com.echothree.model.control.filter.server.graphql.FilterKindObject;
 import com.echothree.model.control.inventory.server.graphql.InventoryConditionObject;
 import com.echothree.model.control.inventory.server.graphql.LotObject;
 import com.echothree.model.control.item.server.graphql.ItemCategoryObject;
 import com.echothree.model.control.item.server.graphql.ItemObject;
 import com.echothree.model.control.offer.server.graphql.OfferNameElementObject;
 import com.echothree.model.control.offer.server.graphql.OfferObject;
+import com.echothree.model.control.offer.server.graphql.OfferUseObject;
 import com.echothree.model.control.offer.server.graphql.UseNameElementObject;
 import com.echothree.model.control.offer.server.graphql.UseObject;
 import com.echothree.model.control.offer.server.graphql.UseTypeObject;
@@ -186,6 +201,9 @@ import com.echothree.model.control.payment.server.graphql.PaymentProcessorTypeCo
 import com.echothree.model.control.payment.server.graphql.PaymentProcessorTypeObject;
 import com.echothree.model.control.queue.server.graphql.QueueTypeObject;
 import com.echothree.model.control.search.server.graphql.CustomerResultsObject;
+import com.echothree.model.control.selector.server.graphql.SelectorKindObject;
+import com.echothree.model.control.sequence.server.graphql.SequenceChecksumTypeObject;
+import com.echothree.model.control.sequence.server.graphql.SequenceEncoderTypeObject;
 import com.echothree.model.control.shipment.server.graphql.FreeOnBoardObject;
 import com.echothree.model.control.uom.server.graphql.UnitOfMeasureKindObject;
 import com.echothree.model.control.uom.server.graphql.UnitOfMeasureKindUseObject;
@@ -221,12 +239,14 @@ import com.echothree.model.data.core.server.entity.MimeTypeFileExtension;
 import com.echothree.model.data.core.server.entity.MimeTypeUsageType;
 import com.echothree.model.data.core.server.entity.TextDecoration;
 import com.echothree.model.data.core.server.entity.TextTransformation;
+import com.echothree.model.data.filter.server.entity.FilterKind;
 import com.echothree.model.data.inventory.server.entity.InventoryCondition;
 import com.echothree.model.data.inventory.server.entity.Lot;
 import com.echothree.model.data.item.server.entity.Item;
 import com.echothree.model.data.item.server.entity.ItemCategory;
 import com.echothree.model.data.offer.server.entity.Offer;
 import com.echothree.model.data.offer.server.entity.OfferNameElement;
+import com.echothree.model.data.offer.server.entity.OfferUse;
 import com.echothree.model.data.offer.server.entity.Use;
 import com.echothree.model.data.offer.server.entity.UseNameElement;
 import com.echothree.model.data.offer.server.entity.UseType;
@@ -244,6 +264,9 @@ import com.echothree.model.data.payment.server.entity.PaymentProcessorType;
 import com.echothree.model.data.payment.server.entity.PaymentProcessorTypeCode;
 import com.echothree.model.data.payment.server.entity.PaymentProcessorTypeCodeType;
 import com.echothree.model.data.queue.server.entity.QueueType;
+import com.echothree.model.data.selector.server.entity.SelectorKind;
+import com.echothree.model.data.sequence.server.entity.SequenceChecksumType;
+import com.echothree.model.data.sequence.server.entity.SequenceEncoderType;
 import com.echothree.model.data.shipment.server.entity.FreeOnBoard;
 import com.echothree.model.data.uom.server.entity.UnitOfMeasureKind;
 import com.echothree.model.data.uom.server.entity.UnitOfMeasureKindUse;
@@ -265,6 +288,247 @@ import javax.naming.NamingException;
 @GraphQLName("query")
 public final class GraphQlQueries
         extends BaseGraphQl {
+
+    @GraphQLField
+    @GraphQLName("sequenceChecksumType")
+    public static SequenceChecksumTypeObject sequenceChecksumType(final DataFetchingEnvironment env,
+            @GraphQLName("sequenceChecksumTypeName") final String sequenceChecksumTypeName) {
+        SequenceChecksumType sequenceChecksumType;
+
+        try {
+            var commandForm = SequenceUtil.getHome().getGetSequenceChecksumTypeForm();
+
+            commandForm.setSequenceChecksumTypeName(sequenceChecksumTypeName);
+
+            sequenceChecksumType = new GetSequenceChecksumTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return sequenceChecksumType == null ? null : new SequenceChecksumTypeObject(sequenceChecksumType);
+    }
+
+    @GraphQLField
+    @GraphQLName("sequenceChecksumTypes")
+    public static Collection<SequenceChecksumTypeObject> sequenceChecksumTypes(final DataFetchingEnvironment env) {
+        Collection<SequenceChecksumType> sequenceChecksumTypes;
+        Collection<SequenceChecksumTypeObject> sequenceChecksumTypeObjects;
+
+        try {
+            var commandForm = SequenceUtil.getHome().getGetSequenceChecksumTypesForm();
+
+            sequenceChecksumTypes = new GetSequenceChecksumTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(sequenceChecksumTypes == null) {
+            sequenceChecksumTypeObjects = emptyList();
+        } else {
+            sequenceChecksumTypeObjects = new ArrayList<>(sequenceChecksumTypes.size());
+
+            sequenceChecksumTypes.stream()
+                    .map(SequenceChecksumTypeObject::new)
+                    .forEachOrdered(sequenceChecksumTypeObjects::add);
+        }
+
+        return sequenceChecksumTypeObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("sequenceEncoderType")
+    public static SequenceEncoderTypeObject sequenceEncoderType(final DataFetchingEnvironment env,
+            @GraphQLName("sequenceEncoderTypeName") final String sequenceEncoderTypeName) {
+        SequenceEncoderType sequenceEncoderType;
+
+        try {
+            var commandForm = SequenceUtil.getHome().getGetSequenceEncoderTypeForm();
+
+            commandForm.setSequenceEncoderTypeName(sequenceEncoderTypeName);
+
+            sequenceEncoderType = new GetSequenceEncoderTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return sequenceEncoderType == null ? null : new SequenceEncoderTypeObject(sequenceEncoderType);
+    }
+
+    @GraphQLField
+    @GraphQLName("sequenceEncoderTypes")
+    public static Collection<SequenceEncoderTypeObject> sequenceEncoderTypes(final DataFetchingEnvironment env) {
+        Collection<SequenceEncoderType> sequenceEncoderTypes;
+        Collection<SequenceEncoderTypeObject> sequenceEncoderTypeObjects;
+
+        try {
+            var commandForm = SequenceUtil.getHome().getGetSequenceEncoderTypesForm();
+
+            sequenceEncoderTypes = new GetSequenceEncoderTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(sequenceEncoderTypes == null) {
+            sequenceEncoderTypeObjects = emptyList();
+        } else {
+            sequenceEncoderTypeObjects = new ArrayList<>(sequenceEncoderTypes.size());
+
+            sequenceEncoderTypes.stream()
+                    .map(SequenceEncoderTypeObject::new)
+                    .forEachOrdered(sequenceEncoderTypeObjects::add);
+        }
+
+        return sequenceEncoderTypeObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("selectorKind")
+    public static SelectorKindObject selectorKind(final DataFetchingEnvironment env,
+            @GraphQLName("selectorKindName") final String selectorKindName,
+            @GraphQLName("id") final String id) {
+        SelectorKind selectorKind;
+
+        try {
+            var commandForm = SelectorUtil.getHome().getGetSelectorKindForm();
+
+            commandForm.setSelectorKindName(selectorKindName);
+            commandForm.setUlid(id);
+
+            selectorKind = new GetSelectorKindCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return selectorKind == null ? null : new SelectorKindObject(selectorKind);
+    }
+
+    @GraphQLField
+    @GraphQLName("selectorKinds")
+    public static Collection<SelectorKindObject> selectorKinds(final DataFetchingEnvironment env) {
+        Collection<SelectorKind> selectorKinds;
+        Collection<SelectorKindObject> selectorKindObjects;
+
+        try {
+            var commandForm = SelectorUtil.getHome().getGetSelectorKindsForm();
+
+            selectorKinds = new GetSelectorKindsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(selectorKinds == null) {
+            selectorKindObjects = emptyList();
+        } else {
+            selectorKindObjects = new ArrayList<>(selectorKinds.size());
+
+            selectorKinds.stream()
+                    .map(SelectorKindObject::new)
+                    .forEachOrdered(selectorKindObjects::add);
+        }
+
+        return selectorKindObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("filterKind")
+    public static FilterKindObject filterKind(final DataFetchingEnvironment env,
+            @GraphQLName("filterKindName") final String filterKindName,
+            @GraphQLName("id") final String id) {
+        FilterKind filterKind;
+
+        try {
+            var commandForm = FilterUtil.getHome().getGetFilterKindForm();
+
+            commandForm.setFilterKindName(filterKindName);
+            commandForm.setUlid(id);
+
+            filterKind = new GetFilterKindCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return filterKind == null ? null : new FilterKindObject(filterKind);
+    }
+
+    @GraphQLField
+    @GraphQLName("filterKinds")
+    public static Collection<FilterKindObject> filterKinds(final DataFetchingEnvironment env) {
+        Collection<FilterKind> filterKinds;
+        Collection<FilterKindObject> filterKindObjects;
+
+        try {
+            var commandForm = FilterUtil.getHome().getGetFilterKindsForm();
+
+            filterKinds = new GetFilterKindsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(filterKinds == null) {
+            filterKindObjects = emptyList();
+        } else {
+            filterKindObjects = new ArrayList<>(filterKinds.size());
+
+            filterKinds.stream()
+                    .map(FilterKindObject::new)
+                    .forEachOrdered(filterKindObjects::add);
+        }
+
+        return filterKindObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("offerUse")
+    public static OfferUseObject offerUse(final DataFetchingEnvironment env,
+            @GraphQLName("offerName") @GraphQLNonNull final String offerName,
+            @GraphQLName("useName") @GraphQLNonNull final String useName) {
+        OfferUse offerUse;
+
+        try {
+            var commandForm = OfferUtil.getHome().getGetOfferUseForm();
+
+            commandForm.setOfferName(offerName);
+            commandForm.setUseName(useName);
+
+            offerUse = new GetOfferUseCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return offerUse == null ? null : new OfferUseObject(offerUse);
+    }
+
+    @GraphQLField
+    @GraphQLName("offerUses")
+    public static Collection<OfferUseObject> offerUses(final DataFetchingEnvironment env,
+            @GraphQLName("offerName") final String offerName,
+            @GraphQLName("useName") final String useName) {
+        Collection<OfferUse> offerUses;
+        Collection<OfferUseObject> offerUseObjects;
+
+        try {
+            var commandForm = OfferUtil.getHome().getGetOfferUsesForm();
+
+            commandForm.setOfferName(offerName);
+            commandForm.setUseName(useName);
+
+            offerUses = new GetOfferUsesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(offerUses == null) {
+            offerUseObjects = emptyList();
+        } else {
+            offerUseObjects = new ArrayList<>(offerUses.size());
+
+            offerUses.stream()
+                    .map(OfferUseObject::new)
+                    .forEachOrdered(offerUseObjects::add);
+        }
+
+        return offerUseObjects;
+    }
 
     @GraphQLField
     @GraphQLName("offer")

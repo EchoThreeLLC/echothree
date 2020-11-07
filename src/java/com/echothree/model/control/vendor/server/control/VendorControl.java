@@ -17,6 +17,10 @@
 package com.echothree.model.control.vendor.server.control;
 
 import com.echothree.model.control.core.common.EventTypes;
+import com.echothree.model.control.search.common.SearchOptions;
+import com.echothree.model.control.search.server.control.SearchControl;
+import static com.echothree.model.control.search.server.control.SearchControl.ENI_ENTITYUNIQUEID_COLUMN_INDEX;
+import com.echothree.model.control.search.server.graphql.VendorResultObject;
 import com.echothree.model.control.vendor.common.choice.ItemPurchasingCategoryChoicesBean;
 import com.echothree.model.control.vendor.common.choice.VendorItemStatusChoicesBean;
 import com.echothree.model.control.vendor.common.choice.VendorStatusChoicesBean;
@@ -25,6 +29,7 @@ import com.echothree.model.control.vendor.common.transfer.ItemPurchasingCategory
 import com.echothree.model.control.vendor.common.transfer.ItemPurchasingCategoryTransfer;
 import com.echothree.model.control.vendor.common.transfer.VendorItemCostTransfer;
 import com.echothree.model.control.vendor.common.transfer.VendorItemTransfer;
+import com.echothree.model.control.vendor.common.transfer.VendorResultTransfer;
 import com.echothree.model.control.vendor.common.transfer.VendorTransfer;
 import com.echothree.model.control.vendor.common.transfer.VendorTypeDescriptionTransfer;
 import com.echothree.model.control.vendor.common.transfer.VendorTypeTransfer;
@@ -55,6 +60,7 @@ import com.echothree.model.data.party.server.entity.Language;
 import com.echothree.model.data.party.server.entity.Party;
 import com.echothree.model.data.returnpolicy.common.pk.ReturnPolicyPK;
 import com.echothree.model.data.returnpolicy.server.entity.ReturnPolicy;
+import com.echothree.model.data.search.server.entity.UserVisitSearch;
 import com.echothree.model.data.selector.common.pk.SelectorPK;
 import com.echothree.model.data.selector.server.entity.Selector;
 import com.echothree.model.data.shipment.server.entity.FreeOnBoard;
@@ -102,6 +108,7 @@ import com.echothree.util.server.message.ExecutionErrorAccumulator;
 import com.echothree.util.server.persistence.EntityPermission;
 import com.echothree.util.server.persistence.Session;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -110,6 +117,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class VendorControl
@@ -124,7 +132,7 @@ public class VendorControl
     //   Vendor Transfer Caches
     // --------------------------------------------------------------------------------
     
-    private VendorTransferCaches vendorTransferCaches = null;
+    private VendorTransferCaches vendorTransferCaches;
     
     public VendorTransferCaches getVendorTransferCaches(UserVisit userVisit) {
         if(vendorTransferCaches == null) {
@@ -235,7 +243,7 @@ public class VendorControl
     }
     
     private VendorType getVendorTypeByName(String vendorTypeName, EntityPermission entityPermission) {
-        VendorType vendorType = null;
+        VendorType vendorType;
         
         try {
             String query = null;
@@ -304,7 +312,7 @@ public class VendorControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultVendorTypeChoice == null? false: defaultVendorTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultVendorTypeChoice != null && defaultVendorTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && vendorTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -412,7 +420,7 @@ public class VendorControl
                 if(iter.hasNext()) {
                     defaultVendorType = iter.next();
                 }
-                VendorTypeDetailValue vendorTypeDetailValue = defaultVendorType.getLastDetailForUpdate().getVendorTypeDetailValue().clone();
+                VendorTypeDetailValue vendorTypeDetailValue = Objects.requireNonNull(defaultVendorType).getLastDetailForUpdate().getVendorTypeDetailValue().clone();
                 
                 vendorTypeDetailValue.setIsDefault(Boolean.TRUE);
                 updateVendorTypeFromValue(vendorTypeDetailValue, false, deletedBy);
@@ -439,7 +447,7 @@ public class VendorControl
     }
     
     private VendorTypeDescription getVendorTypeDescription(VendorType vendorType, Language language, EntityPermission entityPermission) {
-        VendorTypeDescription vendorTypeDescription = null;
+        VendorTypeDescription vendorTypeDescription;
         
         try {
             String query = null;
@@ -486,7 +494,7 @@ public class VendorControl
     }
     
     private List<VendorTypeDescription> getVendorTypeDescriptionsByVendorType(VendorType vendorType, EntityPermission entityPermission) {
-        List<VendorTypeDescription> vendorTypeDescriptions = null;
+        List<VendorTypeDescription> vendorTypeDescriptions;
         
         try {
             String query = null;
@@ -593,9 +601,9 @@ public class VendorControl
     public void deleteVendorTypeDescriptionsByVendorType(VendorType vendorType, BasePK deletedBy) {
         List<VendorTypeDescription> vendorTypeDescriptions = getVendorTypeDescriptionsByVendorTypeForUpdate(vendorType);
         
-        vendorTypeDescriptions.stream().forEach((vendorTypeDescription) -> {
-            deleteVendorTypeDescription(vendorTypeDescription, deletedBy);
-        });
+        vendorTypeDescriptions.forEach((vendorTypeDescription) -> 
+                deleteVendorTypeDescription(vendorTypeDescription, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -621,7 +629,7 @@ public class VendorControl
     }
     
     private Vendor getVendor(Party party, EntityPermission entityPermission) {
-        Vendor vendor = null;
+        Vendor vendor;
         
         try {
             String query = null;
@@ -659,7 +667,7 @@ public class VendorControl
     }
     
     private Vendor getVendorByName(String vendorName, EntityPermission entityPermission) {
-        Vendor vendor = null;
+        Vendor vendor;
         
         try {
             String query = null;
@@ -697,7 +705,7 @@ public class VendorControl
     }
     
     private List<Vendor> getVendorsByDefaultItemAliasType(ItemAliasType defaultItemAliasType, EntityPermission entityPermission) {
-        List<Vendor> vendors = null;
+        List<Vendor> vendors;
         
         try {
             String query = null;
@@ -892,7 +900,7 @@ public class VendorControl
     }
 
     private VendorItem getVendorItemByVendorPartyAndVendorItemName(Party vendorParty, String vendorItemName, EntityPermission entityPermission) {
-        VendorItem vendorItem = null;
+        VendorItem vendorItem;
         
         try {
             String query = null;
@@ -940,7 +948,7 @@ public class VendorControl
     }
     
     private List<VendorItem> getVendorItemsByItem(Item item, EntityPermission entityPermission) {
-        List<VendorItem> vendorItems = null;
+        List<VendorItem> vendorItems;
         
         try {
             String query = null;
@@ -981,7 +989,7 @@ public class VendorControl
     }
     
     private List<VendorItem> getVendorItemsByVendorParty(Party vendorParty, EntityPermission entityPermission) {
-        List<VendorItem> vendorItems = null;
+        List<VendorItem> vendorItems;
         
         try {
             String query = null;
@@ -1021,7 +1029,7 @@ public class VendorControl
     }
     
     private List<VendorItem> getVendorItemsByVendorItemName(String vendorItemName, EntityPermission entityPermission) {
-        List<VendorItem> vendorItems = null;
+        List<VendorItem> vendorItems;
         
         try {
             String query = null;
@@ -1108,9 +1116,9 @@ public class VendorControl
         List<VendorItemTransfer> vendorItemTransfers = new ArrayList<>(vendorItems.size());
         VendorItemTransferCache vendorItemTransferCache = getVendorTransferCaches(userVisit).getVendorItemTransferCache();
         
-        vendorItems.stream().forEach((vendorItem) -> {
-            vendorItemTransfers.add(vendorItemTransferCache.getVendorItemTransfer(vendorItem));
-        });
+        vendorItems.forEach((vendorItem) ->
+                vendorItemTransfers.add(vendorItemTransferCache.getVendorItemTransfer(vendorItem))
+        );
         
         return vendorItemTransfers;
     }
@@ -1164,9 +1172,9 @@ public class VendorControl
     }
     
     public void deleteVendorItems(List<VendorItem> vendorItems, BasePK deletedBy) {
-        vendorItems.stream().forEach((vendorItem) -> {
-            deleteVendorItem(vendorItem, deletedBy);
-        });
+        vendorItems.forEach((vendorItem) -> 
+                deleteVendorItem(vendorItem, deletedBy)
+        );
     }
     
     public void deleteVendorItemsByItem(Item item, BasePK deletedBy) {
@@ -1193,7 +1201,7 @@ public class VendorControl
     
     private VendorItemCost getVendorItemCost(VendorItem vendorItem, InventoryCondition inventoryCondition,
             UnitOfMeasureType unitOfMeasureType, EntityPermission entityPermission) {
-        VendorItemCost vendorItemCost = null;
+        VendorItemCost vendorItemCost;
         
         try {
             String query = null;
@@ -1246,7 +1254,7 @@ public class VendorControl
     }
     
     private List<VendorItemCost> getVendorItemCostsByVendorItem(VendorItem vendorItem, EntityPermission entityPermission) {
-        List<VendorItemCost> vendorItemCosts = null;
+        List<VendorItemCost> vendorItemCosts;
         
         try {
             String query = null;
@@ -1290,7 +1298,7 @@ public class VendorControl
     }
     
     public List<VendorItemCost> getVendorItemCostsByInventoryConditionForUpdate(InventoryCondition inventoryCondition) {
-        List<VendorItemCost> vendorItemCosts = null;
+        List<VendorItemCost> vendorItemCosts;
         
         try {
             PreparedStatement ps = VendorItemCostFactory.getInstance().prepareStatement(
@@ -1311,7 +1319,7 @@ public class VendorControl
     }
     
     public List<VendorItemCost> getVendorItemCostsByUnitOfMeasureTypeForUpdate(UnitOfMeasureType unitOfMeasureType) {
-        List<VendorItemCost> vendorItemCosts = null;
+        List<VendorItemCost> vendorItemCosts;
         
         try {
             PreparedStatement ps = VendorItemCostFactory.getInstance().prepareStatement(
@@ -1332,7 +1340,7 @@ public class VendorControl
     }
     
     public List<VendorItemCost> getVendorItemCostsByItemAndUnitOfMeasureTypeForUpdate(Item item, UnitOfMeasureType unitOfMeasureType) {
-        List<VendorItemCost> vendorItemCosts = null;
+        List<VendorItemCost> vendorItemCosts;
         
         try {
             PreparedStatement ps = VendorItemCostFactory.getInstance().prepareStatement(
@@ -1400,9 +1408,9 @@ public class VendorControl
     }
     
     public void deleteVendorItemCosts(List<VendorItemCost> vendorItemCosts, BasePK deletedBy) {
-        vendorItemCosts.stream().forEach((vendorItemCost) -> {
-            deleteVendorItemCost(vendorItemCost, deletedBy);
-        });
+        vendorItemCosts.forEach((vendorItemCost) -> 
+                deleteVendorItemCost(vendorItemCost, deletedBy)
+        );
     }
     
     public void deleteVendorItemCostsByVendorItem(VendorItem vendorItem, BasePK deletedBy) {
@@ -1603,9 +1611,9 @@ public class VendorControl
         List<ItemPurchasingCategoryTransfer> itemPurchasingCategoryTransfers = new ArrayList<>(itemPurchasingCategories.size());
         ItemPurchasingCategoryTransferCache itemPurchasingCategoryTransferCache = getVendorTransferCaches(userVisit).getItemPurchasingCategoryTransferCache();
         
-        itemPurchasingCategories.stream().forEach((itemPurchasingCategory) -> {
-            itemPurchasingCategoryTransfers.add(itemPurchasingCategoryTransferCache.getItemPurchasingCategoryTransfer(itemPurchasingCategory));
-        });
+        itemPurchasingCategories.forEach((itemPurchasingCategory) ->
+                itemPurchasingCategoryTransfers.add(itemPurchasingCategoryTransferCache.getItemPurchasingCategoryTransfer(itemPurchasingCategory))
+        );
         
         return itemPurchasingCategoryTransfers;
     }
@@ -1636,7 +1644,7 @@ public class VendorControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultItemPurchasingCategoryChoice == null? false: defaultItemPurchasingCategoryChoice.equals(value);
+            boolean usingDefaultChoice = defaultItemPurchasingCategoryChoice != null && defaultItemPurchasingCategoryChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && itemPurchasingCategoryDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -1736,7 +1744,7 @@ public class VendorControl
                     if(iter.hasNext()) {
                         defaultItemPurchasingCategory = iter.next();
                     }
-                    ItemPurchasingCategoryDetailValue itemPurchasingCategoryDetailValue = defaultItemPurchasingCategory.getLastDetailForUpdate().getItemPurchasingCategoryDetailValue().clone();
+                    ItemPurchasingCategoryDetailValue itemPurchasingCategoryDetailValue = Objects.requireNonNull(defaultItemPurchasingCategory).getLastDetailForUpdate().getItemPurchasingCategoryDetailValue().clone();
 
                     itemPurchasingCategoryDetailValue.setIsDefault(Boolean.TRUE);
                     updateItemPurchasingCategoryFromValue(itemPurchasingCategoryDetailValue, false, deletedBy);
@@ -1752,9 +1760,7 @@ public class VendorControl
     }
 
     private void deleteItemPurchasingCategories(List<ItemPurchasingCategory> itemPurchasingCategories, boolean checkDefault, BasePK deletedBy) {
-        itemPurchasingCategories.stream().forEach((itemPurchasingCategory) -> {
-            deleteItemPurchasingCategory(itemPurchasingCategory, checkDefault, deletedBy);
-        });
+        itemPurchasingCategories.forEach((itemPurchasingCategory) -> deleteItemPurchasingCategory(itemPurchasingCategory, checkDefault, deletedBy));
     }
 
     public void deleteItemPurchasingCategories(List<ItemPurchasingCategory> itemPurchasingCategories, BasePK deletedBy) {
@@ -1779,7 +1785,7 @@ public class VendorControl
     }
     
     private ItemPurchasingCategoryDescription getItemPurchasingCategoryDescription(ItemPurchasingCategory itemPurchasingCategory, Language language, EntityPermission entityPermission) {
-        ItemPurchasingCategoryDescription itemPurchasingCategoryDescription = null;
+        ItemPurchasingCategoryDescription itemPurchasingCategoryDescription;
         
         try {
             String query = null;
@@ -1826,7 +1832,7 @@ public class VendorControl
     }
     
     private List<ItemPurchasingCategoryDescription> getItemPurchasingCategoryDescriptionsByItemPurchasingCategory(ItemPurchasingCategory itemPurchasingCategory, EntityPermission entityPermission) {
-        List<ItemPurchasingCategoryDescription> itemPurchasingCategoryDescriptions = null;
+        List<ItemPurchasingCategoryDescription> itemPurchasingCategoryDescriptions;
         
         try {
             String query = null;
@@ -1891,9 +1897,9 @@ public class VendorControl
         List<ItemPurchasingCategoryDescriptionTransfer> itemPurchasingCategoryDescriptionTransfers = new ArrayList<>(itemPurchasingCategoryDescriptions.size());
         ItemPurchasingCategoryDescriptionTransferCache itemPurchasingCategoryDescriptionTransferCache = getVendorTransferCaches(userVisit).getItemPurchasingCategoryDescriptionTransferCache();
         
-        itemPurchasingCategoryDescriptions.stream().forEach((itemPurchasingCategoryDescription) -> {
-            itemPurchasingCategoryDescriptionTransfers.add(itemPurchasingCategoryDescriptionTransferCache.getItemPurchasingCategoryDescriptionTransfer(itemPurchasingCategoryDescription));
-        });
+        itemPurchasingCategoryDescriptions.forEach((itemPurchasingCategoryDescription) ->
+                itemPurchasingCategoryDescriptionTransfers.add(itemPurchasingCategoryDescriptionTransferCache.getItemPurchasingCategoryDescriptionTransfer(itemPurchasingCategoryDescription))
+        );
         
         return itemPurchasingCategoryDescriptionTransfers;
     }
@@ -1926,9 +1932,56 @@ public class VendorControl
     public void deleteItemPurchasingCategoryDescriptionsByItemPurchasingCategory(ItemPurchasingCategory itemPurchasingCategory, BasePK deletedBy) {
         List<ItemPurchasingCategoryDescription> itemPurchasingCategoryDescriptions = getItemPurchasingCategoryDescriptionsByItemPurchasingCategoryForUpdate(itemPurchasingCategory);
         
-        itemPurchasingCategoryDescriptions.stream().forEach((itemPurchasingCategoryDescription) -> {
-            deleteItemPurchasingCategoryDescription(itemPurchasingCategoryDescription, deletedBy);
-        });
+        itemPurchasingCategoryDescriptions.forEach((itemPurchasingCategoryDescription) -> 
+                deleteItemPurchasingCategoryDescription(itemPurchasingCategoryDescription, deletedBy)
+        );
     }
-    
+
+    // --------------------------------------------------------------------------------
+    //   Vendor Searches
+    // --------------------------------------------------------------------------------
+
+    public List<VendorResultTransfer> getVendorResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
+        var searchControl = (SearchControl)Session.getModelController(SearchControl.class);
+        var vendorResultTransfers = new ArrayList<VendorResultTransfer>();
+        var includeVendor = false;
+
+        var options = session.getOptions();
+        if(options != null) {
+            includeVendor = options.contains(SearchOptions.VendorResultIncludeVendor);
+        }
+
+        try (ResultSet rs = searchControl.getUserVisitSearchResultSet(userVisitSearch)) {
+            var vendorControl = (VendorControl)Session.getModelController(VendorControl.class);
+
+            while(rs.next()) {
+                var party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
+
+                vendorResultTransfers.add(new VendorResultTransfer(party.getLastDetail().getPartyName(),
+                        includeVendor ? vendorControl.getVendorTransfer(userVisit, party) : null));
+            }
+        } catch(SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return vendorResultTransfers;
+    }
+
+    public List<VendorResultObject> getVendorResultObjects(UserVisitSearch userVisitSearch) {
+        var searchControl = (SearchControl)Session.getModelController(SearchControl.class);
+        var vendorResultObjects = new ArrayList<VendorResultObject>();
+
+        try (var rs = searchControl.getUserVisitSearchResultSet(userVisitSearch)) {
+            while(rs.next()) {
+                var party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
+
+                vendorResultObjects.add(new VendorResultObject(party));
+            }
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return vendorResultObjects;
+    }
+
 }

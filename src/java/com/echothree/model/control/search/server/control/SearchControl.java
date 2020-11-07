@@ -17,17 +17,32 @@
 package com.echothree.model.control.search.server.control;
 
 import com.echothree.model.control.batch.server.control.BatchControl;
+import com.echothree.model.control.contact.common.transfer.ContactMechanismResultTransfer;
 import com.echothree.model.control.contact.server.control.ContactControl;
+import com.echothree.model.control.content.common.transfer.ContentCategoryResultTransfer;
 import com.echothree.model.control.content.server.control.ContentControl;
 import com.echothree.model.control.core.common.EventTypes;
+import com.echothree.model.control.core.common.transfer.EntityListItemResultTransfer;
+import com.echothree.model.control.core.common.transfer.EntityTypeResultTransfer;
 import com.echothree.model.control.core.server.control.CoreControl;
+import com.echothree.model.control.customer.common.transfer.CustomerResultTransfer;
 import com.echothree.model.control.customer.server.control.CustomerControl;
+import com.echothree.model.control.employee.common.transfer.EmployeeResultTransfer;
+import com.echothree.model.control.employee.common.transfer.LeaveResultTransfer;
 import com.echothree.model.control.employee.server.control.EmployeeControl;
+import com.echothree.model.control.forum.common.transfer.ForumMessageResultTransfer;
 import com.echothree.model.control.forum.server.control.ForumControl;
+import com.echothree.model.control.item.common.transfer.HarmonizedTariffScheduleCodeResultTransfer;
+import com.echothree.model.control.item.common.transfer.ItemResultTransfer;
 import com.echothree.model.control.item.server.control.ItemControl;
+import com.echothree.model.control.offer.common.transfer.OfferResultTransfer;
+import com.echothree.model.control.offer.common.transfer.UseResultTransfer;
+import com.echothree.model.control.offer.common.transfer.UseTypeResultTransfer;
 import com.echothree.model.control.offer.server.control.OfferControl;
 import com.echothree.model.control.offer.server.control.UseControl;
 import com.echothree.model.control.offer.server.control.UseTypeControl;
+import com.echothree.model.control.sales.common.transfer.SalesOrderBatchResultTransfer;
+import com.echothree.model.control.sales.common.transfer.SalesOrderResultTransfer;
 import com.echothree.model.control.sales.common.workflow.SalesOrderStatusConstants;
 import com.echothree.model.control.sales.server.control.SalesOrderBatchControl;
 import com.echothree.model.control.search.common.SearchOptions;
@@ -39,19 +54,6 @@ import com.echothree.model.control.search.common.choice.SearchSortDirectionChoic
 import com.echothree.model.control.search.common.choice.SearchSortOrderChoicesBean;
 import com.echothree.model.control.search.common.choice.SearchTypeChoicesBean;
 import com.echothree.model.control.search.common.choice.SearchUseTypeChoicesBean;
-import com.echothree.model.control.search.common.transfer.ContactMechanismResultTransfer;
-import com.echothree.model.control.search.common.transfer.ContentCategoryResultTransfer;
-import com.echothree.model.control.search.common.transfer.CustomerResultTransfer;
-import com.echothree.model.control.search.common.transfer.EmployeeResultTransfer;
-import com.echothree.model.control.search.common.transfer.EntityListItemResultTransfer;
-import com.echothree.model.control.search.common.transfer.EntityTypeResultTransfer;
-import com.echothree.model.control.search.common.transfer.ForumMessageResultTransfer;
-import com.echothree.model.control.search.common.transfer.HarmonizedTariffScheduleCodeResultTransfer;
-import com.echothree.model.control.search.common.transfer.ItemResultTransfer;
-import com.echothree.model.control.search.common.transfer.LeaveResultTransfer;
-import com.echothree.model.control.search.common.transfer.OfferResultTransfer;
-import com.echothree.model.control.search.common.transfer.SalesOrderBatchResultTransfer;
-import com.echothree.model.control.search.common.transfer.SalesOrderResultTransfer;
 import com.echothree.model.control.search.common.transfer.SearchCheckSpellingActionTypeDescriptionTransfer;
 import com.echothree.model.control.search.common.transfer.SearchCheckSpellingActionTypeTransfer;
 import com.echothree.model.control.search.common.transfer.SearchDefaultOperatorDescriptionTransfer;
@@ -68,11 +70,6 @@ import com.echothree.model.control.search.common.transfer.SearchTypeDescriptionT
 import com.echothree.model.control.search.common.transfer.SearchTypeTransfer;
 import com.echothree.model.control.search.common.transfer.SearchUseTypeDescriptionTransfer;
 import com.echothree.model.control.search.common.transfer.SearchUseTypeTransfer;
-import com.echothree.model.control.search.common.transfer.SecurityRoleGroupResultTransfer;
-import com.echothree.model.control.search.common.transfer.SecurityRoleResultTransfer;
-import com.echothree.model.control.search.common.transfer.UseResultTransfer;
-import com.echothree.model.control.search.common.transfer.UseTypeResultTransfer;
-import com.echothree.model.control.search.common.transfer.VendorResultTransfer;
 import com.echothree.model.control.search.server.graphql.CustomerResultObject;
 import com.echothree.model.control.search.server.graphql.ItemResultObject;
 import com.echothree.model.control.search.server.graphql.VendorResultObject;
@@ -90,59 +87,40 @@ import com.echothree.model.control.search.server.transfer.SearchTransferCaches;
 import com.echothree.model.control.search.server.transfer.SearchTypeTransferCache;
 import com.echothree.model.control.search.server.transfer.SearchUseTypeDescriptionTransferCache;
 import com.echothree.model.control.search.server.transfer.SearchUseTypeTransferCache;
+import com.echothree.model.control.security.common.transfer.SecurityRoleGroupResultTransfer;
+import com.echothree.model.control.security.common.transfer.SecurityRoleResultTransfer;
 import com.echothree.model.control.security.server.control.SecurityControl;
+import com.echothree.model.control.vendor.common.transfer.VendorResultTransfer;
 import com.echothree.model.control.vendor.server.control.VendorControl;
-import com.echothree.model.control.workflow.common.transfer.WorkflowEntityStatusTransfer;
 import com.echothree.model.data.batch.common.pk.BatchPK;
-import com.echothree.model.data.batch.server.entity.Batch;
 import com.echothree.model.data.contact.common.pk.ContactMechanismPK;
-import com.echothree.model.data.contact.server.entity.ContactMechanism;
-import com.echothree.model.data.contact.server.entity.ContactMechanismDetail;
 import com.echothree.model.data.contact.server.factory.ContactMechanismFactory;
 import com.echothree.model.data.content.common.pk.ContentCategoryPK;
-import com.echothree.model.data.content.server.entity.ContentCatalogDetail;
-import com.echothree.model.data.content.server.entity.ContentCategory;
-import com.echothree.model.data.content.server.entity.ContentCategoryDetail;
 import com.echothree.model.data.content.server.factory.ContentCategoryFactory;
 import com.echothree.model.data.core.common.pk.EntityInstancePK;
 import com.echothree.model.data.core.common.pk.EntityListItemPK;
 import com.echothree.model.data.core.common.pk.EntityTypePK;
-import com.echothree.model.data.core.server.entity.EntityAttributeDetail;
 import com.echothree.model.data.core.server.entity.EntityInstance;
-import com.echothree.model.data.core.server.entity.EntityListItem;
-import com.echothree.model.data.core.server.entity.EntityListItemDetail;
-import com.echothree.model.data.core.server.entity.EntityType;
-import com.echothree.model.data.core.server.entity.EntityTypeDetail;
 import com.echothree.model.data.core.server.factory.EntityListItemFactory;
 import com.echothree.model.data.core.server.factory.EntityTypeFactory;
 import com.echothree.model.data.employee.common.pk.LeavePK;
 import com.echothree.model.data.employee.server.entity.Leave;
 import com.echothree.model.data.employee.server.factory.LeaveFactory;
 import com.echothree.model.data.forum.common.pk.ForumMessagePK;
-import com.echothree.model.data.forum.server.entity.ForumMessage;
 import com.echothree.model.data.forum.server.factory.ForumMessageFactory;
 import com.echothree.model.data.index.server.entity.Index;
 import com.echothree.model.data.index.server.entity.IndexField;
 import com.echothree.model.data.item.common.pk.HarmonizedTariffScheduleCodePK;
 import com.echothree.model.data.item.common.pk.ItemPK;
-import com.echothree.model.data.item.server.entity.HarmonizedTariffScheduleCode;
-import com.echothree.model.data.item.server.entity.HarmonizedTariffScheduleCodeDetail;
 import com.echothree.model.data.item.server.factory.HarmonizedTariffScheduleCodeFactory;
 import com.echothree.model.data.item.server.factory.ItemFactory;
 import com.echothree.model.data.offer.common.pk.OfferPK;
 import com.echothree.model.data.offer.common.pk.UsePK;
 import com.echothree.model.data.offer.common.pk.UseTypePK;
-import com.echothree.model.data.offer.server.entity.Offer;
-import com.echothree.model.data.offer.server.entity.OfferDetail;
-import com.echothree.model.data.offer.server.entity.Use;
-import com.echothree.model.data.offer.server.entity.UseDetail;
-import com.echothree.model.data.offer.server.entity.UseType;
-import com.echothree.model.data.offer.server.entity.UseTypeDetail;
 import com.echothree.model.data.offer.server.factory.OfferFactory;
 import com.echothree.model.data.offer.server.factory.UseFactory;
 import com.echothree.model.data.offer.server.factory.UseTypeFactory;
 import com.echothree.model.data.order.common.pk.OrderPK;
-import com.echothree.model.data.order.server.entity.Order;
 import com.echothree.model.data.order.server.factory.OrderFactory;
 import com.echothree.model.data.party.common.pk.PartyPK;
 import com.echothree.model.data.party.server.entity.Language;
@@ -249,9 +227,6 @@ import com.echothree.model.data.search.server.value.SearchUseTypeDescriptionValu
 import com.echothree.model.data.search.server.value.SearchUseTypeDetailValue;
 import com.echothree.model.data.security.common.pk.SecurityRoleGroupPK;
 import com.echothree.model.data.security.common.pk.SecurityRolePK;
-import com.echothree.model.data.security.server.entity.SecurityRole;
-import com.echothree.model.data.security.server.entity.SecurityRoleDetail;
-import com.echothree.model.data.security.server.entity.SecurityRoleGroup;
 import com.echothree.model.data.security.server.factory.SecurityRoleFactory;
 import com.echothree.model.data.security.server.factory.SecurityRoleGroupFactory;
 import com.echothree.model.data.user.server.entity.UserVisit;
@@ -260,7 +235,6 @@ import com.echothree.util.common.persistence.BasePK;
 import com.echothree.util.server.control.BaseModelControl;
 import com.echothree.util.server.persistence.EntityPermission;
 import com.echothree.util.server.persistence.Session;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -270,7 +244,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 
 public class SearchControl
         extends BaseModelControl {
@@ -284,7 +258,7 @@ public class SearchControl
     //   Search Transfer Caches
     // --------------------------------------------------------------------------------
 
-    private SearchTransferCaches searchTransferCaches = null;
+    private SearchTransferCaches searchTransferCaches;
 
     public SearchTransferCaches getSearchTransferCaches(UserVisit userVisit) {
         if(searchTransferCaches == null) {
@@ -448,9 +422,9 @@ public class SearchControl
         List<SearchUseTypeTransfer> searchUseTypeTransfers = new ArrayList<>(searchUseTypes.size());
         SearchUseTypeTransferCache searchUseTypeTransferCache = getSearchTransferCaches(userVisit).getSearchUseTypeTransferCache();
 
-        searchUseTypes.stream().forEach((searchUseType) -> {
-            searchUseTypeTransfers.add(searchUseTypeTransferCache.getSearchUseTypeTransfer(searchUseType));
-        });
+        searchUseTypes.forEach((searchUseType) ->
+                searchUseTypeTransfers.add(searchUseTypeTransferCache.getSearchUseTypeTransfer(searchUseType))
+        );
 
         return searchUseTypeTransfers;
     }
@@ -480,7 +454,7 @@ public class SearchControl
             labels.add(label == null? value: label);
             values.add(value);
 
-            boolean usingDefaultChoice = defaultSearchUseTypeChoice == null? false: defaultSearchUseTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultSearchUseTypeChoice != null && defaultSearchUseTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && searchUseTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -555,7 +529,7 @@ public class SearchControl
                     if(iter.hasNext()) {
                         defaultSearchUseType = iter.next();
                     }
-                    SearchUseTypeDetailValue searchUseTypeDetailValue = defaultSearchUseType.getLastDetailForUpdate().getSearchUseTypeDetailValue().clone();
+                    SearchUseTypeDetailValue searchUseTypeDetailValue = Objects.requireNonNull(defaultSearchUseType).getLastDetailForUpdate().getSearchUseTypeDetailValue().clone();
 
                     searchUseTypeDetailValue.setIsDefault(Boolean.TRUE);
                     updateSearchUseTypeFromValue(searchUseTypeDetailValue, false, deletedBy);
@@ -571,9 +545,7 @@ public class SearchControl
     }
 
     private void deleteSearchUseTypes(List<SearchUseType> searchUseTypes, boolean checkDefault, BasePK deletedBy) {
-        searchUseTypes.stream().forEach((searchUseType) -> {
-            deleteSearchUseType(searchUseType, checkDefault, deletedBy);
-        });
+        searchUseTypes.forEach((searchUseType) -> deleteSearchUseType(searchUseType, checkDefault, deletedBy));
     }
 
     public void deleteSearchUseTypes(List<SearchUseType> searchUseTypes, BasePK deletedBy) {
@@ -688,9 +660,9 @@ public class SearchControl
         List<SearchUseTypeDescriptionTransfer> searchUseTypeDescriptionTransfers = new ArrayList<>(searchUseTypeDescriptions.size());
         SearchUseTypeDescriptionTransferCache searchUseTypeDescriptionTransferCache = getSearchTransferCaches(userVisit).getSearchUseTypeDescriptionTransferCache();
 
-        searchUseTypeDescriptions.stream().forEach((searchUseTypeDescription) -> {
-            searchUseTypeDescriptionTransfers.add(searchUseTypeDescriptionTransferCache.getSearchUseTypeDescriptionTransfer(searchUseTypeDescription));
-        });
+        searchUseTypeDescriptions.forEach((searchUseTypeDescription) ->
+                searchUseTypeDescriptionTransfers.add(searchUseTypeDescriptionTransferCache.getSearchUseTypeDescriptionTransfer(searchUseTypeDescription))
+        );
 
         return searchUseTypeDescriptionTransfers;
     }
@@ -724,9 +696,9 @@ public class SearchControl
     public void deleteSearchUseTypeDescriptionsBySearchUseType(SearchUseType searchUseType, BasePK deletedBy) {
         List<SearchUseTypeDescription> searchUseTypeDescriptions = getSearchUseTypeDescriptionsBySearchUseTypeForUpdate(searchUseType);
 
-        searchUseTypeDescriptions.stream().forEach((searchUseTypeDescription) -> {
-            deleteSearchUseTypeDescription(searchUseTypeDescription, deletedBy);
-        });
+        searchUseTypeDescriptions.forEach((searchUseTypeDescription) -> 
+                deleteSearchUseTypeDescription(searchUseTypeDescription, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -883,9 +855,9 @@ public class SearchControl
         List<SearchResultActionTypeTransfer> searchResultActionTypeTransfers = new ArrayList<>(searchResultActionTypes.size());
         SearchResultActionTypeTransferCache searchResultActionTypeTransferCache = getSearchTransferCaches(userVisit).getSearchResultActionTypeTransferCache();
 
-        searchResultActionTypes.stream().forEach((searchResultActionType) -> {
-            searchResultActionTypeTransfers.add(searchResultActionTypeTransferCache.getSearchResultActionTypeTransfer(searchResultActionType));
-        });
+        searchResultActionTypes.forEach((searchResultActionType) ->
+                searchResultActionTypeTransfers.add(searchResultActionTypeTransferCache.getSearchResultActionTypeTransfer(searchResultActionType))
+        );
 
         return searchResultActionTypeTransfers;
     }
@@ -915,7 +887,7 @@ public class SearchControl
             labels.add(label == null? value: label);
             values.add(value);
 
-            boolean usingDefaultChoice = defaultSearchResultActionTypeChoice == null? false: defaultSearchResultActionTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultSearchResultActionTypeChoice != null && defaultSearchResultActionTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && searchResultActionTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -990,7 +962,7 @@ public class SearchControl
                     if(iter.hasNext()) {
                         defaultSearchResultActionType = iter.next();
                     }
-                    SearchResultActionTypeDetailValue searchResultActionTypeDetailValue = defaultSearchResultActionType.getLastDetailForUpdate().getSearchResultActionTypeDetailValue().clone();
+                    SearchResultActionTypeDetailValue searchResultActionTypeDetailValue = Objects.requireNonNull(defaultSearchResultActionType).getLastDetailForUpdate().getSearchResultActionTypeDetailValue().clone();
 
                     searchResultActionTypeDetailValue.setIsDefault(Boolean.TRUE);
                     updateSearchResultActionTypeFromValue(searchResultActionTypeDetailValue, false, deletedBy);
@@ -1006,9 +978,7 @@ public class SearchControl
     }
 
     private void deleteSearchResultActionTypes(List<SearchResultActionType> searchResultActionTypes, boolean checkDefault, BasePK deletedBy) {
-        searchResultActionTypes.stream().forEach((searchResultActionType) -> {
-            deleteSearchResultActionType(searchResultActionType, checkDefault, deletedBy);
-        });
+        searchResultActionTypes.forEach((searchResultActionType) -> deleteSearchResultActionType(searchResultActionType, checkDefault, deletedBy));
     }
 
     public void deleteSearchResultActionTypes(List<SearchResultActionType> searchResultActionTypes, BasePK deletedBy) {
@@ -1123,9 +1093,9 @@ public class SearchControl
         List<SearchResultActionTypeDescriptionTransfer> searchResultActionTypeDescriptionTransfers = new ArrayList<>(searchResultActionTypeDescriptions.size());
         SearchResultActionTypeDescriptionTransferCache searchResultActionTypeDescriptionTransferCache = getSearchTransferCaches(userVisit).getSearchResultActionTypeDescriptionTransferCache();
 
-        searchResultActionTypeDescriptions.stream().forEach((searchResultActionTypeDescription) -> {
-            searchResultActionTypeDescriptionTransfers.add(searchResultActionTypeDescriptionTransferCache.getSearchResultActionTypeDescriptionTransfer(searchResultActionTypeDescription));
-        });
+        searchResultActionTypeDescriptions.forEach((searchResultActionTypeDescription) ->
+                searchResultActionTypeDescriptionTransfers.add(searchResultActionTypeDescriptionTransferCache.getSearchResultActionTypeDescriptionTransfer(searchResultActionTypeDescription))
+        );
 
         return searchResultActionTypeDescriptionTransfers;
     }
@@ -1159,9 +1129,9 @@ public class SearchControl
     public void deleteSearchResultActionTypeDescriptionsBySearchResultActionType(SearchResultActionType searchResultActionType, BasePK deletedBy) {
         List<SearchResultActionTypeDescription> searchResultActionTypeDescriptions = getSearchResultActionTypeDescriptionsBySearchResultActionTypeForUpdate(searchResultActionType);
 
-        searchResultActionTypeDescriptions.stream().forEach((searchResultActionTypeDescription) -> {
-            deleteSearchResultActionTypeDescription(searchResultActionTypeDescription, deletedBy);
-        });
+        searchResultActionTypeDescriptions.forEach((searchResultActionTypeDescription) -> 
+                deleteSearchResultActionTypeDescription(searchResultActionTypeDescription, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -1318,9 +1288,9 @@ public class SearchControl
         List<SearchCheckSpellingActionTypeTransfer> searchCheckSpellingActionTypeTransfers = new ArrayList<>(searchCheckSpellingActionTypes.size());
         SearchCheckSpellingActionTypeTransferCache searchCheckSpellingActionTypeTransferCache = getSearchTransferCaches(userVisit).getSearchCheckSpellingActionTypeTransferCache();
 
-        searchCheckSpellingActionTypes.stream().forEach((searchCheckSpellingActionType) -> {
-            searchCheckSpellingActionTypeTransfers.add(searchCheckSpellingActionTypeTransferCache.getSearchCheckSpellingActionTypeTransfer(searchCheckSpellingActionType));
-        });
+        searchCheckSpellingActionTypes.forEach((searchCheckSpellingActionType) ->
+                searchCheckSpellingActionTypeTransfers.add(searchCheckSpellingActionTypeTransferCache.getSearchCheckSpellingActionTypeTransfer(searchCheckSpellingActionType))
+        );
 
         return searchCheckSpellingActionTypeTransfers;
     }
@@ -1350,7 +1320,7 @@ public class SearchControl
             labels.add(label == null? value: label);
             values.add(value);
 
-            boolean usingDefaultChoice = defaultSearchCheckSpellingActionTypeChoice == null? false: defaultSearchCheckSpellingActionTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultSearchCheckSpellingActionTypeChoice != null && defaultSearchCheckSpellingActionTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && searchCheckSpellingActionTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -1424,7 +1394,7 @@ public class SearchControl
                     if(iter.hasNext()) {
                         defaultSearchCheckSpellingActionType = iter.next();
                     }
-                    SearchCheckSpellingActionTypeDetailValue searchCheckSpellingActionTypeDetailValue = defaultSearchCheckSpellingActionType.getLastDetailForUpdate().getSearchCheckSpellingActionTypeDetailValue().clone();
+                    SearchCheckSpellingActionTypeDetailValue searchCheckSpellingActionTypeDetailValue = Objects.requireNonNull(defaultSearchCheckSpellingActionType).getLastDetailForUpdate().getSearchCheckSpellingActionTypeDetailValue().clone();
 
                     searchCheckSpellingActionTypeDetailValue.setIsDefault(Boolean.TRUE);
                     updateSearchCheckSpellingActionTypeFromValue(searchCheckSpellingActionTypeDetailValue, false, deletedBy);
@@ -1440,9 +1410,7 @@ public class SearchControl
     }
 
     private void deleteSearchCheckSpellingActionTypes(List<SearchCheckSpellingActionType> searchCheckSpellingActionTypes, boolean checkDefault, BasePK deletedBy) {
-        searchCheckSpellingActionTypes.stream().forEach((searchCheckSpellingActionType) -> {
-            deleteSearchCheckSpellingActionType(searchCheckSpellingActionType, checkDefault, deletedBy);
-        });
+        searchCheckSpellingActionTypes.forEach((searchCheckSpellingActionType) -> deleteSearchCheckSpellingActionType(searchCheckSpellingActionType, checkDefault, deletedBy));
     }
 
     public void deleteSearchCheckSpellingActionTypes(List<SearchCheckSpellingActionType> searchCheckSpellingActionTypes, BasePK deletedBy) {
@@ -1557,9 +1525,9 @@ public class SearchControl
         List<SearchCheckSpellingActionTypeDescriptionTransfer> searchCheckSpellingActionTypeDescriptionTransfers = new ArrayList<>(searchCheckSpellingActionTypeDescriptions.size());
         SearchCheckSpellingActionTypeDescriptionTransferCache searchCheckSpellingActionTypeDescriptionTransferCache = getSearchTransferCaches(userVisit).getSearchCheckSpellingActionTypeDescriptionTransferCache();
 
-        searchCheckSpellingActionTypeDescriptions.stream().forEach((searchCheckSpellingActionTypeDescription) -> {
-            searchCheckSpellingActionTypeDescriptionTransfers.add(searchCheckSpellingActionTypeDescriptionTransferCache.getSearchCheckSpellingActionTypeDescriptionTransfer(searchCheckSpellingActionTypeDescription));
-        });
+        searchCheckSpellingActionTypeDescriptions.forEach((searchCheckSpellingActionTypeDescription) ->
+                searchCheckSpellingActionTypeDescriptionTransfers.add(searchCheckSpellingActionTypeDescriptionTransferCache.getSearchCheckSpellingActionTypeDescriptionTransfer(searchCheckSpellingActionTypeDescription))
+        );
 
         return searchCheckSpellingActionTypeDescriptionTransfers;
     }
@@ -1593,9 +1561,9 @@ public class SearchControl
     public void deleteSearchCheckSpellingActionTypeDescriptionsBySearchCheckSpellingActionType(SearchCheckSpellingActionType searchCheckSpellingActionType, BasePK deletedBy) {
         List<SearchCheckSpellingActionTypeDescription> searchCheckSpellingActionTypeDescriptions = getSearchCheckSpellingActionTypeDescriptionsBySearchCheckSpellingActionTypeForUpdate(searchCheckSpellingActionType);
 
-        searchCheckSpellingActionTypeDescriptions.stream().forEach((searchCheckSpellingActionTypeDescription) -> {
-            deleteSearchCheckSpellingActionTypeDescription(searchCheckSpellingActionTypeDescription, deletedBy);
-        });
+        searchCheckSpellingActionTypeDescriptions.forEach((searchCheckSpellingActionTypeDescription) -> 
+                deleteSearchCheckSpellingActionTypeDescription(searchCheckSpellingActionTypeDescription, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -1752,9 +1720,9 @@ public class SearchControl
         List<SearchDefaultOperatorTransfer> searchDefaultOperatorTransfers = new ArrayList<>(searchDefaultOperators.size());
         SearchDefaultOperatorTransferCache searchDefaultOperatorTransferCache = getSearchTransferCaches(userVisit).getSearchDefaultOperatorTransferCache();
 
-        searchDefaultOperators.stream().forEach((searchDefaultOperator) -> {
-            searchDefaultOperatorTransfers.add(searchDefaultOperatorTransferCache.getSearchDefaultOperatorTransfer(searchDefaultOperator));
-        });
+        searchDefaultOperators.forEach((searchDefaultOperator) ->
+                searchDefaultOperatorTransfers.add(searchDefaultOperatorTransferCache.getSearchDefaultOperatorTransfer(searchDefaultOperator))
+        );
 
         return searchDefaultOperatorTransfers;
     }
@@ -1784,7 +1752,7 @@ public class SearchControl
             labels.add(label == null? value: label);
             values.add(value);
 
-            boolean usingDefaultChoice = defaultSearchDefaultOperatorChoice == null? false: defaultSearchDefaultOperatorChoice.equals(value);
+            boolean usingDefaultChoice = defaultSearchDefaultOperatorChoice != null && defaultSearchDefaultOperatorChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && searchDefaultOperatorDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -1860,7 +1828,7 @@ public class SearchControl
                     if(iter.hasNext()) {
                         defaultSearchDefaultOperator = iter.next();
                     }
-                    SearchDefaultOperatorDetailValue searchDefaultOperatorDetailValue = defaultSearchDefaultOperator.getLastDetailForUpdate().getSearchDefaultOperatorDetailValue().clone();
+                    SearchDefaultOperatorDetailValue searchDefaultOperatorDetailValue = Objects.requireNonNull(defaultSearchDefaultOperator).getLastDetailForUpdate().getSearchDefaultOperatorDetailValue().clone();
 
                     searchDefaultOperatorDetailValue.setIsDefault(Boolean.TRUE);
                     updateSearchDefaultOperatorFromValue(searchDefaultOperatorDetailValue, false, deletedBy);
@@ -1876,9 +1844,7 @@ public class SearchControl
     }
 
     private void deleteSearchDefaultOperators(List<SearchDefaultOperator> searchDefaultOperators, boolean checkDefault, BasePK deletedBy) {
-        searchDefaultOperators.stream().forEach((searchDefaultOperator) -> {
-            deleteSearchDefaultOperator(searchDefaultOperator, checkDefault, deletedBy);
-        });
+        searchDefaultOperators.forEach((searchDefaultOperator) -> deleteSearchDefaultOperator(searchDefaultOperator, checkDefault, deletedBy));
     }
 
     public void deleteSearchDefaultOperators(List<SearchDefaultOperator> searchDefaultOperators, BasePK deletedBy) {
@@ -1993,9 +1959,9 @@ public class SearchControl
         List<SearchDefaultOperatorDescriptionTransfer> searchDefaultOperatorDescriptionTransfers = new ArrayList<>(searchDefaultOperatorDescriptions.size());
         SearchDefaultOperatorDescriptionTransferCache searchDefaultOperatorDescriptionTransferCache = getSearchTransferCaches(userVisit).getSearchDefaultOperatorDescriptionTransferCache();
 
-        searchDefaultOperatorDescriptions.stream().forEach((searchDefaultOperatorDescription) -> {
-            searchDefaultOperatorDescriptionTransfers.add(searchDefaultOperatorDescriptionTransferCache.getSearchDefaultOperatorDescriptionTransfer(searchDefaultOperatorDescription));
-        });
+        searchDefaultOperatorDescriptions.forEach((searchDefaultOperatorDescription) ->
+                searchDefaultOperatorDescriptionTransfers.add(searchDefaultOperatorDescriptionTransferCache.getSearchDefaultOperatorDescriptionTransfer(searchDefaultOperatorDescription))
+        );
 
         return searchDefaultOperatorDescriptionTransfers;
     }
@@ -2029,9 +1995,9 @@ public class SearchControl
     public void deleteSearchDefaultOperatorDescriptionsBySearchDefaultOperator(SearchDefaultOperator searchDefaultOperator, BasePK deletedBy) {
         List<SearchDefaultOperatorDescription> searchDefaultOperatorDescriptions = getSearchDefaultOperatorDescriptionsBySearchDefaultOperatorForUpdate(searchDefaultOperator);
 
-        searchDefaultOperatorDescriptions.stream().forEach((searchDefaultOperatorDescription) -> {
-            deleteSearchDefaultOperatorDescription(searchDefaultOperatorDescription, deletedBy);
-        });
+        searchDefaultOperatorDescriptions.forEach((searchDefaultOperatorDescription) -> 
+                deleteSearchDefaultOperatorDescription(searchDefaultOperatorDescription, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -2188,9 +2154,9 @@ public class SearchControl
         List<SearchSortDirectionTransfer> searchSortDirectionTransfers = new ArrayList<>(searchSortDirections.size());
         SearchSortDirectionTransferCache searchSortDirectionTransferCache = getSearchTransferCaches(userVisit).getSearchSortDirectionTransferCache();
 
-        searchSortDirections.stream().forEach((searchSortDirection) -> {
-            searchSortDirectionTransfers.add(searchSortDirectionTransferCache.getSearchSortDirectionTransfer(searchSortDirection));
-        });
+        searchSortDirections.forEach((searchSortDirection) ->
+                searchSortDirectionTransfers.add(searchSortDirectionTransferCache.getSearchSortDirectionTransfer(searchSortDirection))
+        );
 
         return searchSortDirectionTransfers;
     }
@@ -2220,7 +2186,7 @@ public class SearchControl
             labels.add(label == null? value: label);
             values.add(value);
 
-            boolean usingDefaultChoice = defaultSearchSortDirectionChoice == null? false: defaultSearchSortDirectionChoice.equals(value);
+            boolean usingDefaultChoice = defaultSearchSortDirectionChoice != null && defaultSearchSortDirectionChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && searchSortDirectionDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -2296,7 +2262,7 @@ public class SearchControl
                     if(iter.hasNext()) {
                         defaultSearchSortDirection = iter.next();
                     }
-                    SearchSortDirectionDetailValue searchSortDirectionDetailValue = defaultSearchSortDirection.getLastDetailForUpdate().getSearchSortDirectionDetailValue().clone();
+                    SearchSortDirectionDetailValue searchSortDirectionDetailValue = Objects.requireNonNull(defaultSearchSortDirection).getLastDetailForUpdate().getSearchSortDirectionDetailValue().clone();
 
                     searchSortDirectionDetailValue.setIsDefault(Boolean.TRUE);
                     updateSearchSortDirectionFromValue(searchSortDirectionDetailValue, false, deletedBy);
@@ -2312,9 +2278,7 @@ public class SearchControl
     }
 
     private void deleteSearchSortDirections(List<SearchSortDirection> searchSortDirections, boolean checkDefault, BasePK deletedBy) {
-        searchSortDirections.stream().forEach((searchSortDirection) -> {
-            deleteSearchSortDirection(searchSortDirection, checkDefault, deletedBy);
-        });
+        searchSortDirections.forEach((searchSortDirection) -> deleteSearchSortDirection(searchSortDirection, checkDefault, deletedBy));
     }
 
     public void deleteSearchSortDirections(List<SearchSortDirection> searchSortDirections, BasePK deletedBy) {
@@ -2429,9 +2393,9 @@ public class SearchControl
         List<SearchSortDirectionDescriptionTransfer> searchSortDirectionDescriptionTransfers = new ArrayList<>(searchSortDirectionDescriptions.size());
         SearchSortDirectionDescriptionTransferCache searchSortDirectionDescriptionTransferCache = getSearchTransferCaches(userVisit).getSearchSortDirectionDescriptionTransferCache();
 
-        searchSortDirectionDescriptions.stream().forEach((searchSortDirectionDescription) -> {
-            searchSortDirectionDescriptionTransfers.add(searchSortDirectionDescriptionTransferCache.getSearchSortDirectionDescriptionTransfer(searchSortDirectionDescription));
-        });
+        searchSortDirectionDescriptions.forEach((searchSortDirectionDescription) ->
+                searchSortDirectionDescriptionTransfers.add(searchSortDirectionDescriptionTransferCache.getSearchSortDirectionDescriptionTransfer(searchSortDirectionDescription))
+        );
 
         return searchSortDirectionDescriptionTransfers;
     }
@@ -2465,9 +2429,9 @@ public class SearchControl
     public void deleteSearchSortDirectionDescriptionsBySearchSortDirection(SearchSortDirection searchSortDirection, BasePK deletedBy) {
         List<SearchSortDirectionDescription> searchSortDirectionDescriptions = getSearchSortDirectionDescriptionsBySearchSortDirectionForUpdate(searchSortDirection);
 
-        searchSortDirectionDescriptions.stream().forEach((searchSortDirectionDescription) -> {
-            deleteSearchSortDirectionDescription(searchSortDirectionDescription, deletedBy);
-        });
+        searchSortDirectionDescriptions.forEach((searchSortDirectionDescription) -> 
+                deleteSearchSortDirectionDescription(searchSortDirectionDescription, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -2629,7 +2593,7 @@ public class SearchControl
             labels.add(label == null? value: label);
             values.add(value);
 
-            boolean usingDefaultChoice = defaultSearchKindChoice == null? false: defaultSearchKindChoice.equals(value);
+            boolean usingDefaultChoice = defaultSearchKindChoice != null && defaultSearchKindChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && searchKindDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -2647,9 +2611,9 @@ public class SearchControl
         List<SearchKindTransfer> searchKindTransfers = new ArrayList<>(searchKinds.size());
         SearchKindTransferCache searchKindTransferCache = getSearchTransferCaches(userVisit).getSearchKindTransferCache();
 
-        searchKinds.stream().forEach((searchKind) -> {
-            searchKindTransfers.add(searchKindTransferCache.getSearchKindTransfer(searchKind));
-        });
+        searchKinds.forEach((searchKind) ->
+                searchKindTransfers.add(searchKindTransferCache.getSearchKindTransfer(searchKind))
+        );
 
         return searchKindTransfers;
     }
@@ -2718,7 +2682,7 @@ public class SearchControl
                     if(iter.hasNext()) {
                         defaultSearchKind = iter.next();
                     }
-                    SearchKindDetailValue searchKindDetailValue = defaultSearchKind.getLastDetailForUpdate().getSearchKindDetailValue().clone();
+                    SearchKindDetailValue searchKindDetailValue = Objects.requireNonNull(defaultSearchKind).getLastDetailForUpdate().getSearchKindDetailValue().clone();
 
                     searchKindDetailValue.setIsDefault(Boolean.TRUE);
                     updateSearchKindFromValue(searchKindDetailValue, false, deletedBy);
@@ -2734,9 +2698,7 @@ public class SearchControl
     }
 
     private void deleteSearchKinds(List<SearchKind> searchKinds, boolean checkDefault, BasePK deletedBy) {
-        searchKinds.stream().forEach((searchKind) -> {
-            deleteSearchKind(searchKind, checkDefault, deletedBy);
-        });
+        searchKinds.forEach((searchKind) -> deleteSearchKind(searchKind, checkDefault, deletedBy));
     }
 
     public void deleteSearchKinds(List<SearchKind> searchKinds, BasePK deletedBy) {
@@ -2887,9 +2849,9 @@ public class SearchControl
     public void deleteSearchKindDescriptionsBySearchKind(SearchKind searchKind, BasePK deletedBy) {
         List<SearchKindDescription> searchKindDescriptions = getSearchKindDescriptionsBySearchKindForUpdate(searchKind);
 
-        searchKindDescriptions.stream().forEach((searchKindDescription) -> {
-            deleteSearchKindDescription(searchKindDescription, deletedBy);
-        });
+        searchKindDescriptions.forEach((searchKindDescription) -> 
+                deleteSearchKindDescription(searchKindDescription, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -3057,7 +3019,7 @@ public class SearchControl
             labels.add(label == null? value: label);
             values.add(value);
 
-            boolean usingDefaultChoice = defaultSearchTypeChoice == null? false: defaultSearchTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultSearchTypeChoice != null && defaultSearchTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && searchTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -3075,9 +3037,9 @@ public class SearchControl
         List<SearchTypeTransfer> searchTypeTransfers = new ArrayList<>(searchTypes.size());
         SearchTypeTransferCache searchTypeTransferCache = getSearchTransferCaches(userVisit).getSearchTypeTransferCache();
 
-        searchTypes.stream().forEach((searchType) -> {
-            searchTypeTransfers.add(searchTypeTransferCache.getSearchTypeTransfer(searchType));
-        });
+        searchTypes.forEach((searchType) ->
+                searchTypeTransfers.add(searchTypeTransferCache.getSearchTypeTransfer(searchType))
+        );
 
         return searchTypeTransfers;
     }
@@ -3152,7 +3114,7 @@ public class SearchControl
                 if(iter.hasNext()) {
                     defaultSearchType = iter.next();
                 }
-                SearchTypeDetailValue searchTypeDetailValue = defaultSearchType.getLastDetailForUpdate().getSearchTypeDetailValue().clone();
+                SearchTypeDetailValue searchTypeDetailValue = Objects.requireNonNull(defaultSearchType).getLastDetailForUpdate().getSearchTypeDetailValue().clone();
 
                 searchTypeDetailValue.setIsDefault(Boolean.TRUE);
                 updateSearchTypeFromValue(searchTypeDetailValue, false, deletedBy);
@@ -3165,9 +3127,9 @@ public class SearchControl
     public void deleteSearchTypesBySearchKind(SearchKind searchKind, BasePK deletedBy) {
         List<SearchType> searchTypes = getSearchTypesForUpdate(searchKind);
 
-        searchTypes.stream().forEach((searchType) -> {
-            deleteSearchType(searchType, deletedBy);
-        });
+        searchTypes.forEach((searchType) -> 
+                deleteSearchType(searchType, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -3314,9 +3276,9 @@ public class SearchControl
     public void deleteSearchTypeDescriptionsBySearchType(SearchType searchType, BasePK deletedBy) {
         List<SearchTypeDescription> searchTypeDescriptions = getSearchTypeDescriptionsBySearchTypeForUpdate(searchType);
 
-        searchTypeDescriptions.stream().forEach((searchTypeDescription) -> {
-            deleteSearchTypeDescription(searchTypeDescription, deletedBy);
-        });
+        searchTypeDescriptions.forEach((searchTypeDescription) -> 
+                deleteSearchTypeDescription(searchTypeDescription, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -3484,7 +3446,7 @@ public class SearchControl
             labels.add(label == null? value: label);
             values.add(value);
 
-            boolean usingDefaultChoice = defaultSearchSortOrderChoice == null? false: defaultSearchSortOrderChoice.equals(value);
+            boolean usingDefaultChoice = defaultSearchSortOrderChoice != null && defaultSearchSortOrderChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && searchSortOrderDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -3502,9 +3464,9 @@ public class SearchControl
         List<SearchSortOrderTransfer> searchSortOrderTransfers = new ArrayList<>(searchSortOrders.size());
         SearchSortOrderTransferCache searchSortOrderTransferCache = getSearchTransferCaches(userVisit).getSearchSortOrderTransferCache();
 
-        searchSortOrders.stream().forEach((searchSortOrder) -> {
-            searchSortOrderTransfers.add(searchSortOrderTransferCache.getSearchSortOrderTransfer(searchSortOrder));
-        });
+        searchSortOrders.forEach((searchSortOrder) ->
+                searchSortOrderTransfers.add(searchSortOrderTransferCache.getSearchSortOrderTransfer(searchSortOrder))
+        );
 
         return searchSortOrderTransfers;
     }
@@ -3577,7 +3539,7 @@ public class SearchControl
                 if(iter.hasNext()) {
                     defaultSearchSortOrder = iter.next();
                 }
-                SearchSortOrderDetailValue searchSortOrderDetailValue = defaultSearchSortOrder.getLastDetailForUpdate().getSearchSortOrderDetailValue().clone();
+                SearchSortOrderDetailValue searchSortOrderDetailValue = Objects.requireNonNull(defaultSearchSortOrder).getLastDetailForUpdate().getSearchSortOrderDetailValue().clone();
 
                 searchSortOrderDetailValue.setIsDefault(Boolean.TRUE);
                 updateSearchSortOrderFromValue(searchSortOrderDetailValue, false, deletedBy);
@@ -3590,9 +3552,9 @@ public class SearchControl
     public void deleteSearchSortOrdersBySearchKind(SearchKind searchKind, BasePK deletedBy) {
         List<SearchSortOrder> searchSortOrders = getSearchSortOrdersForUpdate(searchKind);
 
-        searchSortOrders.stream().forEach((searchSortOrder) -> {
-            deleteSearchSortOrder(searchSortOrder, deletedBy);
-        });
+        searchSortOrders.forEach((searchSortOrder) -> 
+                deleteSearchSortOrder(searchSortOrder, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -3739,9 +3701,9 @@ public class SearchControl
     public void deleteSearchSortOrderDescriptionsBySearchSortOrder(SearchSortOrder searchSortOrder, BasePK deletedBy) {
         List<SearchSortOrderDescription> searchSortOrderDescriptions = getSearchSortOrderDescriptionsBySearchSortOrderForUpdate(searchSortOrder);
 
-        searchSortOrderDescriptions.stream().forEach((searchSortOrderDescription) -> {
-            deleteSearchSortOrderDescription(searchSortOrderDescription, deletedBy);
-        });
+        searchSortOrderDescriptions.forEach((searchSortOrderDescription) -> 
+                deleteSearchSortOrderDescription(searchSortOrderDescription, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -3892,9 +3854,9 @@ public class SearchControl
     }
     
     public void deleteSearches(List<Search> searches, BasePK deletedBy) {
-        searches.stream().forEach((search) -> {
-            deleteSearch(search, deletedBy);
-        });
+        searches.forEach((search) -> 
+                deleteSearch(search, deletedBy)
+        );
     }
 
     public void deleteSearchesByParty(Party party, BasePK deletedBy) {
@@ -4145,9 +4107,9 @@ public class SearchControl
     }
     
     public void deletedCachedSearches(List<CachedSearch> cachedSearches, BasePK deletedBy) {
-        cachedSearches.stream().forEach((cachedSearch) -> {
-            deleteCachedSearch(cachedSearch, deletedBy);
-        });
+        cachedSearches.forEach((cachedSearch) -> 
+                deleteCachedSearch(cachedSearch, deletedBy)
+        );
     }
     
     public void deleteCachedSearchesByIndex(Index index, BasePK deletedBy) {
@@ -4296,9 +4258,9 @@ public class SearchControl
     }
     
     public void deleteCachedSearchIndexFields(List<CachedSearchIndexField> cachedSearchIndexFields, BasePK deletedBy) {
-        cachedSearchIndexFields.stream().forEach((cachedSearchIndexField) -> {
-            deleteCachedSearchIndexField(cachedSearchIndexField, deletedBy);
-        });
+        cachedSearchIndexFields.forEach((cachedSearchIndexField) -> 
+                deleteCachedSearchIndexField(cachedSearchIndexField, deletedBy)
+        );
     }
     
     public void deleteCachedSearchIndexFieldsByCachedSearch(CachedSearch cachedSearch, BasePK deletedBy) {
@@ -4559,7 +4521,7 @@ public class SearchControl
     }
     
     public void removeUserVisitSearch(UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
+        var search = userVisitSearch.getSearch();
         
         // If it isn't a CachedSearch, then the results need to be removed.
         if(search.getCachedSearch() == null) {
@@ -4787,9 +4749,9 @@ public class SearchControl
     }
 
     public void deletePartySearchTypePreferences(List<PartySearchTypePreference> partySearchTypePreferences, BasePK deletedBy) {
-        partySearchTypePreferences.stream().forEach((partySearchTypePreference) -> {
-            deletePartySearchTypePreference(partySearchTypePreference, deletedBy);
-        });
+        partySearchTypePreferences.forEach((partySearchTypePreference) -> 
+                deletePartySearchTypePreference(partySearchTypePreference, deletedBy)
+        );
     }
 
     public void deletePartySearchTypePreferencesByParty(Party party, BasePK deletedBy) {
@@ -4909,9 +4871,9 @@ public class SearchControl
     }
     
     public void deleteSearchResultActions(List<SearchResultAction> searchResultActions, BasePK deletedBy) {
-        searchResultActions.stream().forEach((searchResultAction) -> {
-            deleteSearchResultAction(searchResultAction, deletedBy);
-        });
+        searchResultActions.forEach((searchResultAction) -> 
+                deleteSearchResultAction(searchResultAction, deletedBy)
+        );
     }
     
     public void deleteSearchResultActionsBySearch(Search search, BasePK deletedBy) {
@@ -4930,10 +4892,10 @@ public class SearchControl
     //   Common Search Result Utils
     // --------------------------------------------------------------------------------
 
-    private final int ENI_ENTITYINSTANCEID_COLUMN_INDEX = 1;
-    private final int ENI_ENTITYUNIQUEID_COLUMN_INDEX = 2;
+    public final static int ENI_ENTITYINSTANCEID_COLUMN_INDEX = 1;
+    public final static int ENI_ENTITYUNIQUEID_COLUMN_INDEX = 2;
 
-    private ResultSet getUserVisitSearchResultSet(final UserVisitSearch userVisitSearch) {
+    public ResultSet getUserVisitSearchResultSet(final UserVisitSearch userVisitSearch) {
         var search = userVisitSearch.getSearch();
         var cachedSearch = search.getCachedSearch();
         ResultSet rs;
@@ -4955,7 +4917,7 @@ public class SearchControl
 
                 session.copyLimit(SearchResultConstants.ENTITY_TYPE_NAME, CachedExecutedSearchResultConstants.ENTITY_TYPE_NAME);
 
-                PreparedStatement ps = CachedExecutedSearchResultFactory.getInstance().prepareStatement(
+                var ps = CachedExecutedSearchResultFactory.getInstance().prepareStatement(
                         "SELECT eni_entityinstanceid, eni_entityuniqueid "
                                 + "FROM cachedexecutedsearchresults, entityinstances "
                                 + "WHERE cxsrchr_cxsrch_cachedexecutedsearchid = ? AND cxsrchr_eni_entityinstanceid = eni_entityinstanceid "
@@ -4974,7 +4936,7 @@ public class SearchControl
     }
 
     // Takes into account if it's a Search or CachedSearch.
-    private int countSearchResults(final UserVisitSearch userVisitSearch) {
+    public int countSearchResults(final UserVisitSearch userVisitSearch) {
         var search = userVisitSearch.getSearch();
         var cachedSearch = search.getCachedSearch();
         int count;
@@ -5014,833 +4976,4 @@ public class SearchControl
         return entityInstances;
     }
 
-    // --------------------------------------------------------------------------------
-    //   Customer Searches
-    // --------------------------------------------------------------------------------
-
-    public List<CustomerResultTransfer> getCustomerResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        var customerResultTransfers = new ArrayList<CustomerResultTransfer>();
-        var includeCustomer = false;
-        
-        var options = session.getOptions();
-        if(options != null) {
-            includeCustomer = options.contains(SearchOptions.CustomerResultIncludeCustomer);
-        }
-        
-        try (ResultSet rs = getUserVisitSearchResultSet(userVisitSearch)) {
-            var customerControl = (CustomerControl)Session.getModelController(CustomerControl.class);
-
-            while(rs.next()) {
-                var party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
-
-                customerResultTransfers.add(new CustomerResultTransfer(party.getLastDetail().getPartyName(),
-                        includeCustomer ? customerControl.getCustomerTransfer(userVisit, party) : null));
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return customerResultTransfers;
-    }
-
-    public List<CustomerResultObject> getCustomerResultObjects(UserVisitSearch userVisitSearch) {
-        var customerResultObjects = new ArrayList<CustomerResultObject>();
-
-        try (var rs = getUserVisitSearchResultSet(userVisitSearch)) {
-            while(rs.next()) {
-                var party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
-
-                customerResultObjects.add(new CustomerResultObject(party));
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-
-        return customerResultObjects;
-    }
-
-    // --------------------------------------------------------------------------------
-    //   Employee Searches
-    // --------------------------------------------------------------------------------
-
-    public List<EmployeeResultTransfer> getEmployeeResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<EmployeeResultTransfer> employeeResultTransfers = new ArrayList<>();
-        boolean includeEmployee = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeEmployee = options.contains(SearchOptions.EmployeeResultIncludeEmployee);
-        }
-
-        try {
-            var employeeControl = (EmployeeControl)Session.getModelController(EmployeeControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    Party party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(1)));
-
-                    employeeResultTransfers.add(new EmployeeResultTransfer(party.getLastDetail().getPartyName(),
-                            includeEmployee ? employeeControl.getEmployeeTransfer(userVisit, party) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-
-        return employeeResultTransfers;
-    }
-
-    // --------------------------------------------------------------------------------
-    //   Leave Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<LeaveResultTransfer> getLeaveResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<LeaveResultTransfer> leaveResultTransfers = new ArrayList<>();
-        boolean includeLeave = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeLeave = options.contains(SearchOptions.LeaveResultIncludeLeave);
-        }
-        
-        try {
-            var employeeControl = (EmployeeControl)Session.getModelController(EmployeeControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-            
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    Leave leave = LeaveFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new LeavePK(rs.getLong(1)));
-
-                    leaveResultTransfers.add(new LeaveResultTransfer(leave.getLastDetail().getLeaveName(),
-                            includeLeave ? employeeControl.getLeaveTransfer(userVisit, leave) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return leaveResultTransfers;
-    }
-    
-    // --------------------------------------------------------------------------------
-    //   Item Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<ItemResultTransfer> getItemResultTransfers(UserVisitSearch userVisitSearch) {
-        List<ItemResultTransfer> itemResultTransfers = new ArrayList<>(countSearchResults(userVisitSearch));;
-        var includeItem = false;
-
-        // ItemTransfer objects are not included unless specifically requested;
-        var options = session.getOptions();
-        if(options != null) {
-            includeItem = options.contains(SearchOptions.ItemResultIncludeItem);
-        }
-
-        if(userVisitSearch.getSearch().getCachedSearch() != null) {
-            session.copyLimit(SearchResultConstants.ENTITY_TYPE_NAME, CachedExecutedSearchResultConstants.ENTITY_TYPE_NAME);
-        }
-
-        try (ResultSet rs = getUserVisitSearchResultSet(userVisitSearch)) {
-            var itemControl = (ItemControl)Session.getModelController(ItemControl.class);
-
-            while(rs.next()) {
-                var item = ItemFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new ItemPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
-
-                itemResultTransfers.add(new ItemResultTransfer(item.getLastDetail().getItemName(),
-                        includeItem ? itemControl.getItemTransfer(userVisitSearch.getUserVisit(), item) : null));
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-
-        return itemResultTransfers;
-    }
-
-    public List<ItemResultObject> getItemResultObjects(UserVisitSearch userVisitSearch) {
-        var itemResultObjects = new ArrayList<ItemResultObject>();
-
-        try (var rs = getUserVisitSearchResultSet(userVisitSearch)) {
-            var itemControl = (ItemControl)Session.getModelController(ItemControl.class);
-
-            while(rs.next()) {
-                var item = itemControl.getItemByPK(new ItemPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
-
-                itemResultObjects.add(new ItemResultObject(item));
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-
-        return itemResultObjects;
-    }
-    
-    // --------------------------------------------------------------------------------
-    //   Vendor Searches
-    // --------------------------------------------------------------------------------
-
-    public List<VendorResultTransfer> getVendorResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        var vendorResultTransfers = new ArrayList<VendorResultTransfer>();
-        var includeVendor = false;
-
-        var options = session.getOptions();
-        if(options != null) {
-            includeVendor = options.contains(SearchOptions.VendorResultIncludeVendor);
-        }
-
-        try (ResultSet rs = getUserVisitSearchResultSet(userVisitSearch)) {
-            var vendorControl = (VendorControl)Session.getModelController(VendorControl.class);
-
-            while(rs.next()) {
-                var party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
-
-                vendorResultTransfers.add(new VendorResultTransfer(party.getLastDetail().getPartyName(),
-                        includeVendor ? vendorControl.getVendorTransfer(userVisit, party) : null));
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-
-        return vendorResultTransfers;
-    }
-
-    public List<VendorResultObject> getVendorResultObjects(UserVisitSearch userVisitSearch) {
-        var vendorResultObjects = new ArrayList<VendorResultObject>();
-
-        try (var rs = getUserVisitSearchResultSet(userVisitSearch)) {
-            while(rs.next()) {
-                var party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
-
-                vendorResultObjects.add(new VendorResultObject(party));
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-
-        return vendorResultObjects;
-    }
-
-    // --------------------------------------------------------------------------------
-    //   Forum Message Searches
-    // --------------------------------------------------------------------------------
-
-    public List<ForumMessageResultTransfer> getForumMessageResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<ForumMessageResultTransfer> forumMessageResultTransfers = new ArrayList<>();
-        boolean includeForumMessage = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeForumMessage = options.contains(SearchOptions.ForumMessageResultIncludeForumMessage);
-        }
-
-        try {
-            var forumControl = (ForumControl)Session.getModelController(ForumControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    ForumMessage forumMessage = ForumMessageFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new ForumMessagePK(rs.getLong(1)));
-
-                    forumMessageResultTransfers.add(new ForumMessageResultTransfer(forumMessage.getLastDetail().getForumMessageName(),
-                            includeForumMessage ? forumControl.getForumMessageTransfer(userVisit, forumMessage) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-
-        return forumMessageResultTransfers;
-    }
-
-    // --------------------------------------------------------------------------------
-    //   Sales Order Batch Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<SalesOrderBatchResultTransfer> getSalesOrderBatchResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<SalesOrderBatchResultTransfer> salesOrderBatchResultTransfers = new ArrayList<>();
-        boolean includeSalesOrderBatch = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeSalesOrderBatch = options.contains(SearchOptions.SalesOrderBatchResultIncludeSalesOrderBatch);
-        }
-        
-        try {
-            var batchControl = (BatchControl)Session.getModelController(BatchControl.class);
-            var salesOrderBatchControl = (SalesOrderBatchControl)Session.getModelController(SalesOrderBatchControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-            
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    Batch batch = batchControl.getBatchByPK(new BatchPK(rs.getLong(1)));
-
-                    salesOrderBatchResultTransfers.add(new SalesOrderBatchResultTransfer(batch.getLastDetail().getBatchName(),
-                            includeSalesOrderBatch ? salesOrderBatchControl.getSalesOrderBatchTransfer(userVisit, batch) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return salesOrderBatchResultTransfers;
-    }
-    
-    // --------------------------------------------------------------------------------
-    //   Sales Order Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<SalesOrderResultTransfer> getSalesOrderResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<SalesOrderResultTransfer> salesOrderResultTransfers = new ArrayList<>();
-        
-        try {
-            var coreControl = getCoreControl();
-            var workflowControl = getWorkflowControl();
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-            
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    OrderPK orderPK = new OrderPK(rs.getLong(1));
-                    Order order = OrderFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, orderPK);
-
-                    EntityInstance entityInstance = coreControl.getEntityInstanceByBasePK(orderPK);
-                    WorkflowEntityStatusTransfer orderStatusTransfer = workflowControl.getWorkflowEntityStatusTransferByEntityInstanceUsingNames(userVisit,
-                            SalesOrderStatusConstants.Workflow_SALES_ORDER_STATUS, entityInstance);
-
-                    salesOrderResultTransfers.add(new SalesOrderResultTransfer(order.getLastDetail().getOrderName(), orderStatusTransfer));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return salesOrderResultTransfers;
-    }
-    
-    // --------------------------------------------------------------------------------
-    //   Entity List Item Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<EntityListItemResultTransfer> getEntityListItemResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        CachedSearch cachedSearch = search.getCachedSearch();
-        List<EntityListItemResultTransfer> entityListItemResultTransfers;
-        boolean includeEntityListItem = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeEntityListItem = options.contains(SearchOptions.EntityListItemResultIncludeEntityListItem);
-        }
-        
-        if(cachedSearch == null) {
-            entityListItemResultTransfers = new ArrayList<>(countSearchResults(search));
-
-            try {
-                var coreControl = (CoreControl)Session.getModelController(CoreControl.class);
-                PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                        "SELECT eni_entityuniqueid "
-                        + "FROM searchresults, entityinstances "
-                        + "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid "
-                        + "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid "
-                        + "_LIMIT_");
-
-                ps.setLong(1, search.getPrimaryKey().getEntityId());
-
-                try (ResultSet rs = ps.executeQuery()) {
-                    while(rs.next()) {
-                        EntityListItem entityListItem = EntityListItemFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new EntityListItemPK(rs.getLong(1)));
-                        EntityListItemDetail entityListItemDetail = entityListItem.getLastDetail();
-                        EntityAttributeDetail entityAttributeDetail = entityListItemDetail.getEntityAttribute().getLastDetail();
-                        EntityTypeDetail entityTypeDetail = entityAttributeDetail.getEntityType().getLastDetail();
-
-                        entityListItemResultTransfers.add(new EntityListItemResultTransfer(entityTypeDetail.getComponentVendor().getLastDetail().getComponentVendorName(),
-                                entityTypeDetail.getEntityTypeName(), entityAttributeDetail.getEntityAttributeName(), entityListItemDetail.getEntityListItemName(),
-                                includeEntityListItem ? coreControl.getEntityListItemTransfer(userVisit, entityListItem, null) : null));
-                    }
-                } catch (SQLException se) {
-                    throw new PersistenceDatabaseException(se);
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } else {
-            CachedExecutedSearch cachedExecutedSearch = getCachedExecutedSearch(cachedSearch);
-            
-            entityListItemResultTransfers = new ArrayList<>(countCachedExecutedSearchResults(cachedExecutedSearch));
-            
-            session.copyLimit(SearchResultConstants.ENTITY_TYPE_NAME, CachedExecutedSearchResultConstants.ENTITY_TYPE_NAME);
-            
-            try {
-                var coreControl = (CoreControl)Session.getModelController(CoreControl.class);
-                PreparedStatement ps = CachedExecutedSearchResultFactory.getInstance().prepareStatement(
-                        "SELECT eni_entityuniqueid "
-                        + "FROM cachedexecutedsearchresults, entityinstances "
-                        + "WHERE cxsrchr_cxsrch_cachedexecutedsearchid = ? AND cxsrchr_eni_entityinstanceid = eni_entityinstanceid "
-                        + "ORDER BY cxsrchr_sortorder, cxsrchr_eni_entityinstanceid "
-                        + "_LIMIT_");
-
-                ps.setLong(1, cachedExecutedSearch.getPrimaryKey().getEntityId());
-
-                try (ResultSet rs = ps.executeQuery()) {
-                    while(rs.next()) {
-                        EntityListItem entityListItem = EntityListItemFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new EntityListItemPK(rs.getLong(1)));
-                        EntityListItemDetail entityListItemDetail = entityListItem.getLastDetail();
-                        EntityAttributeDetail entityAttributeDetail = entityListItemDetail.getEntityAttribute().getLastDetail();
-                        EntityTypeDetail entityTypeDetail = entityAttributeDetail.getEntityType().getLastDetail();
-
-                        entityListItemResultTransfers.add(new EntityListItemResultTransfer(entityTypeDetail.getComponentVendor().getLastDetail().getComponentVendorName(),
-                                entityTypeDetail.getEntityTypeName(), entityAttributeDetail.getEntityAttributeName(), entityListItemDetail.getEntityListItemName(),
-                                includeEntityListItem ? coreControl.getEntityListItemTransfer(userVisit, entityListItem, null) : null));
-                    }
-                } catch (SQLException se) {
-                    throw new PersistenceDatabaseException(se);
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        }
-        
-        return entityListItemResultTransfers;
-    }
-    
-    // --------------------------------------------------------------------------------
-    //   Content Category Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<ContentCategoryResultTransfer> getContentCategoryResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<ContentCategoryResultTransfer> contentCategoryResultTransfers = new ArrayList<>();
-        boolean includeContentCategory = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeContentCategory = options.contains(SearchOptions.ContentCategoryResultIncludeContentCategory);
-        }
-        
-        try {
-            var contentControl = (ContentControl)Session.getModelController(ContentControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-            
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    ContentCategory contentCategory = ContentCategoryFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new ContentCategoryPK(rs.getLong(1)));
-                    ContentCategoryDetail contentCategoryDetail = contentCategory.getLastDetail();
-                    ContentCatalogDetail contentCatalogDetail = contentCategoryDetail.getContentCatalog().getLastDetail();
-
-                    contentCategoryResultTransfers.add(new ContentCategoryResultTransfer(contentCatalogDetail.getContentCollection().getLastDetail().getContentCollectionName(),
-                            contentCatalogDetail.getContentCatalogName(), contentCategoryDetail.getContentCategoryName(),
-                            includeContentCategory ? contentControl.getContentCategoryTransfer(userVisit, contentCategory) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return contentCategoryResultTransfers;
-    }
-    
-    // --------------------------------------------------------------------------------
-    //   Security Role Group Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<SecurityRoleGroupResultTransfer> getSecurityRoleGroupResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<SecurityRoleGroupResultTransfer> SecurityRoleGroupResultTransfers = new ArrayList<>();
-        boolean includeSecurityRoleGroup = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeSecurityRoleGroup = options.contains(SearchOptions.SecurityRoleGroupResultIncludeSecurityRoleGroup);
-        }
-        
-        try {
-            var securityControl = (SecurityControl)Session.getModelController(SecurityControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-            
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    SecurityRoleGroup securityRoleGroup = SecurityRoleGroupFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new SecurityRoleGroupPK(rs.getLong(1)));
-
-                    SecurityRoleGroupResultTransfers.add(new SecurityRoleGroupResultTransfer(securityRoleGroup.getLastDetail().getSecurityRoleGroupName(),
-                            includeSecurityRoleGroup ? securityControl.getSecurityRoleGroupTransfer(userVisit, securityRoleGroup) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return SecurityRoleGroupResultTransfers;
-    }
-    
-    // --------------------------------------------------------------------------------
-    //   Security Role Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<SecurityRoleResultTransfer> getSecurityRoleResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<SecurityRoleResultTransfer> securityRoleResultTransfers = new ArrayList<>();
-        boolean includeSecurityRole = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeSecurityRole = options.contains(SearchOptions.SecurityRoleResultIncludeSecurityRole);
-        }
-        
-        try {
-            var securityControl = (SecurityControl)Session.getModelController(SecurityControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-            
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    SecurityRole securityRole = SecurityRoleFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new SecurityRolePK(rs.getLong(1)));
-                    SecurityRoleDetail securityRoleDetail = securityRole.getLastDetail();
-
-                    securityRoleResultTransfers.add(new SecurityRoleResultTransfer(securityRoleDetail.getSecurityRoleName(),
-                            securityRoleDetail.getSecurityRoleGroup().getLastDetail().getSecurityRoleGroupName(),
-                            includeSecurityRole ? securityControl.getSecurityRoleTransfer(userVisit, securityRole) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return securityRoleResultTransfers;
-    }
-    
-    // --------------------------------------------------------------------------------
-    //   Harmonized Tariff Schedule Code Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<HarmonizedTariffScheduleCodeResultTransfer> getHarmonizedTariffScheduleCodeResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<HarmonizedTariffScheduleCodeResultTransfer> harmonizedTariffScheduleCodeResultTransfers = new ArrayList<>();
-        boolean includeHarmonizedTariffScheduleCode = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeHarmonizedTariffScheduleCode = options.contains(SearchOptions.HarmonizedTariffScheduleCodeResultIncludeHarmonizedTariffScheduleCode);
-        }
-        
-        try {
-            var itemControl = (ItemControl)Session.getModelController(ItemControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-            
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    HarmonizedTariffScheduleCode harmonizedTariffScheduleCode = HarmonizedTariffScheduleCodeFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new HarmonizedTariffScheduleCodePK(rs.getLong(1)));
-                    HarmonizedTariffScheduleCodeDetail harmonizedTariffScheduleCodeDetail = harmonizedTariffScheduleCode.getLastDetail();
-
-                    harmonizedTariffScheduleCodeResultTransfers.add(new HarmonizedTariffScheduleCodeResultTransfer(
-                            harmonizedTariffScheduleCodeDetail.getCountryGeoCode().getLastDetail().getGeoCodeName(),
-                            harmonizedTariffScheduleCodeDetail.getHarmonizedTariffScheduleCodeName(),
-                            includeHarmonizedTariffScheduleCode ? itemControl.getHarmonizedTariffScheduleCodeTransfer(userVisit, harmonizedTariffScheduleCode) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return harmonizedTariffScheduleCodeResultTransfers;
-    }
-    
-    // --------------------------------------------------------------------------------
-    //   Entity Type Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<EntityTypeResultTransfer> getEntityTypeResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<EntityTypeResultTransfer> entityTypeResultTransfers = new ArrayList<>();
-        boolean includeEntityType = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeEntityType = options.contains(SearchOptions.EntityTypeResultIncludeEntityType);
-        }
-        
-        try {
-            var coreControl = (CoreControl)Session.getModelController(CoreControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-            
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    EntityType entityType = EntityTypeFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new EntityTypePK(rs.getLong(1)));
-                    EntityTypeDetail entityTypeDetail = entityType.getLastDetail();
-
-                    entityTypeResultTransfers.add(new EntityTypeResultTransfer(entityTypeDetail.getComponentVendor().getLastDetail().getComponentVendorName(),
-                            entityTypeDetail.getEntityTypeName(), includeEntityType ? coreControl.getEntityTypeTransfer(userVisit, entityType) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return entityTypeResultTransfers;
-    }
-    
-    // --------------------------------------------------------------------------------
-    //   Contact Mechanism Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<ContactMechanismResultTransfer> getContactMechanismResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<ContactMechanismResultTransfer> contactMechanismResultTransfers = new ArrayList<>();
-        boolean includeContactMechanism = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeContactMechanism = options.contains(SearchOptions.ContactMechanismResultIncludeContactMechanism);
-        }
-        
-        try {
-            var contactControl = (ContactControl)Session.getModelController(ContactControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-            
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    ContactMechanism contactMechanism = ContactMechanismFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new ContactMechanismPK(rs.getLong(1)));
-                    ContactMechanismDetail contactMechanismDetail = contactMechanism.getLastDetail();
-
-                    contactMechanismResultTransfers.add(new ContactMechanismResultTransfer(contactMechanismDetail.getContactMechanismName(),
-                            includeContactMechanism ? contactControl.getContactMechanismTransfer(userVisit, contactMechanism) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return contactMechanismResultTransfers;
-    }
-
-    // --------------------------------------------------------------------------------
-    //   Offer Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<OfferResultTransfer> getOfferResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<OfferResultTransfer> offerResultTransfers = new ArrayList<>();
-        boolean includeOffer = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeOffer = options.contains(SearchOptions.OfferResultIncludeOffer);
-        }
-        
-        try {
-            var offerControl = (OfferControl)Session.getModelController(OfferControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-            
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    Offer offer = OfferFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new OfferPK(rs.getLong(1)));
-                    OfferDetail offerDetail = offer.getLastDetail();
-
-                    offerResultTransfers.add(new OfferResultTransfer(offerDetail.getOfferName(),
-                            includeOffer ? offerControl.getOfferTransfer(userVisit, offer) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return offerResultTransfers;
-    }
-    
-    // --------------------------------------------------------------------------------
-    //   Use Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<UseResultTransfer> getUseResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<UseResultTransfer> useResultTransfers = new ArrayList<>();
-        boolean includeUse = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeUse = options.contains(SearchOptions.UseResultIncludeUse);
-        }
-        
-        try {
-            var useControl = (UseControl)Session.getModelController(UseControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-            
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    Use use = UseFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new UsePK(rs.getLong(1)));
-                    UseDetail useDetail = use.getLastDetail();
-
-                    useResultTransfers.add(new UseResultTransfer(useDetail.getUseName(),
-                            includeUse ? useControl.getUseTransfer(userVisit, use) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return useResultTransfers;
-    }
-    
-    // --------------------------------------------------------------------------------
-    //   Use Type Searches
-    // --------------------------------------------------------------------------------
-    
-    public List<UseTypeResultTransfer> getUseTypeResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        Search search = userVisitSearch.getSearch();
-        List<UseTypeResultTransfer> useTypeResultTransfers = new ArrayList<>();
-        boolean includeUseType = false;
-        
-        Set<String> options = session.getOptions();
-        if(options != null) {
-            includeUseType = options.contains(SearchOptions.UseTypeResultIncludeUseType);
-        }
-        
-        try {
-            var useTypeControl = (UseTypeControl)Session.getModelController(UseTypeControl.class);
-            PreparedStatement ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                    "FROM searchresults, entityinstances " +
-                    "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                    "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                    "_LIMIT_");
-            
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    UseType useType = UseTypeFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, new UseTypePK(rs.getLong(1)));
-                    UseTypeDetail useTypeDetail = useType.getLastDetail();
-
-                    useTypeResultTransfers.add(new UseTypeResultTransfer(useTypeDetail.getUseTypeName(),
-                            includeUseType ? useTypeControl.getUseTypeTransfer(userVisit, useType) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
-            }
-        } catch (SQLException se) {
-            throw new PersistenceDatabaseException(se);
-        }
-        
-        return useTypeResultTransfers;
-    }
-    
 }

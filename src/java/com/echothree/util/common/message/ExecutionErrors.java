@@ -2231,5 +2231,7 @@ public enum ExecutionErrors {
     CannotDeleteOfferUseInUse,
     UnknownDefaultContactListGroup,
     UnknownDefaultContactList,
+    UnknownDefaultFilterKind,
+    UnknownDefaultSelectorKind,
 
 }

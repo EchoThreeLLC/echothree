@@ -295,9 +295,9 @@ public class OrderControl
     }
     
     public void deleteOrders(List<Order> orders, BasePK deletedBy) {
-        orders.stream().forEach((order) -> {
-            deleteOrder(order, deletedBy);
-        });
+        orders.forEach((order) -> 
+                deleteOrder(order, deletedBy)
+        );
     }
     
     public void deleteOrdersByWishlistType(WishlistType wishlistType, BasePK deletedBy) {
@@ -318,7 +318,7 @@ public class OrderControl
     }
     
     private OrderStatus getOrderStatus(Order order, EntityPermission entityPermission) {
-        OrderStatus orderStatus = null;
+        OrderStatus orderStatus;
         
         try {
             String query = null;

@@ -1,5 +1,22 @@
 # Changelog
 
+## 2020-11-01-01
+
+* GraphQL Objects and Mutations for Offer Uses [133](https://gitlab.echothree.com/echothree/echothree/-/issues/133)
+* GraphQL Objects for Selector Kinds [150](https://gitlab.echothree.com/echothree/echothree/-/issues/150)
+* GraphQL Objects for Filter Kinds [153](https://gitlab.echothree.com/echothree/echothree/-/issues/153)
+* jOOQ 3.14.0 Upgrade [175](https://gitlab.echothree.com/echothree/echothree/-/issues/175)
+* Apache Lucene 8.6.3 Upgrade [176](https://gitlab.echothree.com/echothree/echothree/-/issues/176)
+
+## 2020-10-18-01
+
+* GraphQL Objects and Mutations for Offers [127](https://gitlab.echothree.com/echothree/echothree/-/issues/127)
+* GraphQL Objects and Mutations for Uses [131](https://gitlab.echothree.com/echothree/echothree/-/issues/131)
+* Move All Control Classes into control Packages [165](https://gitlab.echothree.com/echothree/echothree/-/issues/165)
+* Remove “Mood” from Profiles [166](https://gitlab.echothree.com/echothree/echothree/-/issues/166)
+* WildFly 21.0.0 Upgrade [168](https://gitlab.echothree.com/echothree/echothree/-/issues/168)
+* Separate Search Results from SearchControl [170](https://gitlab.echothree.com/echothree/echothree/-/issues/170)
+
 ## 2020-10-04-01
 
 * Disallow Deleting the OfferUse If It's In Use [102](https://gitlab.echothree.com/echothree/echothree/-/issues/102)

@@ -51,6 +51,9 @@ import com.echothree.model.data.employee.common.pk.ResponsibilityTypePK;
 import com.echothree.model.data.employee.common.pk.SkillTypePK;
 import com.echothree.model.data.employee.server.entity.ResponsibilityType;
 import com.echothree.model.data.employee.server.entity.SkillType;
+import com.echothree.model.data.filter.common.pk.FilterKindPK;
+import com.echothree.model.data.filter.server.entity.FilterKind;
+import com.echothree.model.data.filter.server.factory.FilterKindFactory;
 import com.echothree.model.data.geo.common.pk.GeoCodePK;
 import com.echothree.model.data.geo.server.entity.GeoCode;
 import com.echothree.model.data.item.common.pk.ItemCategoryPK;
@@ -175,11 +178,13 @@ import com.echothree.util.server.persistence.Session;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class SelectorControl
         extends BaseModelControl {
@@ -193,7 +198,7 @@ public class SelectorControl
     //   Selector Transfer Caches
     // --------------------------------------------------------------------------------
     
-    private SelectorTransferCaches selectorTransferCaches = null;
+    private SelectorTransferCaches selectorTransferCaches;
     
     public SelectorTransferCaches getSelectorTransferCaches(UserVisit userVisit) {
         if(selectorTransferCaches == null) {
@@ -236,6 +241,29 @@ public class SelectorControl
         return selectorKind;
     }
 
+    public long countSelectorKinds() {
+        return session.queryForLong(
+                "SELECT COUNT(*) " +
+                        "FROM selectorkinds, selectorkinddetails " +
+                        "WHERE slk_activedetailid = slkdt_selectorkinddetailid");
+    }
+
+    /** Assume that the entityInstance passed to this function is a ECHOTHREE.SelectorKind */
+    public SelectorKind getSelectorKindByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
+        var pk = new SelectorKindPK(entityInstance.getEntityUniqueId());
+        var selectorKind = SelectorKindFactory.getInstance().getEntityFromPK(entityPermission, pk);
+
+        return selectorKind;
+    }
+
+    public SelectorKind getSelectorKindByEntityInstance(EntityInstance entityInstance) {
+        return getSelectorKindByEntityInstance(entityInstance, EntityPermission.READ_ONLY);
+    }
+
+    public SelectorKind getSelectorKindByEntityInstanceForUpdate(EntityInstance entityInstance) {
+        return getSelectorKindByEntityInstance(entityInstance, EntityPermission.READ_WRITE);
+    }
+
     private static final Map<EntityPermission, String> getSelectorKindByNameQueries;
 
     static {
@@ -253,7 +281,7 @@ public class SelectorControl
         getSelectorKindByNameQueries = Collections.unmodifiableMap(queryMap);
     }
 
-    private SelectorKind getSelectorKindByName(String selectorKindName, EntityPermission entityPermission) {
+    public SelectorKind getSelectorKindByName(String selectorKindName, EntityPermission entityPermission) {
         return SelectorKindFactory.getInstance().getEntityFromQuery(entityPermission, getSelectorKindByNameQueries,
                 selectorKindName);
     }
@@ -291,7 +319,7 @@ public class SelectorControl
         getDefaultSelectorKindQueries = Collections.unmodifiableMap(queryMap);
     }
 
-    private SelectorKind getDefaultSelectorKind(EntityPermission entityPermission) {
+    public SelectorKind getDefaultSelectorKind(EntityPermission entityPermission) {
         return SelectorKindFactory.getInstance().getEntityFromQuery(entityPermission, getDefaultSelectorKindQueries);
     }
 
@@ -362,7 +390,7 @@ public class SelectorControl
             labels.add(label == null? value: label);
             values.add(value);
 
-            boolean usingDefaultChoice = defaultSelectorKindChoice == null? false: defaultSelectorKindChoice.equals(value);
+            boolean usingDefaultChoice = defaultSelectorKindChoice != null && defaultSelectorKindChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && selectorKindDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -375,16 +403,19 @@ public class SelectorControl
         return getSelectorTransferCaches(userVisit).getSelectorKindTransferCache().getSelectorKindTransfer(selectorKind);
     }
 
-    public List<SelectorKindTransfer> getSelectorKindTransfers(UserVisit userVisit) {
-        List<SelectorKind> selectorKinds = getSelectorKinds();
+    public List<SelectorKindTransfer> getSelectorKindTransfers(UserVisit userVisit, Collection<SelectorKind> selectorKinds) {
         List<SelectorKindTransfer> selectorKindTransfers = new ArrayList<>(selectorKinds.size());
         SelectorKindTransferCache selectorKindTransferCache = getSelectorTransferCaches(userVisit).getSelectorKindTransferCache();
 
-        selectorKinds.stream().forEach((selectorKind) -> {
-            selectorKindTransfers.add(selectorKindTransferCache.getSelectorKindTransfer(selectorKind));
-        });
+        selectorKinds.forEach((selectorKind) ->
+                selectorKindTransfers.add(selectorKindTransferCache.getSelectorKindTransfer(selectorKind))
+        );
 
         return selectorKindTransfers;
+    }
+
+    public List<SelectorKindTransfer> getSelectorKindTransfers(UserVisit userVisit) {
+        return getSelectorKindTransfers(userVisit, getSelectorKinds());
     }
 
     private void updateSelectorKindFromValue(SelectorKindDetailValue selectorKindDetailValue, boolean checkDefault, BasePK updatedBy) {
@@ -448,7 +479,7 @@ public class SelectorControl
                 if(iter.hasNext()) {
                     defaultSelectorKind = iter.next();
                 }
-                SelectorKindDetailValue selectorKindDetailValue = defaultSelectorKind.getLastDetailForUpdate().getSelectorKindDetailValue().clone();
+                SelectorKindDetailValue selectorKindDetailValue = Objects.requireNonNull(defaultSelectorKind).getLastDetailForUpdate().getSelectorKindDetailValue().clone();
 
                 selectorKindDetailValue.setIsDefault(Boolean.TRUE);
                 updateSelectorKindFromValue(selectorKindDetailValue, false, deletedBy);
@@ -602,9 +633,9 @@ public class SelectorControl
     public void deleteSelectorKindDescriptionsBySelectorKind(SelectorKind selectorKind, BasePK deletedBy) {
         List<SelectorKindDescription> selectorKindDescriptions = getSelectorKindDescriptionsBySelectorKindForUpdate(selectorKind);
 
-        selectorKindDescriptions.stream().forEach((selectorKindDescription) -> {
-            deleteSelectorKindDescription(selectorKindDescription, deletedBy);
-        });
+        selectorKindDescriptions.forEach((selectorKindDescription) -> 
+                deleteSelectorKindDescription(selectorKindDescription, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -772,7 +803,7 @@ public class SelectorControl
             labels.add(label == null? value: label);
             values.add(value);
 
-            boolean usingDefaultChoice = defaultSelectorTypeChoice == null? false: defaultSelectorTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultSelectorTypeChoice != null && defaultSelectorTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && selectorTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -790,9 +821,9 @@ public class SelectorControl
         List<SelectorTypeTransfer> selectorTypeTransfers = new ArrayList<>(selectorTypes.size());
         SelectorTypeTransferCache selectorTypeTransferCache = getSelectorTransferCaches(userVisit).getSelectorTypeTransferCache();
 
-        selectorTypes.stream().forEach((selectorType) -> {
-            selectorTypeTransfers.add(selectorTypeTransferCache.getSelectorTypeTransfer(selectorType));
-        });
+        selectorTypes.forEach((selectorType) ->
+                selectorTypeTransfers.add(selectorTypeTransferCache.getSelectorTypeTransfer(selectorType))
+        );
 
         return selectorTypeTransfers;
     }
@@ -864,7 +895,7 @@ public class SelectorControl
                 if(iter.hasNext()) {
                     defaultSelectorType = iter.next();
                 }
-                SelectorTypeDetailValue selectorTypeDetailValue = defaultSelectorType.getLastDetailForUpdate().getSelectorTypeDetailValue().clone();
+                SelectorTypeDetailValue selectorTypeDetailValue = Objects.requireNonNull(defaultSelectorType).getLastDetailForUpdate().getSelectorTypeDetailValue().clone();
 
                 selectorTypeDetailValue.setIsDefault(Boolean.TRUE);
                 updateSelectorTypeFromValue(selectorTypeDetailValue, false, deletedBy);
@@ -877,9 +908,9 @@ public class SelectorControl
     public void deleteSelectorTypesBySelectorKind(SelectorKind selectorKind, BasePK deletedBy) {
         List<SelectorType> selectorTypes = getSelectorTypesForUpdate(selectorKind);
 
-        selectorTypes.stream().forEach((selectorType) -> {
-            deleteSelectorType(selectorType, deletedBy);
-        });
+        selectorTypes.forEach((selectorType) -> 
+                deleteSelectorType(selectorType, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -1026,9 +1057,9 @@ public class SelectorControl
     public void deleteSelectorTypeDescriptionsBySelectorType(SelectorType selectorType, BasePK deletedBy) {
         List<SelectorTypeDescription> selectorTypeDescriptions = getSelectorTypeDescriptionsBySelectorTypeForUpdate(selectorType);
 
-        selectorTypeDescriptions.stream().forEach((selectorTypeDescription) -> {
-            deleteSelectorTypeDescription(selectorTypeDescription, deletedBy);
-        });
+        selectorTypeDescriptions.forEach((selectorTypeDescription) -> 
+                deleteSelectorTypeDescription(selectorTypeDescription, deletedBy)
+        );
     }
 
     // --------------------------------------------------------------------------------
@@ -1097,7 +1128,7 @@ public class SelectorControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultSelectorBooleanTypeChoice == null? false: defaultSelectorBooleanTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultSelectorBooleanTypeChoice != null && defaultSelectorBooleanTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && selectorBooleanType.getIsDefault())) {
                 defaultValue = value;
             }
@@ -1119,7 +1150,7 @@ public class SelectorControl
     }
     
     public SelectorBooleanTypeDescription getSelectorBooleanTypeDescription(SelectorBooleanType selectorBooleanType, Language language) {
-        SelectorBooleanTypeDescription selectorBooleanTypeDescription = null;
+        SelectorBooleanTypeDescription selectorBooleanTypeDescription;
         
         try {
             PreparedStatement ps = SelectorBooleanTypeDescriptionFactory.getInstance().prepareStatement(
@@ -1177,7 +1208,7 @@ public class SelectorControl
     }
     
     public SelectorComparisonType getSelectorComparisonTypeByName(String selectorComparisonTypeName) {
-        SelectorComparisonType selectorComparisonType = null;
+        SelectorComparisonType selectorComparisonType;
         
         try {
             PreparedStatement ps = SelectorComparisonTypeFactory.getInstance().prepareStatement(
@@ -1219,7 +1250,7 @@ public class SelectorControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultSelectorComparisonTypeChoice == null? false: defaultSelectorComparisonTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultSelectorComparisonTypeChoice != null && defaultSelectorComparisonTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && selectorComparisonType.getIsDefault())) {
                 defaultValue = value;
             }
@@ -1240,7 +1271,7 @@ public class SelectorControl
     }
     
     public SelectorComparisonTypeDescription getSelectorComparisonTypeDescription(SelectorComparisonType selectorComparisonType, Language language) {
-        SelectorComparisonTypeDescription selectorComparisonTypeDescription = null;
+        SelectorComparisonTypeDescription selectorComparisonTypeDescription;
         
         try {
             PreparedStatement ps = SelectorComparisonTypeDescriptionFactory.getInstance().prepareStatement(
@@ -1286,10 +1317,9 @@ public class SelectorControl
     
     /** Assume that the entityInstance passed to this function is a ECHOTHREE.SelectorNodeType */
     public SelectorNodeType getSelectorNodeTypeByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
-        SelectorNodeTypePK pk = new SelectorNodeTypePK(entityInstance.getEntityUniqueId());
-        SelectorNodeType selectorNodeType = SelectorNodeTypeFactory.getInstance().getEntityFromPK(entityPermission, pk);
-        
-        return selectorNodeType;
+        var pk = new SelectorNodeTypePK(entityInstance.getEntityUniqueId());
+
+        return SelectorNodeTypeFactory.getInstance().getEntityFromPK(entityPermission, pk);
     }
 
     public SelectorNodeType getSelectorNodeTypeByEntityInstance(EntityInstance entityInstance) {
@@ -1301,7 +1331,7 @@ public class SelectorControl
     }
     
     public SelectorNodeType getSelectorNodeTypeByName(String selectorNodeTypeName) {
-        SelectorNodeType selectorNodeType = null;
+        SelectorNodeType selectorNodeType;
         
         try {
             PreparedStatement ps = SelectorNodeTypeFactory.getInstance().prepareStatement(
@@ -1329,7 +1359,7 @@ public class SelectorControl
     }
     
     public List<SelectorNodeType> getSelectorNodeTypesBySelectorKind(SelectorKind selectorKind) {
-        List<SelectorNodeType> selectorNodeTypes = null;
+        List<SelectorNodeType> selectorNodeTypes;
         
         try {
             PreparedStatement ps = SelectorNodeTypeFactory.getInstance().prepareStatement(
@@ -1356,9 +1386,9 @@ public class SelectorControl
         List<SelectorNodeTypeTransfer> selectorNodeTypeTransfers = new ArrayList<>(selectorNodeTypes.size());
         SelectorNodeTypeTransferCache selectorNodeTypeTransferCache = getSelectorTransferCaches(userVisit).getSelectorNodeTypeTransferCache();
         
-        selectorNodeTypes.stream().forEach((selectorNodeType) -> {
-            selectorNodeTypeTransfers.add(selectorNodeTypeTransferCache.getSelectorNodeTypeTransfer(selectorNodeType));
-        });
+        selectorNodeTypes.forEach((selectorNodeType) ->
+                selectorNodeTypeTransfers.add(selectorNodeTypeTransferCache.getSelectorNodeTypeTransfer(selectorNodeType))
+        );
         
         return selectorNodeTypeTransfers;
     }
@@ -1381,7 +1411,7 @@ public class SelectorControl
     }
     
     public SelectorNodeTypeUse getSelectorNodeTypeUse(SelectorKind selectorKind, SelectorNodeType selectorNodeType) {
-        SelectorNodeTypeUse selectorNodeTypeUse = null;
+        SelectorNodeTypeUse selectorNodeTypeUse;
         
         try {
             PreparedStatement ps = SelectorNodeTypeUseFactory.getInstance().prepareStatement(
@@ -1411,7 +1441,7 @@ public class SelectorControl
     }
     
     public SelectorNodeTypeDescription getSelectorNodeTypeDescription(SelectorNodeType selectorNodeType, Language language) {
-        SelectorNodeTypeDescription selectorNodeTypeDescription = null;
+        SelectorNodeTypeDescription selectorNodeTypeDescription;
         
         try {
             PreparedStatement ps = SelectorNodeTypeDescriptionFactory.getInstance().prepareStatement(
@@ -1469,7 +1499,7 @@ public class SelectorControl
     }
     
     public SelectorTextSearchType getSelectorTextSearchTypeByName(String selectorTextSearchTypeName) {
-        SelectorTextSearchType selectorTextSearchType = null;
+        SelectorTextSearchType selectorTextSearchType;
         
         try {
             PreparedStatement ps = SelectorTextSearchTypeFactory.getInstance().prepareStatement(
@@ -1511,7 +1541,7 @@ public class SelectorControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultSelectorTextSearchTypeChoice == null? false: defaultSelectorTextSearchTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultSelectorTextSearchTypeChoice != null && defaultSelectorTextSearchTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && selectorTextSearchType.getIsDefault())) {
                 defaultValue = value;
             }
@@ -1531,7 +1561,7 @@ public class SelectorControl
     }
     
     public SelectorTextSearchTypeDescription getSelectorTextSearchTypeDescription(SelectorTextSearchType selectorTextSearchType, Language language) {
-        SelectorTextSearchTypeDescription selectorTextSearchTypeDescription = null;
+        SelectorTextSearchTypeDescription selectorTextSearchTypeDescription;
         
         try {
             PreparedStatement ps = SelectorTextSearchTypeDescriptionFactory.getInstance().prepareStatement(
@@ -1601,7 +1631,7 @@ public class SelectorControl
     }
     
     private Selector getSelectorByName(SelectorType selectorType, String selectorName, EntityPermission entityPermission) {
-        Selector selector = null;
+        Selector selector;
         
         try {
             String query = null;
@@ -1671,7 +1701,7 @@ public class SelectorControl
     }
     
     private Selector getDefaultSelector(SelectorType selectorType, EntityPermission entityPermission) {
-        Selector selector = null;
+        Selector selector;
         
         try {
             String query = null;
@@ -1712,7 +1742,7 @@ public class SelectorControl
     }
     
     private List<Selector> getSelectorsBySelectorType(SelectorType selectorType, EntityPermission entityPermission) {
-        List<Selector> selectors = null;
+        List<Selector> selectors;
         
         try {
             String query = null;
@@ -1750,7 +1780,7 @@ public class SelectorControl
     }
     
     public List<Selector> getSelectorsBySelectorKind(SelectorKind selectorKind) {
-        List<Selector> selectors = null;
+        List<Selector> selectors;
         
         try {
             PreparedStatement ps = SelectorFactory.getInstance().prepareStatement(
@@ -1797,7 +1827,7 @@ public class SelectorControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultSelectorChoice == null? false: defaultSelectorChoice.equals(value);
+            boolean usingDefaultChoice = defaultSelectorChoice != null && defaultSelectorChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && selectorDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -1814,9 +1844,9 @@ public class SelectorControl
         List<SelectorTransfer> selectorTransfers = new ArrayList<>(selectors.size());
         SelectorTransferCache selectorTransferCache = getSelectorTransferCaches(userVisit).getSelectorTransferCache();
         
-        selectors.stream().forEach((selector) -> {
-            selectorTransfers.add(selectorTransferCache.getSelectorTransfer(selector));
-        });
+        selectors.forEach((selector) ->
+                selectorTransfers.add(selectorTransferCache.getSelectorTransfer(selector))
+        );
         
         return selectorTransfers;
     }
@@ -1894,7 +1924,7 @@ public class SelectorControl
                 if(iter.hasNext()) {
                     defaultSelector = iter.next();
                 }
-                SelectorDetailValue selectorDetailValue = defaultSelector.getLastDetailForUpdate().getSelectorDetailValue().clone();
+                SelectorDetailValue selectorDetailValue = Objects.requireNonNull(defaultSelector).getLastDetailForUpdate().getSelectorDetailValue().clone();
                 
                 selectorDetailValue.setIsDefault(Boolean.TRUE);
                 updateSelectorFromValue(selectorDetailValue, false, deletedBy);
@@ -1905,9 +1935,9 @@ public class SelectorControl
     }
     
     public void deleteSelectors(List<Selector> selectors, BasePK deletedBy) {
-        selectors.stream().forEach((selector) -> {
-            deleteSelector(selector, deletedBy);
-        });
+        selectors.forEach((selector) -> 
+                deleteSelector(selector, deletedBy)
+        );
     }
     
     public void deleteSelectorsBySelectorType(SelectorType selectorType, BasePK deletedBy) {
@@ -1927,7 +1957,7 @@ public class SelectorControl
     }
     
     private SelectorDescription getSelectorDescription(Selector selector, Language language, EntityPermission entityPermission) {
-        SelectorDescription selectorDescription = null;
+        SelectorDescription selectorDescription;
         
         try {
             String query = null;
@@ -1976,7 +2006,7 @@ public class SelectorControl
     }
     
     private List<SelectorDescription> getSelectorDescriptionsBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorDescription> selectorDescriptions = null;
+        List<SelectorDescription> selectorDescriptions;
         
         try {
             String query = null;
@@ -2073,9 +2103,9 @@ public class SelectorControl
     public void deleteSelectorDescriptionsBySelector(Selector selector, BasePK deletedBy) {
         List<SelectorDescription> selectorDescriptions = getSelectorDescriptionsBySelectorForUpdate(selector);
         
-        selectorDescriptions.stream().forEach((selectorDescription) -> {
-            deleteSelectorDescription(selectorDescription, deletedBy);
-        });
+        selectorDescriptions.forEach((selectorDescription) -> 
+                deleteSelectorDescription(selectorDescription, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -2152,7 +2182,7 @@ public class SelectorControl
     }
     
     private SelectorNode getRootSelectorNode(Selector selector, EntityPermission entityPermission) {
-        SelectorNode selectorNode = null;
+        SelectorNode selectorNode;
         
         try {
             String query = null;
@@ -2195,7 +2225,7 @@ public class SelectorControl
     }
     
     private SelectorNode getSelectorNodeByName(Selector selector, String selectorNodeName, EntityPermission entityPermission) {
-        SelectorNode selectorNode = null;
+        SelectorNode selectorNode;
         
         try {
             String query = null;
@@ -2243,7 +2273,7 @@ public class SelectorControl
     }
     
     private List<SelectorNode> getSelectorNodesBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorNode> selectorNodes = null;
+        List<SelectorNode> selectorNodes;
         
         try {
             String query = null;
@@ -2304,7 +2334,7 @@ public class SelectorControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultSelectorNodeChoice == null? false: defaultSelectorNodeChoice.equals(value);
+            boolean usingDefaultChoice = defaultSelectorNodeChoice != null && defaultSelectorNodeChoice.equals(value);
             if(usingDefaultChoice || defaultValue == null) {
                 defaultValue = value;
             }
@@ -2424,7 +2454,7 @@ public class SelectorControl
                 if(iter.hasNext()) {
                     rootSelectorNode = iter.next();
                 }
-                SelectorNodeDetailValue selectorNodeDetailValue = rootSelectorNode.getLastDetailForUpdate().getSelectorNodeDetailValue().clone();
+                SelectorNodeDetailValue selectorNodeDetailValue = Objects.requireNonNull(rootSelectorNode).getLastDetailForUpdate().getSelectorNodeDetailValue().clone();
                 
                 selectorNodeDetailValue.setIsRootSelectorNode(Boolean.TRUE);
                 updateSelectorNodeFromValue(selectorNodeDetailValue, false, deletedBy);
@@ -2438,9 +2468,9 @@ public class SelectorControl
     public void deleteSelectorNodesBySelector(Selector selector, BasePK deletedBy) {
         List<SelectorNode> selectorNodes = getSelectorNodesBySelectorForUpdate(selector);
         
-        selectorNodes.stream().forEach((selectorNode) -> {
-            deleteSelectorNode(selectorNode, deletedBy);
-        });
+        selectorNodes.forEach((selectorNode) -> 
+                deleteSelectorNode(selectorNode, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -2460,7 +2490,7 @@ public class SelectorControl
     
     private SelectorNodeDescription getSelectorNodeDescription(SelectorNode selectorNode, Language language,
             EntityPermission entityPermission) {
-        SelectorNodeDescription selectorNodeDescription = null;
+        SelectorNodeDescription selectorNodeDescription;
         
         try {
             String query = null;
@@ -2509,7 +2539,7 @@ public class SelectorControl
     }
     
     private List<SelectorNodeDescription> getSelectorNodeDescriptionsBySelectorNode(SelectorNode selectorNode, EntityPermission entityPermission) {
-        List<SelectorNodeDescription> selectorNodeDescriptions = null;
+        List<SelectorNodeDescription> selectorNodeDescriptions;
         
         try {
             String query = null;
@@ -2609,9 +2639,9 @@ public class SelectorControl
     public void deleteSelectorNodeDescriptionsBySelectorNode(SelectorNode selectorNode, BasePK deletedBy) {
         List<SelectorNodeDescription> selectorNodeDescriptions = getSelectorNodeDescriptionsBySelectorNodeForUpdate(selectorNode);
         
-        selectorNodeDescriptions.stream().forEach((selectorNodeDescription) -> {
-            deleteSelectorNodeDescription(selectorNodeDescription, deletedBy);
-        });
+        selectorNodeDescriptions.forEach((selectorNodeDescription) -> 
+                deleteSelectorNodeDescription(selectorNodeDescription, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -2630,7 +2660,7 @@ public class SelectorControl
     }
     
     private SelectorNodeBoolean getSelectorNodeBoolean(SelectorNode selectorNode, EntityPermission entityPermission) {
-        SelectorNodeBoolean selectorNodeBoolean = null;
+        SelectorNodeBoolean selectorNodeBoolean;
         
         try {
             String query = null;
@@ -2678,7 +2708,7 @@ public class SelectorControl
     }
     
     private List<SelectorNodeBoolean> getSelectorNodeBooleansBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorNodeBoolean> selectorNodeBooleans = null;
+        List<SelectorNodeBoolean> selectorNodeBooleans;
         
         try {
             String query = null;
@@ -2761,7 +2791,7 @@ public class SelectorControl
     }
     
     private SelectorNodeWorkflowStep getSelectorNodeWorkflowStep(SelectorNode selectorNode, EntityPermission entityPermission) {
-        SelectorNodeWorkflowStep selectorNodeWorkflowStep = null;
+        SelectorNodeWorkflowStep selectorNodeWorkflowStep;
         
         try {
             String query = null;
@@ -2809,7 +2839,7 @@ public class SelectorControl
     }
     
     private List<SelectorNodeWorkflowStep> getSelectorNodeWorkflowStepsBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorNodeWorkflowStep> selectorNodeWorkflowSteps = null;
+        List<SelectorNodeWorkflowStep> selectorNodeWorkflowSteps;
         
         try {
             String query = null;
@@ -2890,7 +2920,7 @@ public class SelectorControl
     }
     
     private SelectorNodeEntityListItem getSelectorNodeEntityListItem(SelectorNode selectorNode, EntityPermission entityPermission) {
-        SelectorNodeEntityListItem selectorNodeEntityListItem = null;
+        SelectorNodeEntityListItem selectorNodeEntityListItem;
         
         try {
             String query = null;
@@ -2938,7 +2968,7 @@ public class SelectorControl
     }
     
     private List<SelectorNodeEntityListItem> getSelectorNodeEntityListItemsBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorNodeEntityListItem> selectorNodeEntityListItems = null;
+        List<SelectorNodeEntityListItem> selectorNodeEntityListItems;
         
         try {
             String query = null;
@@ -3019,7 +3049,7 @@ public class SelectorControl
     }
     
     private SelectorNodeResponsibilityType getSelectorNodeResponsibilityType(SelectorNode selectorNode, EntityPermission entityPermission) {
-        SelectorNodeResponsibilityType selectorNodeResponsibilityType = null;
+        SelectorNodeResponsibilityType selectorNodeResponsibilityType;
         
         try {
             String query = null;
@@ -3067,7 +3097,7 @@ public class SelectorControl
     }
     
     private List<SelectorNodeResponsibilityType> getSelectorNodeResponsibilityTypesBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorNodeResponsibilityType> selectorNodeResponsibilityTypes = null;
+        List<SelectorNodeResponsibilityType> selectorNodeResponsibilityTypes;
         
         try {
             String query = null;
@@ -3148,7 +3178,7 @@ public class SelectorControl
     }
     
     private SelectorNodeTrainingClass getSelectorNodeTrainingClass(SelectorNode selectorNode, EntityPermission entityPermission) {
-        SelectorNodeTrainingClass selectorNodeTrainingClass = null;
+        SelectorNodeTrainingClass selectorNodeTrainingClass;
         
         try {
             String query = null;
@@ -3196,7 +3226,7 @@ public class SelectorControl
     }
     
     private List<SelectorNodeTrainingClass> getSelectorNodeTrainingClassesBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorNodeTrainingClass> selectorNodeTrainingClasses = null;
+        List<SelectorNodeTrainingClass> selectorNodeTrainingClasses;
         
         try {
             String query = null;
@@ -3277,7 +3307,7 @@ public class SelectorControl
     }
     
     private SelectorNodeSkillType getSelectorNodeSkillType(SelectorNode selectorNode, EntityPermission entityPermission) {
-        SelectorNodeSkillType selectorNodeSkillType = null;
+        SelectorNodeSkillType selectorNodeSkillType;
         
         try {
             String query = null;
@@ -3325,7 +3355,7 @@ public class SelectorControl
     }
     
     private List<SelectorNodeSkillType> getSelectorNodeSkillTypesBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorNodeSkillType> selectorNodeSkillTypes = null;
+        List<SelectorNodeSkillType> selectorNodeSkillTypes;
         
         try {
             String query = null;
@@ -3406,7 +3436,7 @@ public class SelectorControl
     }
     
     private SelectorNodeItemCategory getSelectorNodeItemCategory(SelectorNode selectorNode, EntityPermission entityPermission) {
-        SelectorNodeItemCategory selectorNodeItemCategory = null;
+        SelectorNodeItemCategory selectorNodeItemCategory;
         
         try {
             String query = null;
@@ -3454,7 +3484,7 @@ public class SelectorControl
     }
     
     private List<SelectorNodeItemCategory> getSelectorNodeItemCategoriesBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorNodeItemCategory> selectorNodeItemCategories = null;
+        List<SelectorNodeItemCategory> selectorNodeItemCategories;
         
         try {
             String query = null;
@@ -3536,7 +3566,7 @@ public class SelectorControl
     }
     
     private SelectorNodeItemAccountingCategory getSelectorNodeItemAccountingCategory(SelectorNode selectorNode, EntityPermission entityPermission) {
-        SelectorNodeItemAccountingCategory selectorNodeItemAccountingCategory = null;
+        SelectorNodeItemAccountingCategory selectorNodeItemAccountingCategory;
         
         try {
             String query = null;
@@ -3584,7 +3614,7 @@ public class SelectorControl
     }
     
     private List<SelectorNodeItemAccountingCategory> getSelectorNodeItemAccountingCategoriesBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorNodeItemAccountingCategory> selectorNodeItemAccountingCategories = null;
+        List<SelectorNodeItemAccountingCategory> selectorNodeItemAccountingCategories;
         
         try {
             String query = null;
@@ -3668,7 +3698,7 @@ public class SelectorControl
     }
     
     private SelectorNodeItemPurchasingCategory getSelectorNodeItemPurchasingCategory(SelectorNode selectorNode, EntityPermission entityPermission) {
-        SelectorNodeItemPurchasingCategory selectorNodeItemPurchasingCategory = null;
+        SelectorNodeItemPurchasingCategory selectorNodeItemPurchasingCategory;
         
         try {
             String query = null;
@@ -3716,7 +3746,7 @@ public class SelectorControl
     }
     
     private List<SelectorNodeItemPurchasingCategory> getSelectorNodeItemPurchasingCategoriesBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorNodeItemPurchasingCategory> selectorNodeItemPurchasingCategories = null;
+        List<SelectorNodeItemPurchasingCategory> selectorNodeItemPurchasingCategories;
         
         try {
             String query = null;
@@ -3808,7 +3838,7 @@ public class SelectorControl
     }
 
     private SelectorNodeGeoCode getSelectorNodeGeoCode(SelectorNode selectorNode, EntityPermission entityPermission) {
-        SelectorNodeGeoCode selectorNodeGeoCode = null;
+        SelectorNodeGeoCode selectorNodeGeoCode;
         
         try {
             String query = null;
@@ -3856,7 +3886,7 @@ public class SelectorControl
     }
     
     private List<SelectorNodeGeoCode> getSelectorNodeGeoCodesBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorNodeGeoCode> selectorNodeGeoCodes = null;
+        List<SelectorNodeGeoCode> selectorNodeGeoCodes;
         
         try {
             String query = null;
@@ -3937,7 +3967,7 @@ public class SelectorControl
     }
     
     private SelectorNodePaymentMethod getSelectorNodePaymentMethod(SelectorNode selectorNode, EntityPermission entityPermission) {
-        SelectorNodePaymentMethod selectorNodePaymentMethod = null;
+        SelectorNodePaymentMethod selectorNodePaymentMethod;
         
         try {
             String query = null;
@@ -3985,7 +4015,7 @@ public class SelectorControl
     }
     
     private List<SelectorNodePaymentMethod> getSelectorNodePaymentMethodsBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorNodePaymentMethod> selectorNodePaymentMethods = null;
+        List<SelectorNodePaymentMethod> selectorNodePaymentMethods;
         
         try {
             String query = null;
@@ -4066,7 +4096,7 @@ public class SelectorControl
     }
     
     private SelectorNodePaymentProcessor getSelectorNodePaymentProcessor(SelectorNode selectorNode, EntityPermission entityPermission) {
-        SelectorNodePaymentProcessor selectorNodePaymentProcessor = null;
+        SelectorNodePaymentProcessor selectorNodePaymentProcessor;
         
         try {
             String query = null;
@@ -4114,7 +4144,7 @@ public class SelectorControl
     }
     
     private List<SelectorNodePaymentProcessor> getSelectorNodePaymentProcessorsBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorNodePaymentProcessor> selectorNodePaymentProcessors = null;
+        List<SelectorNodePaymentProcessor> selectorNodePaymentProcessors;
         
         try {
             String query = null;
@@ -4191,7 +4221,7 @@ public class SelectorControl
     }
     
     private SelectorParty getSelectorParty(Selector selector, Party party, EntityPermission entityPermission) {
-        SelectorParty selectorParty = null;
+        SelectorParty selectorParty;
         
         try {
             String query = null;
@@ -4236,7 +4266,7 @@ public class SelectorControl
     }
     
     private List<SelectorParty> getSelectorPartiesBySelector(Selector selector, EntityPermission entityPermission) {
-        List<SelectorParty> selectorParties = null;
+        List<SelectorParty> selectorParties;
         
         try {
             String query = null;
@@ -4284,9 +4314,9 @@ public class SelectorControl
         List<SelectorPartyTransfer> selectorPartyTransfers = new ArrayList<>(selectorParties.size());
         SelectorPartyTransferCache selectorPartyTransferCache = getSelectorTransferCaches(userVisit).getSelectorPartyTransferCache();
         
-        selectorParties.stream().forEach((selectorParty) -> {
-            selectorPartyTransfers.add(selectorPartyTransferCache.getSelectorPartyTransfer(selectorParty));
-        });
+        selectorParties.forEach((selectorParty) ->
+                selectorPartyTransfers.add(selectorPartyTransferCache.getSelectorPartyTransfer(selectorParty))
+        );
         
         return selectorPartyTransfers;
     }
@@ -4298,9 +4328,9 @@ public class SelectorControl
     public void deleteSelectorPartiesBySelector(Selector selector, BasePK deletedBy) {
         List<SelectorParty> selectorParties = getSelectorPartiesBySelectorForUpdate(selector);
         
-        selectorParties.stream().forEach((selectorParty) -> {
-            deleteSelectorParty(selectorParty, deletedBy);
-        });
+        selectorParties.forEach((selectorParty) -> 
+                deleteSelectorParty(selectorParty, deletedBy)
+        );
     }
     
 }

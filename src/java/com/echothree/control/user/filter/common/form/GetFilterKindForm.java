@@ -16,11 +16,11 @@
 
 package com.echothree.control.user.filter.common.form;
 
-import com.echothree.control.user.filter.common.spec.FilterKindSpec;
+import com.echothree.control.user.filter.common.spec.FilterKindUniversalSpec;
 
 public interface GetFilterKindForm
-        extends FilterKindSpec {
+        extends FilterKindUniversalSpec {
     
-    // Nothing additional beyond FilterKindSpec
+    // Nothing additional beyond FilterKindUniversalSpec
     
 }

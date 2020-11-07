@@ -78,6 +78,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class TermControl
         extends BaseModelControl {
@@ -91,7 +92,7 @@ public class TermControl
     //   Term Transfer Caches
     // --------------------------------------------------------------------------------
     
-    private TermTransferCaches termTransferCaches = null;
+    private TermTransferCaches termTransferCaches;
     
     public TermTransferCaches getTermTransferCaches(UserVisit userVisit) {
         if(termTransferCaches == null) {
@@ -110,7 +111,7 @@ public class TermControl
     }
     
     public TermType getTermTypeByName(String termTypeName) {
-        TermType termType = null;
+        TermType termType;
         
         try {
             PreparedStatement ps = TermTypeFactory.getInstance().prepareStatement(
@@ -160,7 +161,7 @@ public class TermControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultTermTypeChoice == null? false: defaultTermTypeChoice.equals(value);
+            boolean usingDefaultChoice = defaultTermTypeChoice != null && defaultTermTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && termType.getIsDefault())) {
                 defaultValue = value;
             }
@@ -178,9 +179,9 @@ public class TermControl
         List<TermTypeTransfer> termTypeTransfers = new ArrayList<>(termTypes.size());
         TermTypeTransferCache termTypeTransferCache = getTermTransferCaches(userVisit).getTermTypeTransferCache();
         
-        termTypes.stream().forEach((termType) -> {
-            termTypeTransfers.add(termTypeTransferCache.getTermTypeTransfer(termType));
-        });
+        termTypes.forEach((termType) ->
+                termTypeTransfers.add(termTypeTransferCache.getTermTypeTransfer(termType))
+        );
         
         return termTypeTransfers;
     }
@@ -194,7 +195,7 @@ public class TermControl
     }
     
     public TermTypeDescription getTermTypeDescription(TermType termType, Language language) {
-        TermTypeDescription termTypeDescription = null;
+        TermTypeDescription termTypeDescription;
         
         try {
             PreparedStatement ps = TermTypeDescriptionFactory.getInstance().prepareStatement(
@@ -264,7 +265,7 @@ public class TermControl
     }
     
     private Term getTermByName(String termName, EntityPermission entityPermission) {
-        Term term = null;
+        Term term;
         
         try {
             String query = null;
@@ -388,7 +389,7 @@ public class TermControl
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultTermChoice == null? false: defaultTermChoice.equals(value);
+            boolean usingDefaultChoice = defaultTermChoice != null && defaultTermChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && termDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -406,9 +407,9 @@ public class TermControl
         List<TermTransfer> termTransfers = new ArrayList<>(terms.size());
         TermTransferCache termTransferCache = getTermTransferCaches(userVisit).getTermTransferCache();
         
-        terms.stream().forEach((term) -> {
-            termTransfers.add(termTransferCache.getTermTransfer(term));
-        });
+        terms.forEach((term) ->
+                termTransfers.add(termTransferCache.getTermTransfer(term))
+        );
         
         return termTransfers;
     }
@@ -483,7 +484,7 @@ public class TermControl
                 if(iter.hasNext()) {
                     defaultTerm = iter.next();
                 }
-                TermDetailValue termDetailValue = defaultTerm.getLastDetailForUpdate().getTermDetailValue().clone();
+                TermDetailValue termDetailValue = Objects.requireNonNull(defaultTerm).getLastDetailForUpdate().getTermDetailValue().clone();
                 
                 termDetailValue.setIsDefault(Boolean.TRUE);
                 updateTermFromValue(termDetailValue, false, deletedBy);
@@ -507,7 +508,7 @@ public class TermControl
     }
     
     private TermDescription getTermDescription(Term term, Language language, EntityPermission entityPermission) {
-        TermDescription termDescription = null;
+        TermDescription termDescription;
         
         try {
             String query = null;
@@ -554,7 +555,7 @@ public class TermControl
     }
     
     private List<TermDescription> getTermDescriptionsByTerm(Term term, EntityPermission entityPermission) {
-        List<TermDescription> termDescriptions = null;
+        List<TermDescription> termDescriptions;
         
         try {
             String query = null;
@@ -652,9 +653,9 @@ public class TermControl
     public void deleteTermDescriptionsByTerm(Term term, BasePK deletedBy) {
         List<TermDescription> termDescriptions = getTermDescriptionsByTermForUpdate(term);
         
-        termDescriptions.stream().forEach((termDescription) -> {
-            deleteTermDescription(termDescription, deletedBy);
-        });
+        termDescriptions.forEach((termDescription) -> 
+                deleteTermDescription(termDescription, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -672,7 +673,7 @@ public class TermControl
     }
     
     private StandardTerm getStandardTerm(Term term, EntityPermission entityPermission) {
-        StandardTerm standardTerm = null;
+        StandardTerm standardTerm;
         
         try {
             String query = null;
@@ -766,7 +767,7 @@ public class TermControl
     }
     
     private DateDrivenTerm getDateDrivenTerm(Term term, EntityPermission entityPermission) {
-        DateDrivenTerm dateDrivenTerm = null;
+        DateDrivenTerm dateDrivenTerm;
         
         try {
             String query = null;
@@ -861,7 +862,7 @@ public class TermControl
     }
     
     private CustomerTypeCreditLimit getCustomerTypeCreditLimit(CustomerType customerType, Currency currency, EntityPermission entityPermission) {
-        CustomerTypeCreditLimit customerTypeCreditLimit = null;
+        CustomerTypeCreditLimit customerTypeCreditLimit;
         
         try {
             String query = null;
@@ -909,7 +910,7 @@ public class TermControl
     
     private List<CustomerTypeCreditLimit> getCustomerTypeCreditLimitsByCustomerType(CustomerType customerType,
             EntityPermission entityPermission) {
-        List<CustomerTypeCreditLimit> customerTypeCreditLimits = null;
+        List<CustomerTypeCreditLimit> customerTypeCreditLimits;
         
         try {
             String query = null;
@@ -957,9 +958,9 @@ public class TermControl
         List<CustomerTypeCreditLimitTransfer> customerTypeCreditLimitTransfers = new ArrayList<>(customerTypeCreditLimits.size());
         CustomerTypeCreditLimitTransferCache customerTypeCreditLimitTransferCache = getTermTransferCaches(userVisit).getCustomerTypeCreditLimitTransferCache();
         
-        customerTypeCreditLimits.stream().forEach((customerTypeCreditLimit) -> {
-            customerTypeCreditLimitTransfers.add(customerTypeCreditLimitTransferCache.getCustomerTypeCreditLimitTransfer(customerTypeCreditLimit));
-        });
+        customerTypeCreditLimits.forEach((customerTypeCreditLimit) ->
+                customerTypeCreditLimitTransfers.add(customerTypeCreditLimitTransferCache.getCustomerTypeCreditLimitTransfer(customerTypeCreditLimit))
+        );
         
         return customerTypeCreditLimitTransfers;
     }
@@ -993,9 +994,9 @@ public class TermControl
     public void deleteCustomerTypeCreditLimitsByCustomerType(CustomerType customerType, BasePK deletedBy) {
         List<CustomerTypeCreditLimit> customerTypeCreditLimits = getCustomerTypeCreditLimitsByCustomerTypeForUpdate(customerType);
         
-        customerTypeCreditLimits.stream().forEach((customerTypeCreditLimit) -> {
-            deleteCustomerTypeCreditLimit(customerTypeCreditLimit, deletedBy);
-        });
+        customerTypeCreditLimits.forEach((customerTypeCreditLimit) -> 
+                deleteCustomerTypeCreditLimit(customerTypeCreditLimit, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -1013,7 +1014,7 @@ public class TermControl
     }
     
     private PartyCreditLimit getPartyCreditLimit(Party party, Currency currency, EntityPermission entityPermission) {
-        PartyCreditLimit partyCreditLimit = null;
+        PartyCreditLimit partyCreditLimit;
         
         try {
             String query = null;
@@ -1060,7 +1061,7 @@ public class TermControl
     }
     
     private List<PartyCreditLimit> getPartyCreditLimitsByParty(Party party, EntityPermission entityPermission) {
-        List<PartyCreditLimit> partyCreditLimits = null;
+        List<PartyCreditLimit> partyCreditLimits;
         
         try {
             String query = null;
@@ -1108,9 +1109,9 @@ public class TermControl
         List<PartyCreditLimitTransfer> partyCreditLimitTransfers = new ArrayList<>(partyCreditLimits.size());
         PartyCreditLimitTransferCache partyCreditLimitTransferCache = getTermTransferCaches(userVisit).getPartyCreditLimitTransferCache();
         
-        partyCreditLimits.stream().forEach((partyCreditLimit) -> {
-            partyCreditLimitTransfers.add(partyCreditLimitTransferCache.getPartyCreditLimitTransfer(partyCreditLimit));
-        });
+        partyCreditLimits.forEach((partyCreditLimit) ->
+                partyCreditLimitTransfers.add(partyCreditLimitTransferCache.getPartyCreditLimitTransfer(partyCreditLimit))
+        );
         
         return partyCreditLimitTransfers;
     }
@@ -1144,9 +1145,9 @@ public class TermControl
     public void deletePartyCreditLimitsByParty(Party party, BasePK deletedBy) {
         List<PartyCreditLimit> partyCreditLimits = getPartyCreditLimitsByPartyForUpdate(party);
         
-        partyCreditLimits.stream().forEach((partyCreditLimit) -> {
-            deletePartyCreditLimit(partyCreditLimit, deletedBy);
-        });
+        partyCreditLimits.forEach((partyCreditLimit) -> 
+                deletePartyCreditLimit(partyCreditLimit, deletedBy)
+        );
     }
     
     // --------------------------------------------------------------------------------
@@ -1163,7 +1164,7 @@ public class TermControl
     }
     
     private PartyTerm getPartyTerm(Party party, EntityPermission entityPermission) {
-        PartyTerm partyTerm = null;
+        PartyTerm partyTerm;
         
         try {
             String query = null;
@@ -1209,7 +1210,7 @@ public class TermControl
     }
     
     private List<PartyTerm> getPartyTermsByTerm(Term term, EntityPermission entityPermission) {
-        List<PartyTerm> partyTerms = null;
+        List<PartyTerm> partyTerms;
         
         try {
             String query = null;
@@ -1294,9 +1295,9 @@ public class TermControl
     public void deletePartyTermsByTerm(Term term, BasePK deletedBy) {
         List<PartyTerm> partyTerms = getPartyTermsByTermForUpdate(term);
         
-        partyTerms.stream().forEach((partyTerm) -> {
-            deletePartyTerm(partyTerm, deletedBy);
-        });
+        partyTerms.forEach((partyTerm) -> 
+                deletePartyTerm(partyTerm, deletedBy)
+        );
     }
     
 }

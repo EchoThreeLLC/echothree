@@ -86,6 +86,36 @@ public class OfferUseControl
                 use);
     }
 
+    private List<OfferUse> getOfferUses(EntityPermission entityPermission) {
+        String query = null;
+
+        if(entityPermission.equals(EntityPermission.READ_ONLY)) {
+            query = "SELECT _ALL_ " +
+                    "FROM offeruses, offerusedetails, offers, offerdetails, uses, usedetails " +
+                    "WHERE ofruse_activedetailid = ofrusedt_offerusedetailid " +
+                    "AND ofrusedt_use_useid = use_useid AND use_activedetailid = usedt_usedetailid " +
+                    "AND ofrusedt_ofr_offerid = ofr_offerid AND ofr_activedetailid = ofrdt_offerdetailid " +
+                    "ORDER BY ofrdt_sortorder, ofrdt_offername, usedt_sortorder, usedt_usename";
+        } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
+            query = "SELECT _ALL_ " +
+                    "FROM offeruses, offerusedetails " +
+                    "WHERE ofruse_activedetailid = ofrusedt_offerusedetailid AND ofrusedt_ofr_offerid = ? " +
+                    "FOR UPDATE";
+        }
+
+        PreparedStatement ps = OfferUseFactory.getInstance().prepareStatement(query);
+
+        return OfferUseFactory.getInstance().getEntitiesFromQuery(entityPermission, ps);
+    }
+
+    public List<OfferUse> getOfferUses() {
+        return getOfferUses(EntityPermission.READ_ONLY);
+    }
+
+    public List<OfferUse> getOfferUsesForUpdate() {
+        return getOfferUses(EntityPermission.READ_WRITE);
+    }
+
     private List<OfferUse> getOfferUsesByOffer(Offer offer, EntityPermission entityPermission) {
         List<OfferUse> offerUses = null;
 
@@ -136,7 +166,7 @@ public class OfferUseControl
                         "FROM offeruses, offerusedetails, offers, offerdetails " +
                         "WHERE ofruse_activedetailid = ofrusedt_offerusedetailid AND ofrusedt_use_useid = ? " +
                         "AND ofrusedt_ofr_offerid = ofr_offerid AND ofr_activedetailid = ofrdt_offerdetailid " +
-                        "ORDER BY ofrdt_offername";
+                        "ORDER BY ofrdt_sortorder, ofrdt_offername";
             } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
                 query = "SELECT _ALL_ " +
                         "FROM offeruses, offerusedetails " +
@@ -253,9 +283,9 @@ public class OfferUseControl
         List<OfferUseTransfer> offerUseTransfers = new ArrayList<>(offerUses.size());
         OfferUseTransferCache offerUseTransferCache = getOfferTransferCaches(userVisit).getOfferUseTransferCache();
 
-        offerUses.stream().forEach((offerUse) -> {
-            offerUseTransfers.add(offerUseTransferCache.getOfferUseTransfer(offerUse));
-        });
+        offerUses.forEach((offerUse) ->
+                offerUseTransfers.add(offerUseTransferCache.getOfferUseTransfer(offerUse))
+        );
 
         return offerUseTransfers;
     }
@@ -306,9 +336,9 @@ public class OfferUseControl
     }
 
     public void deleteOfferUses(List<OfferUse> offerUses, BasePK deletedBy) {
-        offerUses.stream().forEach((offerUse) -> {
-            deleteOfferUse(offerUse, deletedBy);
-        });
+        offerUses.forEach((offerUse) -> 
+                deleteOfferUse(offerUse, deletedBy)
+        );
     }
 
     public void deleteOfferUsesByOffer(Offer offer, BasePK deletedBy) {

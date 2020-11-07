@@ -84,7 +84,7 @@ public class BillingControl
     }
     
     public BillingAccountRoleType getBillingAccountRoleTypeByName(String billingAccountRoleTypeName) {
-        BillingAccountRoleType billingAccountRoleType = null;
+        BillingAccountRoleType billingAccountRoleType;
         
         try {
             PreparedStatement ps = BillingAccountRoleTypeFactory.getInstance().prepareStatement(
@@ -112,9 +112,9 @@ public class BillingControl
         List<BillingAccountRoleTypeTransfer> billingAccountRoleTypeTransfers = new ArrayList<>(billingAccountRoleTypes.size());
         BillingAccountRoleTypeTransferCache billingAccountRoleTypeTransferCache = getPaymentTransferCaches(userVisit).getBillingAccountRoleTypeTransferCache();
 
-        billingAccountRoleTypes.stream().forEach((billingAccountRoleType) -> {
-            billingAccountRoleTypeTransfers.add(billingAccountRoleTypeTransferCache.getTransfer(billingAccountRoleType));
-        });
+        billingAccountRoleTypes.forEach((billingAccountRoleType) ->
+                billingAccountRoleTypeTransfers.add(billingAccountRoleTypeTransferCache.getTransfer(billingAccountRoleType))
+        );
 
             return billingAccountRoleTypeTransfers;
     }
@@ -132,7 +132,7 @@ public class BillingControl
     }
     
     public BillingAccountRoleTypeDescription getBillingAccountRoleTypeDescription(BillingAccountRoleType billingAccountRoleType, Language language) {
-        BillingAccountRoleTypeDescription billingAccountRoleTypeDescription = null;
+        BillingAccountRoleTypeDescription billingAccountRoleTypeDescription;
         
         try {
             PreparedStatement ps = BillingAccountRoleTypeDescriptionFactory.getInstance().prepareStatement(
@@ -200,7 +200,7 @@ public class BillingControl
     }
     
     private BillingAccount getBillingAccount(Party billFrom, Party billTo, Currency currency, EntityPermission entityPermission) {
-        BillingAccount billingAccount = null;
+        BillingAccount billingAccount;
         
         try {
             String query = null;
@@ -253,7 +253,7 @@ public class BillingControl
     }
     
     private List<BillingAccount> getBillingAccountsByBillFrom(Party billFrom, EntityPermission entityPermission) {
-        List<BillingAccount> billingAccounts = null;
+        List<BillingAccount> billingAccounts;
         
         try {
             String query = null;
@@ -304,7 +304,7 @@ public class BillingControl
     }
     
     private List<BillingAccount> getBillingAccountsByBillTo(Party billTo, EntityPermission entityPermission) {
-        List<BillingAccount> billingAccounts = null;
+        List<BillingAccount> billingAccounts;
         
         try {
             String query = null;
@@ -355,7 +355,7 @@ public class BillingControl
     }
     
     private BillingAccount getBillingAccountByName(String billingAccountName, EntityPermission entityPermission) {
-        BillingAccount billingAccount = null;
+        BillingAccount billingAccount;
         
         try {
             String query = null;
@@ -399,9 +399,9 @@ public class BillingControl
         List<BillingAccountTransfer> billingAccountTransfers = new ArrayList<>(billingAccounts.size());
         BillingAccountTransferCache billingAccountTransferCache = getPaymentTransferCaches(userVisit).getBillingAccountTransferCache();
         
-        billingAccounts.stream().forEach((billingAccount) -> {
-            billingAccountTransfers.add(billingAccountTransferCache.getTransfer(billingAccount));
-        });
+        billingAccounts.forEach((billingAccount) ->
+                billingAccountTransfers.add(billingAccountTransferCache.getTransfer(billingAccount))
+        );
         
         return billingAccountTransfers;
     }
@@ -424,7 +424,7 @@ public class BillingControl
     }
     
     private BillingAccountStatus getBillingAccountStatus(BillingAccount billingAccount, EntityPermission entityPermission) {
-        BillingAccountStatus billingAccountStatus = null;
+        BillingAccountStatus billingAccountStatus;
         
         try {
             String query = null;
@@ -482,7 +482,7 @@ public class BillingControl
     }
     
     private BillingAccountRole getBillingAccountRole(BillingAccount billingAccount, BillingAccountRoleType billingAccountRoleType, EntityPermission entityPermission) {
-        BillingAccountRole billingAccountRole = null;
+        BillingAccountRole billingAccountRole;
         
         try {
             String query = null;
@@ -535,7 +535,7 @@ public class BillingControl
     }
     
     private List<BillingAccountRole> getBillingAccountRolesByBillingAccount(BillingAccount billingAccount, EntityPermission entityPermission) {
-        List<BillingAccountRole> billingAccountRoles = null;
+        List<BillingAccountRole> billingAccountRoles;
         
         try {
             String query = null;
@@ -576,7 +576,7 @@ public class BillingControl
     }
     
     private List<BillingAccountRole> getBillingAccountRolesByPartyContactMechanism(PartyContactMechanism partyContactMechanism, EntityPermission entityPermission) {
-        List<BillingAccountRole> billingAccountRoles = null;
+        List<BillingAccountRole> billingAccountRoles;
         
         try {
             String query = null;
@@ -624,9 +624,9 @@ public class BillingControl
         List<BillingAccountRoleTransfer> billingAccountRoleTransfers = new ArrayList<>(billingAccountRoles.size());
         BillingAccountRoleTransferCache billingAccountRoleTransferCache = getPaymentTransferCaches(userVisit).getBillingAccountRoleTransferCache();
         
-        billingAccountRoles.stream().forEach((billingAccountRole) -> {
-            billingAccountRoleTransfers.add(billingAccountRoleTransferCache.getTransfer(billingAccountRole));
-        });
+        billingAccountRoles.forEach((billingAccountRole) ->
+                billingAccountRoleTransfers.add(billingAccountRoleTransferCache.getTransfer(billingAccountRole))
+        );
         
         return billingAccountRoleTransfers;
     }
