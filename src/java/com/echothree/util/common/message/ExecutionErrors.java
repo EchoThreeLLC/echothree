@@ -2233,5 +2233,6 @@ public enum ExecutionErrors {
     UnknownDefaultContactList,
     UnknownDefaultFilterKind,
     UnknownDefaultSelectorKind,
+    UnknownDefaultSequenceType,
 
 }
