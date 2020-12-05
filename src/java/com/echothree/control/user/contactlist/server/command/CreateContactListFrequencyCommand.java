@@ -67,10 +67,10 @@ public class CreateContactListFrequencyCommand
     @Override
     protected BaseResult execute() {
         var result = ContactListResultFactory.getCreateContactListFrequencyResult();
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         var contactListFrequencyName = form.getContactListFrequencyName();
         var contactListFrequency = contactListControl.getContactListFrequencyByName(contactListFrequencyName);
-        
+
         if(contactListFrequency == null) {
             var partyPK = getPartyPK();
             var isDefault = Boolean.valueOf(form.getIsDefault());

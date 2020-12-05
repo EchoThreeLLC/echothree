@@ -69,8 +69,8 @@ public class ContactListLogic
 
     public ContactList getContactListByName(final ExecutionErrorAccumulator eea, final String contactListName,
             final EntityPermission entityPermission) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
-        ContactList contactList = contactListControl.getContactListByName(contactListName, entityPermission);
+        var contactListControl = Session.getModelController(ContactListControl.class);
+        var contactList = contactListControl.getContactListByName(contactListName, entityPermission);
 
         if(contactList == null) {
             handleExecutionError(UnknownContactListNameException.class, eea, ExecutionErrors.UnknownContactListName.name(), contactListName);
@@ -91,8 +91,8 @@ public class ContactListLogic
             final ContactListUniversalSpec universalSpec, boolean allowDefault, final EntityPermission entityPermission) {
         ContactList contactList = null;
         var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
-        String contactListName = universalSpec.getContactListName();
-        int parameterCount = (contactListName == null ? 0 : 1) + EntityInstanceLogic.getInstance().countPossibleEntitySpecs(universalSpec);
+        var contactListName = universalSpec.getContactListName();
+        var parameterCount = (contactListName == null ? 0 : 1) + EntityInstanceLogic.getInstance().countPossibleEntitySpecs(universalSpec);
 
         switch(parameterCount) {
             case 0:
@@ -138,9 +138,9 @@ public class ContactListLogic
 
     public ContactListContactMechanismPurpose getContactListContactMechanismPurpose(final ExecutionErrorAccumulator eea, final ContactList contactList,
             final ContactMechanismPurpose contactMechanismPurpose) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         var contactListContactMechanismPurpose = contactListControl.getContactListContactMechanismPurpose(contactList, contactMechanismPurpose);
-        
+
         if(contactListContactMechanismPurpose == null) {
             handleExecutionError(UnknownContactListContactMechanismPurposeException.class, eea, ExecutionErrors.UnknownContactListContactMechanismPurpose.name(),
                     contactList.getLastDetail().getContactListName(), contactMechanismPurpose.getContactMechanismPurposeName());
@@ -150,7 +150,7 @@ public class ContactListLogic
     }
 
     public boolean hasContactListAccess(final Party executingParty, final ContactList contactList) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         var partyType = executingParty.getLastDetail().getPartyType();
         var partyTypeName = partyType.getPartyTypeName();
         var contactListGroup = contactList.getLastDetail().getContactListGroup();
@@ -167,8 +167,7 @@ public class ContactListLogic
         // If access hasn't been granted, allow access if the Party Type has been explicitly given access to the
         // Contact List, or if the Contact List has no further restrictions.
         if(!hasAccess) {
-            hasAccess = contactListControl.partyTypeContactListExists(partyType, contactList)
-                    || contactListControl.countPartyTypeContactListsByContactList(contactList) == 0;
+            hasAccess = contactListControl.partyTypeContactListExists(partyType, contactList) || contactListControl.countPartyTypeContactListsByContactList(contactList) == 0;
         }
 
         // Customers have some special checks based on Customer Type, if access still has not yet been granted.
@@ -182,8 +181,7 @@ public class ContactListLogic
             // If access hasn't been granted, allow access if the Customer Type has been explicitly given access to the
             // Contact List, or if the Contact List has no further restrictions.
             if(!hasAccess) {
-                hasAccess = contactListControl.customerTypeContactListExists(customerType, contactList)
-                        || contactListControl.countCustomerTypeContactListsByContactList(contactList) == 0;
+                hasAccess = contactListControl.customerTypeContactListExists(customerType, contactList) || contactListControl.countCustomerTypeContactListsByContactList(contactList) == 0;
             }
         }
 
@@ -192,7 +190,7 @@ public class ContactListLogic
     
     public PartyContactList addContactListToParty(final ExecutionErrorAccumulator eea, final Party party, final ContactList contactList,
             final ContactListContactMechanismPurpose preferredContactListContactMechanismPurpose, final BasePK createdBy) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+            var contactListControl = Session.getModelController(ContactListControl.class);
         var coreControl = (CoreControl)Session.getModelController(CoreControl.class);
         var workflowControl = (WorkflowControl)Session.getModelController(WorkflowControl.class);
         var partyContactList = contactListControl.createPartyContactList(party, contactList, preferredContactListContactMechanismPurpose, createdBy);
@@ -214,7 +212,7 @@ public class ContactListLogic
     }
     
     public void removeContactListFromParty(final ExecutionErrorAccumulator eea, final PartyContactList partyContactList, final BasePK deletedBy) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+            var contactListControl = Session.getModelController(ContactListControl.class);
         var coreControl = (CoreControl)Session.getModelController(CoreControl.class);
         var workflowControl = (WorkflowControl)Session.getModelController(WorkflowControl.class);
         var entityInstance = coreControl.getEntityInstanceByBasePK(partyContactList.getPrimaryKey());
@@ -232,7 +230,7 @@ public class ContactListLogic
     }
     
     public void setupInitialContactLists(final ExecutionErrorAccumulator eea, final Party party, final BasePK createdBy) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+            var contactListControl = Session.getModelController(ContactListControl.class);
         var partyType = party.getLastDetail().getPartyType();
         var contactLists = new HashSet<ContactList>();
 
@@ -249,7 +247,7 @@ public class ContactListLogic
         // If the party is a CUSTOMER, check to see if their CustomerType is tied to any specific ContactLists
         // or ContactListGroups.
         if(PartyLogic.getInstance().isPartyType(party, PartyTypes.CUSTOMER.name())) {
-            var customerControl = (CustomerControl)Session.getModelController(CustomerControl.class);
+            var customerControl = Session.getModelController(CustomerControl.class);
             var customerType = customerControl.getCustomer(party).getCustomerType();
 
             contactListControl.getCustomerTypeContactListsByCustomerType(customerType).stream()
@@ -271,13 +269,13 @@ public class ContactListLogic
     }
 
     public ContactListTransfer getContactListTransfer(UserVisit userVisit, ContactList contactList) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
 
         return contactListControl.getContactListTransfer(userVisit, contactList);
     }
 
     public List<ContactListTransfer> getContactListTransfers(UserVisit userVisit) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
 
         return contactListControl.getContactListTransfers(userVisit);
     }

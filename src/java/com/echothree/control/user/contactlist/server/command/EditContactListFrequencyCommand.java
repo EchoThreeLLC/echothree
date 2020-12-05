@@ -89,7 +89,7 @@ public class EditContactListFrequencyCommand
 
     @Override
     public ContactListFrequency getEntity(EditContactListFrequencyResult result) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         ContactListFrequency contactListFrequency = null;
         String contactListFrequencyName = spec.getContactListFrequencyName();
 
@@ -113,14 +113,14 @@ public class EditContactListFrequencyCommand
 
     @Override
     public void fillInResult(EditContactListFrequencyResult result, ContactListFrequency contactListFrequency) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
 
         result.setContactListFrequency(contactListControl.getContactListFrequencyTransfer(getUserVisit(), contactListFrequency));
     }
 
     @Override
     public void doLock(ContactListFrequencyEdit edit, ContactListFrequency contactListFrequency) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         ContactListFrequencyDescription contactListFrequencyDescription = contactListControl.getContactListFrequencyDescription(contactListFrequency, getPreferredLanguage());
         ContactListFrequencyDetail contactListFrequencyDetail = contactListFrequency.getLastDetail();
 
@@ -135,7 +135,7 @@ public class EditContactListFrequencyCommand
 
     @Override
     public void canUpdate(ContactListFrequency contactListFrequency) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         String contactListFrequencyName = edit.getContactListFrequencyName();
         ContactListFrequency duplicateContactListFrequency = contactListControl.getContactListFrequencyByName(contactListFrequencyName);
 
@@ -146,7 +146,7 @@ public class EditContactListFrequencyCommand
 
     @Override
     public void doUpdate(ContactListFrequency contactListFrequency) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         var partyPK = getPartyPK();
         ContactListFrequencyDetailValue contactListFrequencyDetailValue = contactListControl.getContactListFrequencyDetailValueForUpdate(contactListFrequency);
         ContactListFrequencyDescription contactListFrequencyDescription = contactListControl.getContactListFrequencyDescriptionForUpdate(contactListFrequency, getPreferredLanguage());

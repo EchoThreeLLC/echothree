@@ -1906,7 +1906,7 @@ public class ContactListControl
     }
 
     public void deleteContactList(ContactList contactList, BasePK deletedBy) {
-        var letterControl = (LetterControl)Session.getModelController(LetterControl.class);
+        var letterControl = Session.getModelController(LetterControl.class);
         
         letterControl.deleteLettersByContactList(contactList, deletedBy);
         deletePartyContactListsByContactList(contactList, deletedBy);
@@ -3361,7 +3361,7 @@ public class ContactListControl
     
     public ContactListContactMechanismPurposeChoicesBean getContactListContactMechanismPurposeChoices(String defaultContactListContactMechanismPurposeChoice, Language language, boolean allowNullChoice,
             ContactList contactList) {
-        var contactControl = (ContactControl)Session.getModelController(ContactControl.class);
+        var contactControl = Session.getModelController(ContactControl.class);
         List<ContactListContactMechanismPurpose> contactListContactMechanismPurposes = getContactListContactMechanismPurposesByContactList(contactList);
         int size = contactListContactMechanismPurposes.size();
         List<String> labels = new ArrayList<>(size);

@@ -101,7 +101,7 @@ public class EditContactListCommand
 
     @Override
     public ContactList getEntity(EditContactListResult result) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         ContactList contactList = null;
         String contactListName = spec.getContactListName();
 
@@ -132,7 +132,7 @@ public class EditContactListCommand
 
     @Override
     public void doLock(ContactListEdit edit, ContactList contactList) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         ContactListDescription contactListDescription = contactListControl.getContactListDescription(contactList, getPreferredLanguage());
         ContactListDetail contactListDetail = contactList.getLastDetail();
 
@@ -157,7 +157,7 @@ public class EditContactListCommand
 
     @Override
     public void canUpdate(ContactList contactList) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         String contactListName = edit.getContactListName();
         ContactList duplicateContactList = contactListControl.getContactListByName(contactListName);
 
@@ -179,7 +179,7 @@ public class EditContactListCommand
                     contactListFrequency = contactListFrequencyName == null ? null : contactListControl.getContactListFrequencyByName(contactListFrequencyName);
 
                     if(contactListFrequencyName == null || contactListFrequency != null) {
-                        var workflowControl = (WorkflowControl)Session.getModelController(WorkflowControl.class);
+                        var workflowControl = Session.getModelController(WorkflowControl.class);
                         String defaultPartyContactListStatusChoice = edit.getDefaultPartyContactListStatusChoice();
                         Workflow workflow = workflowControl.getWorkflowByName(PartyContactListStatusConstants.Workflow_PARTY_CONTACT_LIST_STATUS);
 
@@ -203,7 +203,7 @@ public class EditContactListCommand
 
     @Override
     public void doUpdate(ContactList contactList) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         var partyPK = getPartyPK();
         ContactListDetailValue contactListDetailValue = contactListControl.getContactListDetailValueForUpdate(contactList);
         ContactListDescription contactListDescription = contactListControl.getContactListDescriptionForUpdate(contactList, getPreferredLanguage());

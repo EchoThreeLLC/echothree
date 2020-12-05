@@ -93,7 +93,7 @@ public class PartyLogic
     }
 
     public PartyType getPartyTypeByName(final ExecutionErrorAccumulator eea, final String partyTypeName) {
-        var partyControl = (PartyControl)Session.getModelController(PartyControl.class);
+        var partyControl = Session.getModelController(PartyControl.class);
         PartyType partyType = partyControl.getPartyTypeByName(partyTypeName);
 
         if(partyType == null) {
@@ -105,7 +105,7 @@ public class PartyLogic
     
     public Party getPartyByName(final ExecutionErrorAccumulator eea, final String partyName,
             final EntityPermission entityPermission) {
-        var partyControl = (PartyControl)Session.getModelController(PartyControl.class);
+        var partyControl = Session.getModelController(PartyControl.class);
         Party party = partyControl.getPartyByName(partyName, entityPermission);
 
         if(party == null) {
@@ -156,7 +156,7 @@ public class PartyLogic
                 ComponentVendors.ECHOTHREE.name(), EntityTypes.Party.name());
 
         if(eea == null || !eea.hasExecutionErrors()) {
-            var partyControl = (PartyControl)Session.getModelController(PartyControl.class);
+            var partyControl = Session.getModelController(PartyControl.class);
             
             party = partyControl.getPartyByEntityInstance(entityInstance, entityPermission);
         }

@@ -64,11 +64,11 @@ public class GetContactListGroupCommand
     
     @Override
     protected BaseResult execute() {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         var result = ContactListResultFactory.getGetContactListGroupResult();
         var contactListGroupName = form.getContactListGroupName();
         var contactListGroup = contactListControl.getContactListGroupByName(contactListGroupName);
-        
+
         if(contactListGroup != null) {
             result.setContactListGroup(ContactListGroupLogic.getInstance().getContactListGroupTransfer(getUserVisit(), contactListGroup));
             

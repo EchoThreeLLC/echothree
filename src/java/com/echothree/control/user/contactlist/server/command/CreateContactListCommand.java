@@ -72,7 +72,7 @@ public class CreateContactListCommand
     @Override
     protected BaseResult execute() {
         var result = ContactListResultFactory.getCreateContactListResult();
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         var contactListName = form.getContactListName();
         var contactList = contactListControl.getContactListByName(contactListName);
 

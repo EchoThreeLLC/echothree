@@ -55,7 +55,7 @@ public class ContactListGroupLogic
 
     public ContactListGroup getContactListGroupByName(final ExecutionErrorAccumulator eea, final String contactListGroupName,
             final EntityPermission entityPermission) {
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         ContactListGroup contactListGroup = contactListControl.getContactListGroupByName(contactListGroupName, entityPermission);
 
         if(contactListGroup == null) {

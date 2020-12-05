@@ -59,7 +59,7 @@ public class GetContactListsCommand
     @Override
     protected BaseResult execute() {
         var result = ContactListResultFactory.getGetContactListsResult();
-        
+
         result.setContactLists(ContactListLogic.getInstance().getContactListTransfers(getUserVisit()));
         
         return result;

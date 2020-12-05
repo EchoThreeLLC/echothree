@@ -66,10 +66,10 @@ public class CreateContactListGroupCommand
     @Override
     protected BaseResult execute() {
         var result = ContactListResultFactory.getCreateContactListGroupResult();
-        var contactListControl = (ContactListControl)Session.getModelController(ContactListControl.class);
+        var contactListControl = Session.getModelController(ContactListControl.class);
         var contactListGroupName = form.getContactListGroupName();
         var contactListGroup = contactListControl.getContactListGroupByName(contactListGroupName);
-        
+
         if(contactListGroup == null) {
             var partyPK = getPartyPK();
             var isDefault = Boolean.valueOf(form.getIsDefault());

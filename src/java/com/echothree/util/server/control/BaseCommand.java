@@ -220,7 +220,7 @@ public abstract class BaseCommand
     
     public UserControl getUserControl() {
         if(userControl == null) {
-            userControl = (UserControl)Session.getModelController(UserControl.class);
+            userControl = Session.getModelController(UserControl.class);
         }
         
         return userControl;
@@ -630,7 +630,7 @@ public abstract class BaseCommand
     
     protected CoreControl getCoreControl() {
         if(coreControl == null) {
-            coreControl = (CoreControl)Session.getModelController(CoreControl.class);
+            coreControl = Session.getModelController(CoreControl.class);
         }
         
         return coreControl;
@@ -676,7 +676,7 @@ public abstract class BaseCommand
      * @param option The option to remove.
      */
     protected void removeOption(String option) {
-        session.getOptions(true).remove(option);
+        session.getOptions().remove(option);
     }
 
     // --------------------------------------------------------------------------------
