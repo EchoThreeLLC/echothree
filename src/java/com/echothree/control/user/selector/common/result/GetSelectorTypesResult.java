@@ -26,7 +26,10 @@ public interface GetSelectorTypesResult
     
     SelectorKindTransfer getSelectorKind();
     void setSelectorKind(SelectorKindTransfer selectorKind);
-    
+
+    Long getSelectorTypeCount();
+    void setSelectorTypeCount(Long selectorTypeCount);
+
     List<SelectorTypeTransfer> getSelectorTypes();
     void setSelectorTypes(List<SelectorTypeTransfer> selectorTypes);
     

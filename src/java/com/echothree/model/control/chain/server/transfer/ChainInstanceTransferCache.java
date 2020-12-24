@@ -38,7 +38,7 @@ public class ChainInstanceTransferCache
     public ChainInstanceTransferCache(UserVisit userVisit, ChainControl chainControl) {
         super(userVisit, chainControl);
         
-        Set<String> options = session.getOptions();
+        var options = session.getOptions();
         if(options != null) {
             includeChainInstanceStatus = options.contains(ChainOptions.ChainInstanceIncludeChainInstanceStatus);
             includeChainInstanceEntityRoles = options.contains(ChainOptions.ChainInstanceIncludeChainInstanceEntityRoles);
@@ -66,7 +66,7 @@ public class ChainInstanceTransferCache
                 List<ChainInstanceEntityRoleTransfer> chainInstanceEntityRoleTransfers = chainControl.getChainInstanceEntityRoleTransfersByChainInstance(userVisit, chainInstance);
                 MapWrapper<ChainInstanceEntityRoleTransfer> chainInstanceEntityRoles = new MapWrapper<>(chainInstanceEntityRoleTransfers.size());
 
-                chainInstanceEntityRoleTransfers.stream().forEach((chainInstanceEntityRoleTransfer) -> {
+                chainInstanceEntityRoleTransfers.forEach((chainInstanceEntityRoleTransfer) -> {
                     chainInstanceEntityRoles.put(chainInstanceEntityRoleTransfer.getChainEntityRoleType().getChainEntityRoleTypeName(), chainInstanceEntityRoleTransfer);
                 });
 

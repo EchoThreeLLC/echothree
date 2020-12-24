@@ -62,7 +62,7 @@ public class InvoiceTransferCache
     public InvoiceTransferCache(UserVisit userVisit, InvoiceControl invoiceControl) {
         super(userVisit, invoiceControl);
 
-        Set<String> options = session.getOptions();
+        var options = session.getOptions();
         if(options != null) {
             includeLines = options.contains(InvoiceOptions.InvoiceIncludeLines);
             includeRoles = options.contains(InvoiceOptions.InvoiceIncludeRoles);
@@ -77,7 +77,7 @@ public class InvoiceTransferCache
         List<InvoiceTimeTransfer> invoiceTimeTransfers = invoiceControl.getInvoiceTimeTransfersByInvoice(userVisit, invoice);
         MapWrapper<InvoiceTimeTransfer> invoiceTimes = new MapWrapper<>(invoiceTimeTransfers.size());
 
-        invoiceTimeTransfers.stream().forEach((invoiceTimeTransfer) -> {
+        invoiceTimeTransfers.forEach((invoiceTimeTransfer) -> {
             invoiceTimes.put(invoiceTimeTransfer.getInvoiceTimeType().getInvoiceTimeTypeName(), invoiceTimeTransfer);
         });
 
@@ -90,7 +90,7 @@ public class InvoiceTransferCache
         List<InvoiceRoleTransfer> invoiceRoleTransfers = invoiceControl.getInvoiceRoleTransfersByInvoice(userVisit, invoice);
         MapWrapper<InvoiceRoleTransfer> invoiceRoles = new MapWrapper<>(invoiceRoleTransfers.size());
 
-        invoiceRoleTransfers.stream().forEach((invoiceRoleTransfer) -> {
+        invoiceRoleTransfers.forEach((invoiceRoleTransfer) -> {
             invoiceRoles.put(invoiceRoleTransfer.getInvoiceRoleType().getInvoiceRoleTypeUseTypeName(), invoiceRoleTransfer);
         });
 

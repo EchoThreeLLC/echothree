@@ -37,7 +37,7 @@ public class EntityAttributeGroupTransferCache
     public EntityAttributeGroupTransferCache(UserVisit userVisit, CoreControl coreControl) {
         super(userVisit, coreControl);
         
-        Set<String> options = session.getOptions();
+        var options = session.getOptions();
         if(options != null) {
             includeEntityAttributes = options.contains(CoreOptions.EntityAttributeGroupIncludeEntityAttributes);
         }
@@ -68,7 +68,7 @@ public class EntityAttributeGroupTransferCache
                             entityAttributeGroup, entityInstance.getEntityType(), entityInstance);
                     MapWrapper<EntityAttributeTransfer> mapWrapper = new MapWrapper<>(entityAttributeTransfers.size());
 
-                    entityAttributeTransfers.stream().forEach((entityAttributeTransfer) -> {
+                    entityAttributeTransfers.forEach((entityAttributeTransfer) -> {
                         mapWrapper.put(entityAttributeTransfer.getEntityAttributeName(), entityAttributeTransfer);
                     });
 

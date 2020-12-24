@@ -50,7 +50,7 @@ public class ForumTransferCache
     public ForumTransferCache(UserVisit userVisit, ForumControl forumControl) {
         super(userVisit, forumControl);
         
-        Set<String> options = session.getOptions();
+        var options = session.getOptions();
         if(options != null) {
             setIncludeGuid(options.contains(ForumOptions.ForumIncludeGuid));
             includeForumGroups = options.contains(ForumOptions.ForumIncludeForumGroups);
@@ -86,7 +86,7 @@ public class ForumTransferCache
                 List<ForumGroupForum> forumGroupForums = forumControl.getForumGroupForumsByForum(forum);
                 List<ForumGroup> forumGroups = new ArrayList<>(forumGroupForums.size());
                 
-                forumGroupForums.stream().forEach((forumGroupForum) -> {
+                forumGroupForums.forEach((forumGroupForum) -> {
                     forumGroups.add(forumGroupForum.getForumGroup());
                 });
                 

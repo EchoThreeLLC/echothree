@@ -96,7 +96,7 @@ public abstract class BaseTransferCache<K extends BaseEntity, V extends BaseTran
         session = ThreadSession.currentSession();
         transferCache = new HashMap<>();
         
-        Set<String> options = session.getOptions();
+        var options = session.getOptions();
         if(options != null) {
             includeEntityAttributeGroups = options.contains(BaseOptions.BaseIncludeEntityAttributeGroups);
             includeTagScopes = options.contains(BaseOptions.BaseIncludeTagScopes);
@@ -257,7 +257,7 @@ public abstract class BaseTransferCache<K extends BaseEntity, V extends BaseTran
         List<EntityAttributeGroupTransfer> entityAttributeGroupTransfers = coreControl.getEntityAttributeGroupTransfersByEntityType(userVisit, entityInstance.getEntityType(), entityInstance);
         MapWrapper<EntityAttributeGroupTransfer> mapWrapper = new MapWrapper<>(entityAttributeGroupTransfers.size());
 
-        entityAttributeGroupTransfers.stream().forEach((entityAttributeGroupTransfer) -> {
+        entityAttributeGroupTransfers.forEach((entityAttributeGroupTransfer) -> {
             mapWrapper.put(entityAttributeGroupTransfer.getEntityAttributeGroupName(), entityAttributeGroupTransfer);
         });
 
@@ -462,7 +462,7 @@ public abstract class BaseTransferCache<K extends BaseEntity, V extends BaseTran
     }
     
     protected void verifyOptionDependency(String dependentOption, String dependsOnOption) {
-        Set<String> options = session.getOptions();
+        var options = session.getOptions();
         
         if(!options.contains(dependsOnOption)) {
             // Throwing an Exception for this seems harsh, but failure to meet the requirements could result in an NPE or other Exceptions.

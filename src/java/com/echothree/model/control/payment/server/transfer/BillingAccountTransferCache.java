@@ -42,7 +42,7 @@ public class BillingAccountTransferCache
     public BillingAccountTransferCache(UserVisit userVisit) {
         super(userVisit);
 
-        Set<String> options = session.getOptions();
+        var options = session.getOptions();
         if(options != null) {
             includeRoles = options.contains(PaymentOptions.BillingAccountIncludeRoles);
         }
@@ -83,7 +83,7 @@ public class BillingAccountTransferCache
                 List<BillingAccountRoleTransfer> billingAccountRoleTransfers = billingControl.getBillingAccountRoleTransfersByBillingAccount(userVisit, billingAccount);
                 MapWrapper<BillingAccountRoleTransfer> billingAccountRoles = new MapWrapper<>(billingAccountRoleTransfers.size());
 
-                billingAccountRoleTransfers.stream().forEach((billingAccountRoleTransfer) -> {
+                billingAccountRoleTransfers.forEach((billingAccountRoleTransfer) -> {
                     billingAccountRoles.put(billingAccountRoleTransfer.getBillingAccountRoleType().getBillingAccountRoleTypeName(), billingAccountRoleTransfer);
                 });
 

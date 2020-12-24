@@ -41,7 +41,7 @@ public class UserLoginTransferCache
     public UserLoginTransferCache(UserVisit userVisit, UserControl userControl) {
         super(userVisit, userControl);
 
-        Set<String> options = session.getOptions();
+        var options = session.getOptions();
         if(options != null) {
             includeUserLoginPasswords = options.contains(UserOptions.UserLoginIncludeUserLoginPasswords);
         }
@@ -73,7 +73,7 @@ public class UserLoginTransferCache
                 List<UserLoginPasswordTransfer> userLoginPasswordTransfers = userControl.getUserLoginPasswordTransfersByParty(userVisit, userLogin.getParty());
                 MapWrapper<UserLoginPasswordTransfer> userLoginPasswords = new MapWrapper<>(userLoginPasswordTransfers.size());
 
-                userLoginPasswordTransfers.stream().forEach((userLoginPasswordTransfer) -> {
+                userLoginPasswordTransfers.forEach((userLoginPasswordTransfer) -> {
                     userLoginPasswords.put(userLoginPasswordTransfer.getUserLoginPasswordType().getUserLoginPasswordTypeName(), userLoginPasswordTransfer);
                 });
 

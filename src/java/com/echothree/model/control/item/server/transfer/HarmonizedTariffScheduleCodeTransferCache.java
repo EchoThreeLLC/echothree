@@ -44,7 +44,7 @@ public class HarmonizedTariffScheduleCodeTransferCache
     public HarmonizedTariffScheduleCodeTransferCache(UserVisit userVisit, ItemControl itemControl) {
         super(userVisit, itemControl);
         
-        Set<String> options = session.getOptions();
+        var options = session.getOptions();
         if(options != null) {
             includeHarmonizedTariffScheduleCodeUses = options.contains(ItemOptions.HarmonizedTariffScheduleCodeIncludeHarmonizedTariffScheduleCodeUses);
         }
@@ -77,7 +77,7 @@ public class HarmonizedTariffScheduleCodeTransferCache
                 List<HarmonizedTariffScheduleCodeUseTransfer> harmonizedTariffScheduleCodeUseTransfers = itemControl.getHarmonizedTariffScheduleCodeUseTransfersByHarmonizedTariffScheduleCode(userVisit, harmonizedTariffScheduleCode);
                 MapWrapper<HarmonizedTariffScheduleCodeUseTransfer> harmonizedTariffScheduleCodeUses = new MapWrapper<>();
                 
-                harmonizedTariffScheduleCodeUseTransfers.stream().forEach((harmonizedTariffScheduleCodeUseTransfer) -> {
+                harmonizedTariffScheduleCodeUseTransfers.forEach((harmonizedTariffScheduleCodeUseTransfer) -> {
                     harmonizedTariffScheduleCodeUses.put(harmonizedTariffScheduleCodeUseTransfer.getHarmonizedTariffScheduleCodeUseType().getHarmonizedTariffScheduleCodeUseTypeName(), harmonizedTariffScheduleCodeUseTransfer);
                 });
                 

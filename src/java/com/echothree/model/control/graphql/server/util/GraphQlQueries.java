@@ -72,8 +72,14 @@ import com.echothree.control.user.core.server.command.GetTextDecorationsCommand;
 import com.echothree.control.user.core.server.command.GetTextTransformationCommand;
 import com.echothree.control.user.core.server.command.GetTextTransformationsCommand;
 import com.echothree.control.user.filter.common.FilterUtil;
+import com.echothree.control.user.filter.server.command.GetFilterAdjustmentSourceCommand;
+import com.echothree.control.user.filter.server.command.GetFilterAdjustmentSourcesCommand;
+import com.echothree.control.user.filter.server.command.GetFilterAdjustmentTypeCommand;
+import com.echothree.control.user.filter.server.command.GetFilterAdjustmentTypesCommand;
 import com.echothree.control.user.filter.server.command.GetFilterKindCommand;
 import com.echothree.control.user.filter.server.command.GetFilterKindsCommand;
+import com.echothree.control.user.filter.server.command.GetFilterTypeCommand;
+import com.echothree.control.user.filter.server.command.GetFilterTypesCommand;
 import com.echothree.control.user.inventory.common.InventoryUtil;
 import com.echothree.control.user.inventory.server.command.GetInventoryConditionCommand;
 import com.echothree.control.user.inventory.server.command.GetInventoryConditionsCommand;
@@ -128,6 +134,8 @@ import com.echothree.control.user.search.server.command.GetCustomerResultsComman
 import com.echothree.control.user.selector.common.SelectorUtil;
 import com.echothree.control.user.selector.server.command.GetSelectorKindCommand;
 import com.echothree.control.user.selector.server.command.GetSelectorKindsCommand;
+import com.echothree.control.user.selector.server.command.GetSelectorTypeCommand;
+import com.echothree.control.user.selector.server.command.GetSelectorTypesCommand;
 import com.echothree.control.user.sequence.common.SequenceUtil;
 import com.echothree.control.user.sequence.server.command.GetSequenceChecksumTypeCommand;
 import com.echothree.control.user.sequence.server.command.GetSequenceChecksumTypesCommand;
@@ -179,7 +187,10 @@ import com.echothree.model.control.core.server.graphql.MimeTypeObject;
 import com.echothree.model.control.core.server.graphql.MimeTypeUsageTypeObject;
 import com.echothree.model.control.core.server.graphql.TextDecorationObject;
 import com.echothree.model.control.core.server.graphql.TextTransformationObject;
+import com.echothree.model.control.filter.server.graphql.FilterAdjustmentSourceObject;
+import com.echothree.model.control.filter.server.graphql.FilterAdjustmentTypeObject;
 import com.echothree.model.control.filter.server.graphql.FilterKindObject;
+import com.echothree.model.control.filter.server.graphql.FilterTypeObject;
 import com.echothree.model.control.inventory.server.graphql.InventoryConditionObject;
 import com.echothree.model.control.inventory.server.graphql.LotObject;
 import com.echothree.model.control.item.server.graphql.ItemCategoryObject;
@@ -206,6 +217,7 @@ import com.echothree.model.control.payment.server.graphql.PaymentProcessorTypeOb
 import com.echothree.model.control.queue.server.graphql.QueueTypeObject;
 import com.echothree.model.control.search.server.graphql.CustomerResultsObject;
 import com.echothree.model.control.selector.server.graphql.SelectorKindObject;
+import com.echothree.model.control.selector.server.graphql.SelectorTypeObject;
 import com.echothree.model.control.sequence.server.graphql.SequenceChecksumTypeObject;
 import com.echothree.model.control.sequence.server.graphql.SequenceEncoderTypeObject;
 import com.echothree.model.control.sequence.server.graphql.SequenceObject;
@@ -245,7 +257,10 @@ import com.echothree.model.data.core.server.entity.MimeTypeFileExtension;
 import com.echothree.model.data.core.server.entity.MimeTypeUsageType;
 import com.echothree.model.data.core.server.entity.TextDecoration;
 import com.echothree.model.data.core.server.entity.TextTransformation;
+import com.echothree.model.data.filter.server.entity.FilterAdjustmentSource;
+import com.echothree.model.data.filter.server.entity.FilterAdjustmentType;
 import com.echothree.model.data.filter.server.entity.FilterKind;
+import com.echothree.model.data.filter.server.entity.FilterType;
 import com.echothree.model.data.inventory.server.entity.InventoryCondition;
 import com.echothree.model.data.inventory.server.entity.Lot;
 import com.echothree.model.data.item.server.entity.Item;
@@ -271,6 +286,7 @@ import com.echothree.model.data.payment.server.entity.PaymentProcessorTypeCode;
 import com.echothree.model.data.payment.server.entity.PaymentProcessorTypeCodeType;
 import com.echothree.model.data.queue.server.entity.QueueType;
 import com.echothree.model.data.selector.server.entity.SelectorKind;
+import com.echothree.model.data.selector.server.entity.SelectorType;
 import com.echothree.model.data.sequence.server.entity.Sequence;
 import com.echothree.model.data.sequence.server.entity.SequenceChecksumType;
 import com.echothree.model.data.sequence.server.entity.SequenceEncoderType;
@@ -539,6 +555,59 @@ public final class GraphQlQueries
     }
 
     @GraphQLField
+    @GraphQLName("selectorType")
+    public static SelectorTypeObject selectorType(final DataFetchingEnvironment env,
+            @GraphQLName("selectorKindName") final String selectorKindName,
+            @GraphQLName("selectorTypeName") final String selectorTypeName,
+            @GraphQLName("id") final String id) {
+        SelectorType selectorType;
+
+        try {
+            var commandForm = SelectorUtil.getHome().getGetSelectorTypeForm();
+
+            commandForm.setSelectorKindName(selectorKindName);
+            commandForm.setSelectorTypeName(selectorTypeName);
+            commandForm.setUlid(id);
+
+            selectorType = new GetSelectorTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return selectorType == null ? null : new SelectorTypeObject(selectorType);
+    }
+
+    @GraphQLField
+    @GraphQLName("selectorTypes")
+    public static Collection<SelectorTypeObject> selectorTypes(final DataFetchingEnvironment env,
+            @GraphQLName("selectorKindName") final String selectorKindName) {
+        Collection<SelectorType> selectorTypes;
+        Collection<SelectorTypeObject> selectorTypeObjects;
+
+        try {
+            var commandForm = SelectorUtil.getHome().getGetSelectorTypesForm();
+
+            commandForm.setSelectorKindName(selectorKindName);
+
+            selectorTypes = new GetSelectorTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(selectorTypes == null) {
+            selectorTypeObjects = emptyList();
+        } else {
+            selectorTypeObjects = new ArrayList<>(selectorTypes.size());
+
+            selectorTypes.stream()
+                    .map(SelectorTypeObject::new)
+                    .forEachOrdered(selectorTypeObjects::add);
+        }
+
+        return selectorTypeObjects;
+    }
+
+    @GraphQLField
     @GraphQLName("filterKind")
     public static FilterKindObject filterKind(final DataFetchingEnvironment env,
             @GraphQLName("filterKindName") final String filterKindName,
@@ -584,6 +653,151 @@ public final class GraphQlQueries
         }
 
         return filterKindObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("filterType")
+    public static FilterTypeObject filterType(final DataFetchingEnvironment env,
+            @GraphQLName("filterKindName") final String filterKindName,
+            @GraphQLName("filterTypeName") final String filterTypeName,
+            @GraphQLName("id") final String id) {
+        FilterType filterType;
+
+        try {
+            var commandForm = FilterUtil.getHome().getGetFilterTypeForm();
+
+            commandForm.setFilterKindName(filterKindName);
+            commandForm.setFilterTypeName(filterTypeName);
+            commandForm.setUlid(id);
+
+            filterType = new GetFilterTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return filterType == null ? null : new FilterTypeObject(filterType);
+    }
+
+    @GraphQLField
+    @GraphQLName("filterTypes")
+    public static Collection<FilterTypeObject> filterTypes(final DataFetchingEnvironment env,
+            @GraphQLName("filterKindName") final String filterKindName) {
+        Collection<FilterType> filterTypes;
+        Collection<FilterTypeObject> filterTypeObjects;
+
+        try {
+            var commandForm = FilterUtil.getHome().getGetFilterTypesForm();
+
+            commandForm.setFilterKindName(filterKindName);
+
+            filterTypes = new GetFilterTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(filterTypes == null) {
+            filterTypeObjects = emptyList();
+        } else {
+            filterTypeObjects = new ArrayList<>(filterTypes.size());
+
+            filterTypes.stream()
+                    .map(FilterTypeObject::new)
+                    .forEachOrdered(filterTypeObjects::add);
+        }
+
+        return filterTypeObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("filterAdjustmentSource")
+    public static FilterAdjustmentSourceObject filterAdjustmentSource(final DataFetchingEnvironment env,
+            @GraphQLName("filterAdjustmentSourceName") @GraphQLNonNull final String filterAdjustmentSourceName) {
+        FilterAdjustmentSource filterAdjustmentSource;
+
+        try {
+            var commandForm = FilterUtil.getHome().getGetFilterAdjustmentSourceForm();
+
+            commandForm.setFilterAdjustmentSourceName(filterAdjustmentSourceName);
+
+            filterAdjustmentSource = new GetFilterAdjustmentSourceCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return filterAdjustmentSource == null ? null : new FilterAdjustmentSourceObject(filterAdjustmentSource);
+    }
+
+    @GraphQLField
+    @GraphQLName("filterAdjustmentSources")
+    public static Collection<FilterAdjustmentSourceObject> filterAdjustmentSources(final DataFetchingEnvironment env) {
+        Collection<FilterAdjustmentSource> filterAdjustmentSources;
+        Collection<FilterAdjustmentSourceObject> filterAdjustmentSourceObjects;
+
+        try {
+            var commandForm = FilterUtil.getHome().getGetFilterAdjustmentSourcesForm();
+
+            filterAdjustmentSources = new GetFilterAdjustmentSourcesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(filterAdjustmentSources == null) {
+            filterAdjustmentSourceObjects = emptyList();
+        } else {
+            filterAdjustmentSourceObjects = new ArrayList<>(filterAdjustmentSources.size());
+
+            filterAdjustmentSources.stream()
+                    .map(FilterAdjustmentSourceObject::new)
+                    .forEachOrdered(filterAdjustmentSourceObjects::add);
+        }
+
+        return filterAdjustmentSourceObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("filterAdjustmentType")
+    public static FilterAdjustmentTypeObject filterAdjustmentType(final DataFetchingEnvironment env,
+            @GraphQLName("filterAdjustmentTypeName") @GraphQLNonNull final String filterAdjustmentTypeName) {
+        FilterAdjustmentType filterAdjustmentType;
+
+        try {
+            var commandForm = FilterUtil.getHome().getGetFilterAdjustmentTypeForm();
+
+            commandForm.setFilterAdjustmentTypeName(filterAdjustmentTypeName);
+
+            filterAdjustmentType = new GetFilterAdjustmentTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return filterAdjustmentType == null ? null : new FilterAdjustmentTypeObject(filterAdjustmentType);
+    }
+
+    @GraphQLField
+    @GraphQLName("filterAdjustmentTypes")
+    public static Collection<FilterAdjustmentTypeObject> filterAdjustmentTypes(final DataFetchingEnvironment env) {
+        Collection<FilterAdjustmentType> filterAdjustmentTypes;
+        Collection<FilterAdjustmentTypeObject> filterAdjustmentTypeObjects;
+
+        try {
+            var commandForm = FilterUtil.getHome().getGetFilterAdjustmentTypesForm();
+
+            filterAdjustmentTypes = new GetFilterAdjustmentTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(filterAdjustmentTypes == null) {
+            filterAdjustmentTypeObjects = emptyList();
+        } else {
+            filterAdjustmentTypeObjects = new ArrayList<>(filterAdjustmentTypes.size());
+
+            filterAdjustmentTypes.stream()
+                    .map(FilterAdjustmentTypeObject::new)
+                    .forEachOrdered(filterAdjustmentTypeObjects::add);
+        }
+
+        return filterAdjustmentTypeObjects;
     }
 
     @GraphQLField

@@ -49,7 +49,7 @@ public class FinancialAccountTransferCache
         
         accountingControl = Session.getModelController(AccountingControl.class);
 
-        Set<String> options = session.getOptions();
+        var options = session.getOptions();
         if(options != null) {
             includeRoles = options.contains(FinancialOptions.FinancialAccountIncludeRoles);
             includeTransactions = options.contains(FinancialOptions.FinancialAccountIncludeTransactions);
@@ -85,7 +85,7 @@ public class FinancialAccountTransferCache
                 List<FinancialAccountRoleTransfer> financialAccountRoleTransfers = financialControl.getFinancialAccountRoleTransfersByFinancialAccount(userVisit, financialAccount);
                 MapWrapper<FinancialAccountRoleTransfer> financialAccountRolesMap = new MapWrapper<>(financialAccountRoleTransfers.size());
 
-                financialAccountRoleTransfers.stream().forEach((financialAccountRoleTransfer) -> {
+                financialAccountRoleTransfers.forEach((financialAccountRoleTransfer) -> {
                     financialAccountRolesMap.put(financialAccountRoleTransfer.getFinancialAccountRoleType().getFinancialAccountRoleTypeName(), financialAccountRoleTransfer);
                 });
 

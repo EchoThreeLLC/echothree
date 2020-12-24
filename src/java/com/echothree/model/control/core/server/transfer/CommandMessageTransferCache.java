@@ -38,7 +38,7 @@ public class CommandMessageTransferCache
     public CommandMessageTransferCache(UserVisit userVisit, CoreControl coreControl) {
         super(userVisit, coreControl);
         
-        Set<String> options = session.getOptions();
+        var options = session.getOptions();
         if(options != null) {
             includeTranslations = options.contains(CoreOptions.CommandMessageIncludeTranslations);
         }
@@ -63,7 +63,7 @@ public class CommandMessageTransferCache
                 List<CommandMessageTranslationTransfer> commandMessageTranslationTransfers = coreControl.getCommandMessageTranslationTransfersByCommandMessage(userVisit, commandMessage);
                 MapWrapper<CommandMessageTranslationTransfer> commandMessageTranslations = new MapWrapper<>();
 
-                commandMessageTranslationTransfers.stream().forEach((commandMessageTranslationTransfer) -> {
+                commandMessageTranslationTransfers.forEach((commandMessageTranslationTransfer) -> {
                     commandMessageTranslations.put(commandMessageTranslationTransfer.getLanguage().getLanguageIsoName(), commandMessageTranslationTransfer);
                 });
 

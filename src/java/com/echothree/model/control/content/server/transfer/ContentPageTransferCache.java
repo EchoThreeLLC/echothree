@@ -51,7 +51,7 @@ public class ContentPageTransferCache
     public ContentPageTransferCache(UserVisit userVisit, ContentControl contentControl) {
         super(userVisit, contentControl);
 
-        Set<String> options = session.getOptions();
+        var options = session.getOptions();
         if(options != null) {
             includeContentPageAreas = options.contains(ContentOptions.ContentPageIncludeContentPageAreas);
             setIncludeKey(options.contains(ContentOptions.ContentPageIncludeKey));
@@ -97,7 +97,7 @@ public class ContentPageTransferCache
                 List<ContentPageAreaTransfer> contentPageAreaTransfers = contentControl.getContentPageAreaTransfersByContentPage(userVisit, contentPage, getLanguage());
                 Map<String, ContentPageAreaTransfer> contentPageAreas = new LinkedHashMap<>(contentPageAreaTransfers.size());
 
-                contentPageAreaTransfers.stream().forEach((contentPageAreaTransfer) -> {
+                contentPageAreaTransfers.forEach((contentPageAreaTransfer) -> {
                     contentPageAreas.put(contentPageAreaTransfer.getContentPageLayoutArea().getSortOrder().toString(), contentPageAreaTransfer);
                 });
 
