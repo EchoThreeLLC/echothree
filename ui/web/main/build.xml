@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--                                                                                  -->
-<!-- Copyright 2002-2020 Echo Three, LLC                                              -->
+<!-- Copyright 2002-2021 Echo Three, LLC                                              -->
 <!--                                                                                  -->
 <!-- Licensed under the Apache License, Version 2.0 (the "License");                  -->
 <!-- you may not use this file except in compliance with the License.                 -->
@@ -190,13 +190,16 @@
             <!-- Popper.js -->
             <fileset dir="${lib.dir}/popper/dist/umd">
                 <include name="popper.min.js" />
+                <include name="popper.min.js.map" />
             </fileset>
             <!-- Bootstrap -->
             <fileset dir="${lib.dir}/bootstrap/css">
                 <include name="bootstrap.min.css" />
+                <include name="bootstrap.min.css.map" />
             </fileset>
             <fileset dir="${lib.dir}/bootstrap/js">
                 <include name="bootstrap.min.js" />
+                <include name="bootstrap.min.js.map" />
             </fileset>
         </war>
     </target>

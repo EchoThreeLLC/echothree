@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2020 Echo Three, LLC
+// Copyright 2002-2021 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import com.echothree.util.common.persistence.BasePK;
 import com.echothree.util.server.persistence.Session;
 import graphql.annotations.annotationTypes.GraphQLDescription;
 import graphql.annotations.annotationTypes.GraphQLField;
+import graphql.annotations.annotationTypes.GraphQLID;
 import graphql.annotations.annotationTypes.GraphQLNonNull;
 import graphql.schema.DataFetchingEnvironment;
 
@@ -66,6 +67,7 @@ public abstract class BaseEntityInstanceObject {
     @GraphQLField
     @GraphQLDescription("id")
     @GraphQLNonNull
+    @GraphQLID
     public String getId() {
         var coreControl = Session.getModelController(CoreControl.class);
 
