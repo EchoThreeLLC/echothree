@@ -45,7 +45,6 @@ import com.echothree.model.control.filter.common.transfer.FilterTypeDescriptionT
 import com.echothree.model.control.filter.common.transfer.FilterTypeTransfer;
 import com.echothree.model.control.filter.server.transfer.FilterAdjustmentAmountTransferCache;
 import com.echothree.model.control.filter.server.transfer.FilterAdjustmentDescriptionTransferCache;
-import com.echothree.model.control.filter.server.transfer.FilterAdjustmentFixedAmountTransferCache;
 import com.echothree.model.control.filter.server.transfer.FilterAdjustmentPercentTransferCache;
 import com.echothree.model.control.filter.server.transfer.FilterAdjustmentTransferCache;
 import com.echothree.model.control.filter.server.transfer.FilterDescriptionTransferCache;
@@ -1370,7 +1369,22 @@ public class FilterControl
         
         return filterAdjustment;
     }
-    
+
+    /** Assume that the entityInstance passed to this function is a ECHOTHREE.FilterAdjustment */
+    public FilterAdjustment getFilterAdjustmentByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
+        var pk = new FilterAdjustmentPK(entityInstance.getEntityUniqueId());
+
+        return FilterAdjustmentFactory.getInstance().getEntityFromPK(entityPermission, pk);
+    }
+
+    public FilterAdjustment getFilterAdjustmentByEntityInstance(EntityInstance entityInstance) {
+        return getFilterAdjustmentByEntityInstance(entityInstance, EntityPermission.READ_ONLY);
+    }
+
+    public FilterAdjustment getFilterAdjustmentByEntityInstanceForUpdate(EntityInstance entityInstance) {
+        return getFilterAdjustmentByEntityInstance(entityInstance, EntityPermission.READ_WRITE);
+    }
+
     public List<FilterAdjustment> getFilterAdjustments() {
         PreparedStatement ps = FilterAdjustmentFactory.getInstance().prepareStatement(
                 "SELECT _ALL_ " +
@@ -1420,7 +1434,7 @@ public class FilterControl
         return getFilterAdjustmentsByFilterKind(filterKind, EntityPermission.READ_WRITE);
     }
     
-    private FilterAdjustment getDefaultFilterAdjustment(FilterKind filterKind, EntityPermission entityPermission) {
+    public FilterAdjustment getDefaultFilterAdjustment(FilterKind filterKind, EntityPermission entityPermission) {
         FilterAdjustment filterAdjustment;
         
         try {
@@ -1462,8 +1476,8 @@ public class FilterControl
     public FilterAdjustmentDetailValue getDefaultFilterAdjustmentDetailValueForUpdate(FilterKind filterKind) {
         return getDefaultFilterAdjustmentForUpdate(filterKind).getLastDetailForUpdate().getFilterAdjustmentDetailValue().clone();
     }
-    
-    private FilterAdjustment getFilterAdjustmentByName(FilterKind filterKind, String filterAdjustmentName,
+
+    public FilterAdjustment getFilterAdjustmentByName(FilterKind filterKind, String filterAdjustmentName,
             EntityPermission entityPermission) {
         FilterAdjustment filterAdjustment;
         
@@ -1516,7 +1530,7 @@ public class FilterControl
         return getFilterTransferCaches(userVisit).getFilterAdjustmentTransferCache().getTransfer(filterAdjustment);
     }
     
-    public List<FilterAdjustmentTransfer> getFilterAdjustmentTransfers(UserVisit userVisit,  List<FilterAdjustment> filterAdjustments) {
+    public List<FilterAdjustmentTransfer> getFilterAdjustmentTransfers(UserVisit userVisit,  Collection<FilterAdjustment> filterAdjustments) {
         List<FilterAdjustmentTransfer> filterAdjustmentTransfers = new ArrayList<>(filterAdjustments.size());
         FilterAdjustmentTransferCache filterAdjustmentTransferCache = getFilterTransferCaches(userVisit).getFilterAdjustmentTransferCache();
         
@@ -1764,19 +1778,22 @@ public class FilterControl
             FilterAdjustmentAmount filterAdjustmentAmount) {
         return getFilterTransferCaches(userVisit).getFilterAdjustmentAmountTransferCache().getTransfer(filterAdjustmentAmount);
     }
-    
-    public List<FilterAdjustmentAmountTransfer> getFilterAdjustmentAmountTransfers(UserVisit userVisit, FilterAdjustment filterAdjustment) {
-        List<FilterAdjustmentAmount> filterAdjustmentAmounts = getFilterAdjustmentAmounts(filterAdjustment);
+
+    public List<FilterAdjustmentAmountTransfer> getFilterAdjustmentAmountTransfers(UserVisit userVisit, Collection<FilterAdjustmentAmount> filterAdjustmentAmounts) {
         List<FilterAdjustmentAmountTransfer> filterAdjustmentAmountTransfers = new ArrayList<>(filterAdjustmentAmounts.size());
         FilterAdjustmentAmountTransferCache filterAdjustmentAmountTransferCache = getFilterTransferCaches(userVisit).getFilterAdjustmentAmountTransferCache();
-        
+
         filterAdjustmentAmounts.forEach((filterAdjustmentAmount) ->
                 filterAdjustmentAmountTransfers.add(filterAdjustmentAmountTransferCache.getTransfer(filterAdjustmentAmount))
         );
-        
+
         return filterAdjustmentAmountTransfers;
     }
-    
+
+    public List<FilterAdjustmentAmountTransfer> getFilterAdjustmentAmountTransfers(UserVisit userVisit, FilterAdjustment filterAdjustment) {
+        return getFilterAdjustmentAmountTransfers(userVisit, getFilterAdjustmentAmounts(filterAdjustment));
+    }
+
     public void updateFilterAdjustmentAmountFromValue(FilterAdjustmentAmountValue filterAdjustmentAmountValue, BasePK updatedBy) {
         if(filterAdjustmentAmountValue.hasBeenModified()) {
             FilterAdjustmentAmount filterAdjustmentAmount = FilterAdjustmentAmountFactory.getInstance().getEntityFromPK(EntityPermission.READ_WRITE,
@@ -1938,19 +1955,22 @@ public class FilterControl
             FilterAdjustmentFixedAmount filterAdjustmentFixedAmount) {
         return getFilterTransferCaches(userVisit).getFilterAdjustmentFixedAmountTransferCache().getTransfer(filterAdjustmentFixedAmount);
     }
-    
-    public List<FilterAdjustmentFixedAmountTransfer> getFilterAdjustmentFixedAmountTransfers(UserVisit userVisit, FilterAdjustment filterAdjustment) {
-        List<FilterAdjustmentFixedAmount> filterAdjustmentFixedAmounts = getFilterAdjustmentFixedAmounts(filterAdjustment);
-        List<FilterAdjustmentFixedAmountTransfer> filterAdjustmentFixedAmountTransfers = new ArrayList<>(filterAdjustmentFixedAmounts.size());
-        FilterAdjustmentFixedAmountTransferCache filterAdjustmentFixedAmountTransferCache = getFilterTransferCaches(userVisit).getFilterAdjustmentFixedAmountTransferCache();
-        
+
+    public List<FilterAdjustmentFixedAmountTransfer> getFilterAdjustmentFixedAmountTransfers(UserVisit userVisit, Collection<FilterAdjustmentFixedAmount> filterAdjustmentFixedAmounts) {
+        var filterAdjustmentFixedAmountTransfers = new ArrayList<FilterAdjustmentFixedAmountTransfer>(filterAdjustmentFixedAmounts.size());
+        var filterAdjustmentFixedAmountTransferCache = getFilterTransferCaches(userVisit).getFilterAdjustmentFixedAmountTransferCache();
+
         filterAdjustmentFixedAmounts.forEach((filterAdjustmentFixedAmount) ->
                 filterAdjustmentFixedAmountTransfers.add(filterAdjustmentFixedAmountTransferCache.getTransfer(filterAdjustmentFixedAmount))
         );
-        
+
         return filterAdjustmentFixedAmountTransfers;
     }
-    
+
+    public List<FilterAdjustmentFixedAmountTransfer> getFilterAdjustmentFixedAmountTransfers(UserVisit userVisit, FilterAdjustment filterAdjustment) {
+        return getFilterAdjustmentFixedAmountTransfers(userVisit, getFilterAdjustmentFixedAmounts(filterAdjustment));
+    }
+
     public void updateFilterAdjustmentFixedAmountFromValue(FilterAdjustmentFixedAmountValue filterAdjustmentFixedAmountValue, BasePK updatedBy) {
         if(filterAdjustmentFixedAmountValue.hasBeenModified()) {
             FilterAdjustmentFixedAmount filterAdjustmentFixedAmount = FilterAdjustmentFixedAmountFactory.getInstance().getEntityFromPK(EntityPermission.READ_WRITE,
@@ -2112,19 +2132,22 @@ public class FilterControl
             FilterAdjustmentPercent filterAdjustmentPercent) {
         return getFilterTransferCaches(userVisit).getFilterAdjustmentPercentTransferCache().getTransfer(filterAdjustmentPercent);
     }
-    
-    public List<FilterAdjustmentPercentTransfer> getFilterAdjustmentPercentTransfers(UserVisit userVisit, FilterAdjustment filterAdjustment) {
-        List<FilterAdjustmentPercent> filterAdjustmentPercents = getFilterAdjustmentPercents(filterAdjustment);
-        List<FilterAdjustmentPercentTransfer> filterAdjustmentPercentTransfers = new ArrayList<>(filterAdjustmentPercents.size());
-        FilterAdjustmentPercentTransferCache filterAdjustmentPercentTransferCache = getFilterTransferCaches(userVisit).getFilterAdjustmentPercentTransferCache();
-        
+
+    public List<FilterAdjustmentPercentTransfer> getFilterAdjustmentPercentTransfers(UserVisit userVisit, Collection<FilterAdjustmentPercent> filterAdjustmentPercents) {
+        var filterAdjustmentPercentTransfers = new ArrayList<FilterAdjustmentPercentTransfer>(filterAdjustmentPercents.size());
+        var filterAdjustmentPercentTransferCache = getFilterTransferCaches(userVisit).getFilterAdjustmentPercentTransferCache();
+
         filterAdjustmentPercents.forEach((filterAdjustmentPercent) ->
                 filterAdjustmentPercentTransfers.add(filterAdjustmentPercentTransferCache.getTransfer(filterAdjustmentPercent))
         );
-        
+
         return filterAdjustmentPercentTransfers;
     }
-    
+
+    public List<FilterAdjustmentPercentTransfer> getFilterAdjustmentPercentTransfers(UserVisit userVisit, FilterAdjustment filterAdjustment) {
+        return getFilterAdjustmentPercentTransfers(userVisit, getFilterAdjustmentPercents(filterAdjustment));
+    }
+
     public void updateFilterAdjustmentPercentFromValue(FilterAdjustmentPercentValue filterAdjustmentPercentValue, BasePK updatedBy) {
         if(filterAdjustmentPercentValue.hasBeenModified()) {
             FilterAdjustmentPercent filterAdjustmentPercent = FilterAdjustmentPercentFactory.getInstance().getEntityFromPK(EntityPermission.READ_WRITE,
@@ -2542,16 +2565,16 @@ public class FilterControl
         return getFilterTransfers(userVisit, getFilters(filterType));
     }
     
-    public int countFiltersBySelector(Selector selector) {
-        return session.queryForInteger(
+    public long countFiltersBySelector(Selector selector) {
+        return session.queryForLong(
                 "SELECT COUNT(*) " +
                 "FROM filterdetails " +
                 "WHERE fltdt_filteritemselectorid = ? AND fltdt_thrutime = ?",
                 selector, Session.MAX_TIME);
     }
     
-    public int countFiltersByFilterAdjustment(FilterAdjustment filterAdjustment) {
-        return session.queryForInteger(
+    public long countFiltersByFilterAdjustment(FilterAdjustment filterAdjustment) {
+        return session.queryForLong(
                 "SELECT COUNT(*) " +
                 "FROM filterdetails " +
                 "WHERE fltdt_initialfilteradjustmentid = ? AND fltdt_thrutime = ?",
@@ -3690,19 +3713,19 @@ public class FilterControl
         return getFilterTransferCaches(userVisit).getFilterStepElementTransferCache().getTransfer(filterStepElement);
     }
     
-    public int countFilterStepElementsBySelector(Selector selector) {
-        return session.queryForInteger(
+    public long countFilterStepElementsBySelector(Selector selector) {
+        return session.queryForLong(
                 "SELECT COUNT(*) " +
                 "FROM filterstepelementdetails " +
                 "WHERE fltstpedt_filteritemselectorid = ? AND fltstpedt_thrutime = ?",
                 selector, Session.MAX_TIME);
     }
     
-    public int countFilterStepElementsByFilterAdjustment(FilterAdjustment filterAdjustment) {
-        return session.queryForInteger(
+    public long countFilterStepElementsByFilterAdjustment(FilterAdjustment filterAdjustment) {
+        return session.queryForLong(
                 "SELECT COUNT(*) " +
-                "FROM searchresults " +
-                "WHERE srchr_srch_searchid = ?",
+                "FROM filterstepelementdetails " +
+                "WHERE fltstpedt_flta_filteradjustmentid = ? AND fltstpedt_thrutime = ?",
                 filterAdjustment, Session.MAX_TIME);
     }
     

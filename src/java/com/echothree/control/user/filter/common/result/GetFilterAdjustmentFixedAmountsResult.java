@@ -25,9 +25,6 @@ import java.util.List;
 public interface GetFilterAdjustmentFixedAmountsResult
         extends BaseResult {
     
-    FilterKindTransfer getFilterKind();
-    void setFilterKind(FilterKindTransfer filterKind);
-    
     FilterAdjustmentTransfer getFilterAdjustment();
     void setFilterAdjustment(FilterAdjustmentTransfer filterAdjustment);
     

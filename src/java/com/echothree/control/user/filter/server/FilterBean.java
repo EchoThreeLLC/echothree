@@ -310,12 +310,17 @@ public class FilterBean
     public CommandResult createFilterAdjustmentAmount(UserVisitPK userVisitPK, CreateFilterAdjustmentAmountForm form) {
         return new CreateFilterAdjustmentAmountCommand(userVisitPK, form).run();
     }
-    
+
     @Override
     public CommandResult getFilterAdjustmentAmounts(UserVisitPK userVisitPK, GetFilterAdjustmentAmountsForm form) {
         return new GetFilterAdjustmentAmountsCommand(userVisitPK, form).run();
     }
-    
+
+    @Override
+    public CommandResult getFilterAdjustmentAmount(UserVisitPK userVisitPK, GetFilterAdjustmentAmountForm form) {
+        return new GetFilterAdjustmentAmountCommand(userVisitPK, form).run();
+    }
+
     @Override
     public CommandResult editFilterAdjustmentAmount(UserVisitPK userVisitPK, EditFilterAdjustmentAmountForm form) {
         return new EditFilterAdjustmentAmountCommand(userVisitPK, form).run();
@@ -334,12 +339,17 @@ public class FilterBean
     public CommandResult createFilterAdjustmentFixedAmount(UserVisitPK userVisitPK, CreateFilterAdjustmentFixedAmountForm form) {
         return new CreateFilterAdjustmentFixedAmountCommand(userVisitPK, form).run();
     }
-    
+
     @Override
     public CommandResult getFilterAdjustmentFixedAmounts(UserVisitPK userVisitPK, GetFilterAdjustmentFixedAmountsForm form) {
         return new GetFilterAdjustmentFixedAmountsCommand(userVisitPK, form).run();
     }
-    
+
+    @Override
+    public CommandResult getFilterAdjustmentFixedAmount(UserVisitPK userVisitPK, GetFilterAdjustmentFixedAmountForm form) {
+        return new GetFilterAdjustmentFixedAmountCommand(userVisitPK, form).run();
+    }
+
     @Override
     public CommandResult editFilterAdjustmentFixedAmount(UserVisitPK userVisitPK, EditFilterAdjustmentFixedAmountForm form) {
         return new EditFilterAdjustmentFixedAmountCommand(userVisitPK, form).run();
@@ -358,12 +368,17 @@ public class FilterBean
     public CommandResult createFilterAdjustmentPercent(UserVisitPK userVisitPK, CreateFilterAdjustmentPercentForm form) {
         return new CreateFilterAdjustmentPercentCommand(userVisitPK, form).run();
     }
-    
+
     @Override
     public CommandResult getFilterAdjustmentPercents(UserVisitPK userVisitPK, GetFilterAdjustmentPercentsForm form) {
         return new GetFilterAdjustmentPercentsCommand(userVisitPK, form).run();
     }
-    
+
+    @Override
+    public CommandResult getFilterAdjustmentPercent(UserVisitPK userVisitPK, GetFilterAdjustmentPercentForm form) {
+        return new GetFilterAdjustmentPercentCommand(userVisitPK, form).run();
+    }
+
     @Override
     public CommandResult editFilterAdjustmentPercent(UserVisitPK userVisitPK, EditFilterAdjustmentPercentForm form) {
         return new EditFilterAdjustmentPercentCommand(userVisitPK, form).run();
