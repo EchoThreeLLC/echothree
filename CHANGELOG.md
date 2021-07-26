@@ -1,5 +1,18 @@
 # Changelog
 
+## 2021-07-25-01
+
+* GraphQL Objects and Mutations for Filter Steps [157](https://gitlab.echothree.com/echothree/echothree/-/issues/157)
+* MySQL Connector/J 8.0.26 Upgrade [311](https://gitlab.echothree.com/echothree/echothree/-/issues/311)
+* Switch MySQL Collation to utf8mb4_0900_ai_ci [312](https://gitlab.echothree.com/echothree/echothree/-/issues/312)
+
+## 2021-07-11-01
+
+* ClassGraph 4.8.109 Upgrade [307](https://gitlab.echothree.com/echothree/echothree/-/issues/307)
+* jOOQ 3.14.12 Upgrade [308](https://gitlab.echothree.com/echothree/echothree/-/issues/308)
+* graphql-java 16.2 and graphql-java-annotations 8.3 Upgrades [309](https://gitlab.echothree.com/echothree/echothree/-/issues/309)
+* NPE Thrown in FilterModificationEventRecorder [310](https://gitlab.echothree.com/echothree/echothree/-/issues/310)
+
 ## 2021-06-27-01
 
 * WildFly 24.0.0 Upgrade [306](https://gitlab.echothree.com/echothree/echothree/-/issues/306)
