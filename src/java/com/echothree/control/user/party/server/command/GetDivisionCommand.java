@@ -17,59 +17,77 @@
 package com.echothree.control.user.party.server.command;
 
 import com.echothree.control.user.party.common.form.GetDivisionForm;
-import com.echothree.control.user.party.common.result.GetDivisionResult;
 import com.echothree.control.user.party.common.result.PartyResultFactory;
 import com.echothree.model.control.core.common.EventTypes;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.party.server.control.PartyControl;
-import com.echothree.model.control.party.server.logic.CompanyLogic;
 import com.echothree.model.control.party.server.logic.DivisionLogic;
-import com.echothree.model.data.party.server.entity.PartyCompany;
+import com.echothree.model.control.security.common.SecurityRoleGroups;
+import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.party.server.entity.PartyDivision;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
+import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.common.command.BaseResult;
-import com.echothree.util.server.control.BaseSimpleCommand;
+import com.echothree.util.server.control.BaseSingleEntityCommand;
+import com.echothree.util.server.control.CommandSecurityDefinition;
+import com.echothree.util.server.control.PartyTypeDefinition;
+import com.echothree.util.server.control.SecurityRoleDefinition;
 import com.echothree.util.server.persistence.Session;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class GetDivisionCommand
-        extends BaseSimpleCommand<GetDivisionForm> {
+        extends BaseSingleEntityCommand<PartyDivision, GetDivisionForm> {
 
+    private final static CommandSecurityDefinition COMMAND_SECURITY_DEFINITION;
     private final static List<FieldDefinition> FORM_FIELD_DEFINITIONS;
 
     static {
-        FORM_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
+        COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(List.of(
+                new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), List.of(
+                        new SecurityRoleDefinition(SecurityRoleGroups.Division.name(), SecurityRoles.Review.name())
+                ))
+        ));
+
+        FORM_FIELD_DEFINITIONS = List.of(
                 new FieldDefinition("CompanyName", FieldType.ENTITY_NAME, false, null, null),
                 new FieldDefinition("DivisionName", FieldType.ENTITY_NAME, false, null, null),
-                new FieldDefinition("PartyName", FieldType.ENTITY_NAME, false, null, null)
-                ));
+                new FieldDefinition("PartyName", FieldType.ENTITY_NAME, false, null, null),
+                new FieldDefinition("EntityRef", FieldType.ENTITY_REF, false, null, null),
+                new FieldDefinition("Key", FieldType.KEY, false, null, null),
+                new FieldDefinition("Guid", FieldType.GUID, false, null, null),
+                new FieldDefinition("Ulid", FieldType.ULID, false, null, null)
+        );
     }
 
     /** Creates a new instance of GetDivisionCommand */
     public GetDivisionCommand(UserVisitPK userVisitPK, GetDivisionForm form) {
-        super(userVisitPK, form, null, FORM_FIELD_DEFINITIONS, true);
+        super(userVisitPK, form, COMMAND_SECURITY_DEFINITION, FORM_FIELD_DEFINITIONS, true);
     }
 
     @Override
-    protected BaseResult execute() {
-        GetDivisionResult result = PartyResultFactory.getGetDivisionResult();
-        String companyName = form.getCompanyName();
-        PartyCompany partyCompany = CompanyLogic.getInstance().getPartyCompanyByName(this, companyName, null, false);
+    protected PartyDivision getEntity() {
+        var companyName = form.getCompanyName();
+        var divisionName = form.getDivisionName();
+        var partyName = form.getPartyName();
+        var partyDivision = DivisionLogic.getInstance().getPartyDivisionByName(this, companyName, divisionName, partyName, form, true);
 
-        if(!hasExecutionErrors()) {
-            String divisionName = form.getDivisionName();
-            String partyName = form.getPartyName();
-            PartyDivision partyDivision = DivisionLogic.getInstance().getPartyDivisionByName(this, partyCompany == null ? null : partyCompany.getParty(), divisionName, partyName, true);
+        if(partyDivision != null) {
+            sendEventUsingNames(partyDivision.getPartyPK(), EventTypes.READ.name(), null, null, getPartyPK());
+        }
 
-            if(!hasExecutionErrors()) {
-                var partyControl = Session.getModelController(PartyControl.class);
-                result.setDivision(partyControl.getDivisionTransfer(getUserVisit(), partyDivision));
+        return partyDivision;
+    }
 
-                sendEventUsingNames(partyDivision.getPartyPK(), EventTypes.READ.name(), null, null, getPartyPK());
-            }
+    @Override
+    protected BaseResult getTransfer(PartyDivision partyDivision) {
+        var result = PartyResultFactory.getGetDivisionResult();
+
+        if(partyDivision != null) {
+            var partyControl = Session.getModelController(PartyControl.class);
+
+            result.setDivision(partyControl.getDivisionTransfer(getUserVisit(), partyDivision));
         }
 
         return result;

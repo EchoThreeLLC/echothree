@@ -16,9 +16,16 @@
 
 package com.echothree.model.control.offer.server.graphql;
 
+import com.echothree.model.control.filter.server.graphql.FilterObject;
+import com.echothree.model.control.filter.server.graphql.FilterSecurityUtils;
 import com.echothree.model.control.graphql.server.graphql.BaseEntityInstanceObject;
 import com.echothree.model.control.graphql.server.util.GraphQlContext;
 import com.echothree.model.control.offer.server.control.OfferControl;
+import com.echothree.model.control.party.server.graphql.CompanyObject;
+import com.echothree.model.control.party.server.graphql.DepartmentObject;
+import com.echothree.model.control.party.server.graphql.PartySecurityUtils;
+import com.echothree.model.control.sequence.server.graphql.SequenceObject;
+import com.echothree.model.control.sequence.server.graphql.SequenceSecurityUtils;
 import com.echothree.model.control.user.server.control.UserControl;
 import com.echothree.model.data.offer.server.entity.Offer;
 import com.echothree.model.data.offer.server.entity.OfferDetail;
@@ -59,13 +66,40 @@ public class OfferObject
         return getOfferDetail().getOfferName();
     }
 
-    // TODO: SalesOrderSequence
+    @GraphQLField
+    @GraphQLDescription("sales order sequence")
+    public SequenceObject getSalesOrderSequence(final DataFetchingEnvironment env) {
+        if(SequenceSecurityUtils.getInstance().getHasSequenceAccess(env)) {
+            var salesOrderSequence = getOfferDetail().getSalesOrderSequence();
 
-    // TODO: DepartmentParty
+            return salesOrderSequence == null ? null : new SequenceObject(salesOrderSequence);
+        } else {
+            return null;
+        }
+    }
+
+    @GraphQLField
+    @GraphQLDescription("department")
+    public DepartmentObject getDepartment(final DataFetchingEnvironment env) {
+        var departmentParty = getOfferDetail().getDepartmentParty();
+
+        return PartySecurityUtils.getInstance().getHasPartyAccess(env, departmentParty) ? new DepartmentObject(departmentParty) : null;
+    }
 
     // TODO: OfferItemSelector
 
-    // TODO: OfferItemPriceFilter
+    @GraphQLField
+    @GraphQLDescription("offer item price filter")
+    public FilterObject getOfferItemPriceFilter(final DataFetchingEnvironment env) {
+        if(FilterSecurityUtils.getInstance().getHasFilterAccess(env)) {
+            var offerItemPriceFilter = getOfferDetail().getOfferItemPriceFilter();
+
+            return offerItemPriceFilter == null ? null : new FilterObject(offerItemPriceFilter);
+        } else {
+            return null;
+        }
+    }
+
 
     @GraphQLField
     @GraphQLDescription("is default")

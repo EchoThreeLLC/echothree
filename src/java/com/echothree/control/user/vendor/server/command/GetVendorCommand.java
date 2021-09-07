@@ -16,10 +16,13 @@
 
 package com.echothree.control.user.vendor.server.command;
 
+import com.echothree.control.user.core.common.spec.UniversalEntitySpec;
 import com.echothree.control.user.vendor.common.form.GetVendorForm;
 import com.echothree.control.user.vendor.common.result.VendorResultFactory;
 import com.echothree.model.control.core.common.EventTypes;
+import com.echothree.model.control.core.server.logic.EntityInstanceLogic;
 import com.echothree.model.control.party.common.PartyTypes;
+import com.echothree.model.control.party.server.logic.PartyLogic;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.control.vendor.server.control.VendorControl;
@@ -27,6 +30,7 @@ import com.echothree.model.control.vendor.server.logic.VendorLogic;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
 import com.echothree.model.data.vendor.server.entity.Vendor;
 import com.echothree.util.common.command.BaseResult;
+import com.echothree.util.common.command.SecurityResult;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
 import com.echothree.util.server.control.BaseSingleEntityCommand;
@@ -34,40 +38,77 @@ import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
 import com.echothree.util.server.control.SecurityRoleDefinition;
 import com.echothree.util.server.persistence.Session;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class GetVendorCommand
         extends BaseSingleEntityCommand<Vendor, GetVendorForm> {
-    
+
     private final static CommandSecurityDefinition COMMAND_SECURITY_DEFINITION;
     private final static List<FieldDefinition> FORM_FIELD_DEFINITIONS;
-    
+
     static {
-        COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(Collections.unmodifiableList(Arrays.asList(
+        COMMAND_SECURITY_DEFINITION = new CommandSecurityDefinition(List.of(
                 new PartyTypeDefinition(PartyTypes.UTILITY.name(), null),
-                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), Collections.unmodifiableList(Arrays.asList(
+                new PartyTypeDefinition(PartyTypes.CUSTOMER.name(), null),
+                new PartyTypeDefinition(PartyTypes.EMPLOYEE.name(), List.of(
                         new SecurityRoleDefinition(SecurityRoleGroups.Vendor.name(), SecurityRoles.Review.name())
-                        )))
-                )));
-        
-        FORM_FIELD_DEFINITIONS = Collections.unmodifiableList(Arrays.asList(
+                ))
+        ));
+
+        FORM_FIELD_DEFINITIONS = List.of(
                 new FieldDefinition("VendorName", FieldType.ENTITY_NAME, false, null, null),
-                new FieldDefinition("PartyName", FieldType.ENTITY_NAME, false, null, null)
-                ));
+                new FieldDefinition("PartyName", FieldType.ENTITY_NAME, false, null, null),
+                new FieldDefinition("EntityRef", FieldType.ENTITY_REF, false, null, null),
+                new FieldDefinition("Key", FieldType.KEY, false, null, null),
+                new FieldDefinition("Guid", FieldType.GUID, false, null, null),
+                new FieldDefinition("Ulid", FieldType.ULID, false, null, null)
+        );
     }
-    
+
     /** Creates a new instance of GetVendorCommand */
     public GetVendorCommand(UserVisitPK userVisitPK, GetVendorForm form) {
         super(userVisitPK, form, COMMAND_SECURITY_DEFINITION, FORM_FIELD_DEFINITIONS, true);
     }
 
+    String vendorName;
+    String partyName;
+    UniversalEntitySpec universalEntitySpec;
+    int parameterCount;
+
+    @Override
+    public SecurityResult security() {
+        var securityResult = super.security();
+
+        vendorName = form.getVendorName();
+        partyName = form.getPartyName();
+        universalEntitySpec = form;
+        parameterCount = (vendorName == null ? 0 : 1) + (partyName == null ? 0 : 1) +
+                EntityInstanceLogic.getInstance().countPossibleEntitySpecs(form);
+
+        if(!canSpecifyParty() && parameterCount != 0) {
+            securityResult = getInsufficientSecurityResult();
+        }
+
+        return securityResult;
+    }
+
     @Override
     protected Vendor getEntity() {
-        var vendorName = form.getVendorName();
-        var partyName = form.getPartyName();
-        var vendor = VendorLogic.getInstance().getVendorByName(this, vendorName, partyName);
+        Vendor vendor = null;
+
+        if(parameterCount == 0) {
+            var party = getParty();
+
+            PartyLogic.getInstance().checkPartyType(this, party, PartyTypes.CUSTOMER.name());
+
+            if(!hasExecutionErrors()) {
+                var vendorControl = Session.getModelController(VendorControl.class);
+
+                vendor = vendorControl.getVendor(party);
+            }
+        } else {
+            vendor = VendorLogic.getInstance().getVendorByName(this, vendorName, partyName, universalEntitySpec);
+        }
 
         if(vendor != null) {
             sendEventUsingNames(vendor.getPartyPK(), EventTypes.READ.name(), null, null, getPartyPK());

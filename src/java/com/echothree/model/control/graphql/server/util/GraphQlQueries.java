@@ -51,6 +51,8 @@ import com.echothree.control.user.core.server.command.GetColorCommand;
 import com.echothree.control.user.core.server.command.GetColorsCommand;
 import com.echothree.control.user.core.server.command.GetComponentVendorCommand;
 import com.echothree.control.user.core.server.command.GetComponentVendorsCommand;
+import com.echothree.control.user.core.server.command.GetEntityAttributeGroupCommand;
+import com.echothree.control.user.core.server.command.GetEntityAttributeGroupsCommand;
 import com.echothree.control.user.core.server.command.GetEntityAttributeTypeCommand;
 import com.echothree.control.user.core.server.command.GetEntityAttributeTypesCommand;
 import com.echothree.control.user.core.server.command.GetEntityInstanceCommand;
@@ -71,6 +73,12 @@ import com.echothree.control.user.core.server.command.GetTextDecorationCommand;
 import com.echothree.control.user.core.server.command.GetTextDecorationsCommand;
 import com.echothree.control.user.core.server.command.GetTextTransformationCommand;
 import com.echothree.control.user.core.server.command.GetTextTransformationsCommand;
+import com.echothree.control.user.customer.common.CustomerUtil;
+import com.echothree.control.user.customer.server.command.GetCustomerCommand;
+import com.echothree.control.user.customer.server.command.GetCustomersCommand;
+import com.echothree.control.user.employee.common.EmployeeUtil;
+import com.echothree.control.user.employee.server.command.GetEmployeeCommand;
+import com.echothree.control.user.employee.server.command.GetEmployeesCommand;
 import com.echothree.control.user.filter.common.FilterUtil;
 import com.echothree.control.user.filter.server.command.GetFilterAdjustmentAmountCommand;
 import com.echothree.control.user.filter.server.command.GetFilterAdjustmentAmountsCommand;
@@ -101,6 +109,7 @@ import com.echothree.control.user.item.common.ItemUtil;
 import com.echothree.control.user.item.server.command.GetItemCategoriesCommand;
 import com.echothree.control.user.item.server.command.GetItemCategoryCommand;
 import com.echothree.control.user.item.server.command.GetItemCommand;
+import com.echothree.control.user.item.server.command.GetItemsCommand;
 import com.echothree.control.user.offer.common.OfferUtil;
 import com.echothree.control.user.offer.server.command.GetOfferCommand;
 import com.echothree.control.user.offer.server.command.GetOfferNameElementCommand;
@@ -115,8 +124,14 @@ import com.echothree.control.user.offer.server.command.GetUseTypeCommand;
 import com.echothree.control.user.offer.server.command.GetUseTypesCommand;
 import com.echothree.control.user.offer.server.command.GetUsesCommand;
 import com.echothree.control.user.party.common.PartyUtil;
+import com.echothree.control.user.party.server.command.GetCompaniesCommand;
+import com.echothree.control.user.party.server.command.GetCompanyCommand;
 import com.echothree.control.user.party.server.command.GetDateTimeFormatCommand;
 import com.echothree.control.user.party.server.command.GetDateTimeFormatsCommand;
+import com.echothree.control.user.party.server.command.GetDepartmentCommand;
+import com.echothree.control.user.party.server.command.GetDepartmentsCommand;
+import com.echothree.control.user.party.server.command.GetDivisionCommand;
+import com.echothree.control.user.party.server.command.GetDivisionsCommand;
 import com.echothree.control.user.party.server.command.GetLanguageCommand;
 import com.echothree.control.user.party.server.command.GetLanguagesCommand;
 import com.echothree.control.user.party.server.command.GetNameSuffixesCommand;
@@ -143,6 +158,9 @@ import com.echothree.control.user.queue.server.command.GetQueueTypeCommand;
 import com.echothree.control.user.queue.server.command.GetQueueTypesCommand;
 import com.echothree.control.user.search.common.SearchUtil;
 import com.echothree.control.user.search.server.command.GetCustomerResultsCommand;
+import com.echothree.control.user.search.server.command.GetEmployeeResultsCommand;
+import com.echothree.control.user.search.server.command.GetItemResultsCommand;
+import com.echothree.control.user.search.server.command.GetVendorResultsCommand;
 import com.echothree.control.user.selector.common.SelectorUtil;
 import com.echothree.control.user.selector.server.command.GetSelectorKindCommand;
 import com.echothree.control.user.selector.server.command.GetSelectorKindsCommand;
@@ -173,6 +191,9 @@ import com.echothree.control.user.user.common.UserUtil;
 import com.echothree.control.user.user.server.command.GetRecoveryQuestionCommand;
 import com.echothree.control.user.user.server.command.GetRecoveryQuestionsCommand;
 import com.echothree.control.user.user.server.command.GetUserLoginCommand;
+import com.echothree.control.user.vendor.common.VendorUtil;
+import com.echothree.control.user.vendor.server.command.GetVendorCommand;
+import com.echothree.control.user.vendor.server.command.GetVendorsCommand;
 import com.echothree.model.control.accounting.server.graphql.CurrencyObject;
 import com.echothree.model.control.content.server.graphql.ContentCatalogItemObject;
 import com.echothree.model.control.content.server.graphql.ContentCatalogObject;
@@ -189,6 +210,7 @@ import com.echothree.model.control.content.server.graphql.ContentWebAddressObjec
 import com.echothree.model.control.core.server.graphql.AppearanceObject;
 import com.echothree.model.control.core.server.graphql.ColorObject;
 import com.echothree.model.control.core.server.graphql.ComponentVendorObject;
+import com.echothree.model.control.core.server.graphql.EntityAttributeGroupObject;
 import com.echothree.model.control.core.server.graphql.EntityAttributeTypeObject;
 import com.echothree.model.control.core.server.graphql.EntityInstanceObject;
 import com.echothree.model.control.core.server.graphql.EntityTypeObject;
@@ -199,6 +221,8 @@ import com.echothree.model.control.core.server.graphql.MimeTypeObject;
 import com.echothree.model.control.core.server.graphql.MimeTypeUsageTypeObject;
 import com.echothree.model.control.core.server.graphql.TextDecorationObject;
 import com.echothree.model.control.core.server.graphql.TextTransformationObject;
+import com.echothree.model.control.customer.server.graphql.CustomerObject;
+import com.echothree.model.control.employee.server.graphql.EmployeeObject;
 import com.echothree.model.control.filter.server.graphql.FilterAdjustmentAmountObject;
 import com.echothree.model.control.filter.server.graphql.FilterAdjustmentFixedAmountObject;
 import com.echothree.model.control.filter.server.graphql.FilterAdjustmentObject;
@@ -219,7 +243,10 @@ import com.echothree.model.control.offer.server.graphql.OfferUseObject;
 import com.echothree.model.control.offer.server.graphql.UseNameElementObject;
 import com.echothree.model.control.offer.server.graphql.UseObject;
 import com.echothree.model.control.offer.server.graphql.UseTypeObject;
+import com.echothree.model.control.party.server.graphql.CompanyObject;
 import com.echothree.model.control.party.server.graphql.DateTimeFormatObject;
+import com.echothree.model.control.party.server.graphql.DepartmentObject;
+import com.echothree.model.control.party.server.graphql.DivisionObject;
 import com.echothree.model.control.party.server.graphql.LanguageObject;
 import com.echothree.model.control.party.server.graphql.NameSuffixObject;
 import com.echothree.model.control.party.server.graphql.PersonalTitleObject;
@@ -234,6 +261,9 @@ import com.echothree.model.control.payment.server.graphql.PaymentProcessorTypeCo
 import com.echothree.model.control.payment.server.graphql.PaymentProcessorTypeObject;
 import com.echothree.model.control.queue.server.graphql.QueueTypeObject;
 import com.echothree.model.control.search.server.graphql.CustomerResultsObject;
+import com.echothree.model.control.search.server.graphql.EmployeeResultsObject;
+import com.echothree.model.control.search.server.graphql.ItemResultsObject;
+import com.echothree.model.control.search.server.graphql.VendorResultsObject;
 import com.echothree.model.control.selector.server.graphql.SelectorKindObject;
 import com.echothree.model.control.selector.server.graphql.SelectorTypeObject;
 import com.echothree.model.control.sequence.server.graphql.SequenceChecksumTypeObject;
@@ -249,6 +279,7 @@ import com.echothree.model.control.user.server.graphql.RecoveryQuestionObject;
 import com.echothree.model.control.user.server.graphql.UserLoginObject;
 import com.echothree.model.control.user.server.graphql.UserSessionObject;
 import com.echothree.model.control.user.server.graphql.UserVisitObject;
+import com.echothree.model.control.vendor.server.graphql.VendorObject;
 import com.echothree.model.data.accounting.server.entity.Currency;
 import com.echothree.model.data.content.server.entity.ContentCatalog;
 import com.echothree.model.data.content.server.entity.ContentCatalogItem;
@@ -265,6 +296,7 @@ import com.echothree.model.data.content.server.entity.ContentWebAddress;
 import com.echothree.model.data.core.server.entity.Appearance;
 import com.echothree.model.data.core.server.entity.Color;
 import com.echothree.model.data.core.server.entity.ComponentVendor;
+import com.echothree.model.data.core.server.entity.EntityAttributeGroup;
 import com.echothree.model.data.core.server.entity.EntityAttributeType;
 import com.echothree.model.data.core.server.entity.EntityInstance;
 import com.echothree.model.data.core.server.entity.EntityType;
@@ -275,6 +307,8 @@ import com.echothree.model.data.core.server.entity.MimeTypeFileExtension;
 import com.echothree.model.data.core.server.entity.MimeTypeUsageType;
 import com.echothree.model.data.core.server.entity.TextDecoration;
 import com.echothree.model.data.core.server.entity.TextTransformation;
+import com.echothree.model.data.customer.server.entity.Customer;
+import com.echothree.model.data.employee.server.entity.PartyEmployee;
 import com.echothree.model.data.filter.server.entity.Filter;
 import com.echothree.model.data.filter.server.entity.FilterAdjustment;
 import com.echothree.model.data.filter.server.entity.FilterAdjustmentAmount;
@@ -298,6 +332,9 @@ import com.echothree.model.data.offer.server.entity.UseType;
 import com.echothree.model.data.party.server.entity.DateTimeFormat;
 import com.echothree.model.data.party.server.entity.Language;
 import com.echothree.model.data.party.server.entity.NameSuffix;
+import com.echothree.model.data.party.server.entity.PartyCompany;
+import com.echothree.model.data.party.server.entity.PartyDepartment;
+import com.echothree.model.data.party.server.entity.PartyDivision;
 import com.echothree.model.data.party.server.entity.PersonalTitle;
 import com.echothree.model.data.party.server.entity.TimeZone;
 import com.echothree.model.data.payment.server.entity.PaymentMethodType;
@@ -324,6 +361,7 @@ import com.echothree.model.data.user.server.entity.RecoveryQuestion;
 import com.echothree.model.data.user.server.entity.UserLogin;
 import com.echothree.model.data.user.server.entity.UserSession;
 import com.echothree.model.data.user.server.entity.UserVisit;
+import com.echothree.model.data.vendor.server.entity.Vendor;
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLID;
 import graphql.annotations.annotationTypes.GraphQLName;
@@ -1903,6 +1941,52 @@ public final class GraphQlQueries
     }
 
     @GraphQLField
+    @GraphQLName("entityAttributeGroup")
+    public static EntityAttributeGroupObject entityAttributeGroup(final DataFetchingEnvironment env,
+            @GraphQLName("entityAttributeGroupName") final String entityAttributeGroupName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        EntityAttributeGroup entityAttributeGroup;
+
+        try {
+            var commandForm = CoreUtil.getHome().getGetEntityAttributeGroupForm();
+
+            commandForm.setEntityAttributeGroupName(entityAttributeGroupName);
+            commandForm.setUlid(id);
+
+            entityAttributeGroup = new GetEntityAttributeGroupCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return entityAttributeGroup == null ? null : new EntityAttributeGroupObject(entityAttributeGroup, null);
+    }
+
+    @GraphQLField
+    @GraphQLName("entityAttributeGroups")
+    public static Collection<EntityAttributeGroupObject> entityAttributeGroups(final DataFetchingEnvironment env) {
+        Collection<EntityAttributeGroup> entityAttributeGroups;
+        Collection<EntityAttributeGroupObject> entityAttributeGroupObjects;
+
+        try {
+            var commandForm = CoreUtil.getHome().getGetEntityAttributeGroupsForm();
+
+            entityAttributeGroups = new GetEntityAttributeGroupsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(entityAttributeGroups == null) {
+            entityAttributeGroupObjects = emptyList();
+        } else {
+            entityAttributeGroupObjects = new ArrayList<>(entityAttributeGroups.size());
+
+            entityAttributeGroups.stream().map(e -> new EntityAttributeGroupObject(e, null)).forEachOrdered(entityAttributeGroupObjects::add);
+        }
+
+        return entityAttributeGroupObjects;
+    }
+
+    @GraphQLField
     @GraphQLName("entityInstance")
     public static EntityInstanceObject entityInstance(final DataFetchingEnvironment env,
             @GraphQLName("id") @GraphQLID final String id) {
@@ -3318,26 +3402,89 @@ public final class GraphQlQueries
         
         return entityAttributeTypeObjects;
     }
-    
+
     @GraphQLField
     @GraphQLName("customerResults")
     public static CustomerResultsObject customerResults(final DataFetchingEnvironment env,
             @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName) {
         CustomerResultsObject customerResultsObject = new CustomerResultsObject();
-        
+
         try {
             var commandForm = SearchUtil.getHome().getGetCustomerResultsForm();
 
             commandForm.setSearchTypeName(searchTypeName);
-            
+
             if(new GetCustomerResultsCommand(getUserVisitPK(env), commandForm).canGetResultsForGraphQl()) {
                 customerResultsObject.setForm(commandForm);
             }
         } catch (NamingException ex) {
             throw new RuntimeException(ex);
         }
-        
+
         return customerResultsObject;
+    }
+
+    @GraphQLField
+    @GraphQLName("employeeResults")
+    public static EmployeeResultsObject employeeResults(final DataFetchingEnvironment env,
+            @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName) {
+        EmployeeResultsObject employeeResultsObject = new EmployeeResultsObject();
+
+        try {
+            var commandForm = SearchUtil.getHome().getGetEmployeeResultsForm();
+
+            commandForm.setSearchTypeName(searchTypeName);
+
+            if(new GetEmployeeResultsCommand(getUserVisitPK(env), commandForm).canGetResultsForGraphQl()) {
+                employeeResultsObject.setForm(commandForm);
+            }
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return employeeResultsObject;
+    }
+
+    @GraphQLField
+    @GraphQLName("itemResults")
+    public static ItemResultsObject itemResults(final DataFetchingEnvironment env,
+            @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName) {
+        ItemResultsObject itemResultsObject = new ItemResultsObject();
+
+        try {
+            var commandForm = SearchUtil.getHome().getGetItemResultsForm();
+
+            commandForm.setSearchTypeName(searchTypeName);
+
+            if(new GetItemResultsCommand(getUserVisitPK(env), commandForm).canGetResultsForGraphQl()) {
+                itemResultsObject.setForm(commandForm);
+            }
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return itemResultsObject;
+    }
+
+    @GraphQLField
+    @GraphQLName("vendorResults")
+    public static VendorResultsObject vendorResults(final DataFetchingEnvironment env,
+            @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName) {
+        VendorResultsObject vendorResultsObject = new VendorResultsObject();
+
+        try {
+            var commandForm = SearchUtil.getHome().getGetVendorResultsForm();
+
+            commandForm.setSearchTypeName(searchTypeName);
+
+            if(new GetVendorResultsCommand(getUserVisitPK(env), commandForm).canGetResultsForGraphQl()) {
+                vendorResultsObject.setForm(commandForm);
+            }
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return vendorResultsObject;
     }
 
     @GraphQLField
@@ -3865,6 +4012,320 @@ public final class GraphQlQueries
     }
 
     @GraphQLField
+    @GraphQLName("customer")
+    public static CustomerObject customer(final DataFetchingEnvironment env,
+            @GraphQLName("customerName") final String customerName,
+            @GraphQLName("partyName") final String partyName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        Customer customer;
+
+        try {
+            var commandForm = CustomerUtil.getHome().getGetCustomerForm();
+
+            commandForm.setCustomerName(customerName);
+            commandForm.setPartyName(partyName);
+            commandForm.setUlid(id);
+
+            customer = new GetCustomerCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return customer == null ? null : new CustomerObject(customer);
+    }
+
+    @GraphQLField
+    @GraphQLName("customers")
+    public static Collection<CustomerObject> customers(final DataFetchingEnvironment env) {
+        Collection<Customer> customers;
+        Collection<CustomerObject> customerObjects;
+
+        try {
+            var commandForm = CustomerUtil.getHome().getGetCustomersForm();
+
+            customers = new GetCustomersCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(customers == null) {
+            customerObjects = emptyList();
+        } else {
+            customerObjects = new ArrayList<>(customers.size());
+
+            customers.stream()
+                    .map(CustomerObject::new)
+                    .forEachOrdered(customerObjects::add);
+        }
+
+        return customerObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("employee")
+    public static EmployeeObject employee(final DataFetchingEnvironment env,
+            @GraphQLName("employeeName") final String employeeName,
+            @GraphQLName("partyName") final String partyName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        PartyEmployee partyEmployee;
+
+        try {
+            var commandForm = EmployeeUtil.getHome().getGetEmployeeForm();
+
+            commandForm.setEmployeeName(employeeName);
+            commandForm.setPartyName(partyName);
+            commandForm.setUlid(id);
+
+            partyEmployee = new GetEmployeeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return partyEmployee == null ? null : new EmployeeObject(partyEmployee);
+    }
+
+    @GraphQLField
+    @GraphQLName("employees")
+    public static Collection<EmployeeObject> employees(final DataFetchingEnvironment env) {
+        Collection<PartyEmployee> partyEmployees;
+        Collection<EmployeeObject> employeeObjects;
+
+        try {
+            var commandForm = EmployeeUtil.getHome().getGetEmployeesForm();
+
+            partyEmployees = new GetEmployeesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(partyEmployees == null) {
+            employeeObjects = emptyList();
+        } else {
+            employeeObjects = new ArrayList<>(partyEmployees.size());
+
+            partyEmployees.stream()
+                    .map(EmployeeObject::new)
+                    .forEachOrdered(employeeObjects::add);
+        }
+
+        return employeeObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("vendor")
+    public static VendorObject vendor(final DataFetchingEnvironment env,
+            @GraphQLName("vendorName") final String vendorName,
+            @GraphQLName("partyName") final String partyName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        Vendor vendor;
+
+        try {
+            var commandForm = VendorUtil.getHome().getGetVendorForm();
+
+            commandForm.setVendorName(vendorName);
+            commandForm.setPartyName(partyName);
+            commandForm.setUlid(id);
+
+            vendor = new GetVendorCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return vendor == null ? null : new VendorObject(vendor);
+    }
+
+    @GraphQLField
+    @GraphQLName("vendors")
+    public static Collection<VendorObject> vendors(final DataFetchingEnvironment env) {
+        Collection<Vendor> vendors;
+        Collection<VendorObject> vendorObjects;
+
+        try {
+            var commandForm = VendorUtil.getHome().getGetVendorsForm();
+
+            vendors = new GetVendorsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(vendors == null) {
+            vendorObjects = emptyList();
+        } else {
+            vendorObjects = new ArrayList<>(vendors.size());
+
+            vendors.stream()
+                    .map(VendorObject::new)
+                    .forEachOrdered(vendorObjects::add);
+        }
+
+        return vendorObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("company")
+    public static CompanyObject company(final DataFetchingEnvironment env,
+            @GraphQLName("companyName") final String companyName,
+            @GraphQLName("partyName") final String partyName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        PartyCompany company;
+
+        try {
+            var commandForm = PartyUtil.getHome().getGetCompanyForm();
+
+            commandForm.setCompanyName(companyName);
+            commandForm.setPartyName(partyName);
+            commandForm.setUlid(id);
+
+            company = new GetCompanyCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return company == null ? null : new CompanyObject(company);
+    }
+
+    @GraphQLField
+    @GraphQLName("companies")
+    public static Collection<CompanyObject> companies(final DataFetchingEnvironment env) {
+        Collection<PartyCompany> partyCompanies;
+        Collection<CompanyObject> companyObjects;
+
+        try {
+            var commandForm = PartyUtil.getHome().getGetCompaniesForm();
+
+            partyCompanies = new GetCompaniesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(partyCompanies == null) {
+            companyObjects = emptyList();
+        } else {
+            companyObjects = new ArrayList<>(partyCompanies.size());
+
+            partyCompanies.stream()
+                    .map(CompanyObject::new)
+                    .forEachOrdered(companyObjects::add);
+        }
+
+        return companyObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("division")
+    public static DivisionObject division(final DataFetchingEnvironment env,
+            @GraphQLName("companyName") final String companyName,
+            @GraphQLName("divisionName") final String divisionName,
+            @GraphQLName("partyName") final String partyName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        PartyDivision division;
+
+        try {
+            var commandForm = PartyUtil.getHome().getGetDivisionForm();
+
+            commandForm.setCompanyName(companyName);
+            commandForm.setDivisionName(divisionName);
+            commandForm.setPartyName(partyName);
+            commandForm.setUlid(id);
+
+            division = new GetDivisionCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return division == null ? null : new DivisionObject(division);
+    }
+
+    @GraphQLField
+    @GraphQLName("divisions")
+    public static Collection<DivisionObject> divisions(final DataFetchingEnvironment env,
+            @GraphQLName("companyName") @GraphQLNonNull final String companyName) {
+        Collection<PartyDivision> partyDivisions;
+        Collection<DivisionObject> divisionObjects;
+
+        try {
+            var commandForm = PartyUtil.getHome().getGetDivisionsForm();
+
+            commandForm.setCompanyName(companyName);
+
+            partyDivisions = new GetDivisionsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(partyDivisions == null) {
+            divisionObjects = emptyList();
+        } else {
+            divisionObjects = new ArrayList<>(partyDivisions.size());
+
+            partyDivisions.stream()
+                    .map(DivisionObject::new)
+                    .forEachOrdered(divisionObjects::add);
+        }
+
+        return divisionObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("department")
+    public static DepartmentObject department(final DataFetchingEnvironment env,
+            @GraphQLName("companyName") final String companyName,
+            @GraphQLName("divisionName") final String divisionName,
+            @GraphQLName("departmentName") final String departmentName,
+            @GraphQLName("partyName") final String partyName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        PartyDepartment department;
+
+        try {
+            var commandForm = PartyUtil.getHome().getGetDepartmentForm();
+
+            commandForm.setCompanyName(companyName);
+            commandForm.setDivisionName(divisionName);
+            commandForm.setDepartmentName(departmentName);
+            commandForm.setPartyName(partyName);
+            commandForm.setUlid(id);
+
+            department = new GetDepartmentCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return department == null ? null : new DepartmentObject(department);
+    }
+
+    @GraphQLField
+    @GraphQLName("departments")
+    public static Collection<DepartmentObject> departments(final DataFetchingEnvironment env,
+            @GraphQLName("companyName") @GraphQLNonNull final String companyName,
+            @GraphQLName("divisionName") final String divisionName) {
+        Collection<PartyDepartment> partyDepartments;
+        Collection<DepartmentObject> departmentObjects;
+
+        try {
+            var commandForm = PartyUtil.getHome().getGetDepartmentsForm();
+
+            commandForm.setCompanyName(companyName);
+            commandForm.setDivisionName(divisionName);
+
+            partyDepartments = new GetDepartmentsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(partyDepartments == null) {
+            departmentObjects = emptyList();
+        } else {
+            departmentObjects = new ArrayList<>(partyDepartments.size());
+
+            partyDepartments.stream()
+                    .map(DepartmentObject::new)
+                    .forEachOrdered(departmentObjects::add);
+        }
+
+        return departmentObjects;
+    }
+
+    @GraphQLField
     @GraphQLName("item")
     public static ItemObject item(final DataFetchingEnvironment env,
             @GraphQLName("itemName") final String itemName,
@@ -3886,7 +4347,34 @@ public final class GraphQlQueries
         
         return item == null ? null : new ItemObject(item);
     }
-    
+
+    @GraphQLField
+    @GraphQLName("items")
+    public static Collection<ItemObject> items(final DataFetchingEnvironment env) {
+        Collection<Item> items;
+        Collection<ItemObject> itemObjects;
+
+        try {
+            var commandForm = ItemUtil.getHome().getGetItemsForm();
+
+            items = new GetItemsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(items == null) {
+            itemObjects = emptyList();
+        } else {
+            itemObjects = new ArrayList<>(items.size());
+
+            items.stream()
+                    .map(ItemObject::new)
+                    .forEachOrdered(itemObjects::add);
+        }
+
+        return itemObjects;
+    }
+
     @GraphQLField
     @GraphQLName("itemCategory")
     public static ItemCategoryObject itemCategory(final DataFetchingEnvironment env,

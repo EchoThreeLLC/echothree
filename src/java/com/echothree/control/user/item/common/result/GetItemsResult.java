@@ -14,16 +14,19 @@
 // limitations under the License.
 // --------------------------------------------------------------------------------
 
-package com.echothree.control.user.party.common.result;
+package com.echothree.control.user.item.common.result;
 
-import com.echothree.model.control.employee.common.transfer.EmployeeTransfer;
+import com.echothree.model.control.item.common.transfer.ItemTransfer;
 import com.echothree.util.common.command.BaseResult;
 import java.util.List;
 
-public interface GetEmployeesResult
+public interface GetItemsResult
         extends BaseResult {
-    
-    List<EmployeeTransfer> getEmployees();
-    void setEmployees(List<EmployeeTransfer> employees);
+
+    Long getItemCount();
+    void setItemCount(Long itemCount);
+
+    List<ItemTransfer> getItems();
+    void setItems(List<ItemTransfer> items);
     
 }

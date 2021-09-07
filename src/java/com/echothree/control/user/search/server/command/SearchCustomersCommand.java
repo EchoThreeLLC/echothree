@@ -87,6 +87,7 @@ public class SearchCustomersCommand
                 new FieldDefinition("TelephoneExtension", FieldType.NUMBERS, false, 1L, 10L),
                 new FieldDefinition("EmailAddress", FieldType.EMAIL_ADDRESS, false, null, null),
                 new FieldDefinition("CustomerName", FieldType.ENTITY_NAME, false, null, null),
+                new FieldDefinition("PartyName", FieldType.ENTITY_NAME, false, null, null),
                 new FieldDefinition("PartyAliasTypeName", FieldType.ENTITY_NAME, false, null, null),
                 new FieldDefinition("Alias", FieldType.ENTITY_NAME, false, null, null),
                 new FieldDefinition("CreatedSince", FieldType.DATE_TIME, false, null, null),
@@ -179,19 +180,16 @@ public class SearchCustomersCommand
                                     CustomerSearchEvaluator customerSearchEvaluator = new CustomerSearchEvaluator(userVisit, searchType,
                                             searchLogic.getDefaultSearchDefaultOperator(null), searchLogic.getDefaultSearchSortOrder(null, searchKind),
                                             searchLogic.getDefaultSearchSortDirection(null));
-                                    String firstNameSoundex = form.getFirstNameSoundex();
-                                    String middleNameSoundex = form.getMiddleNameSoundex();
-                                    String lastNameSoundex = form.getLastNameSoundex();
                                     String createdSince = form.getCreatedSince();
                                     String modifiedSince = form.getModifiedSince();
                                     String fields = form.getFields();
 
                                     customerSearchEvaluator.setFirstName(form.getFirstName());
-                                    customerSearchEvaluator.setFirstNameSoundex(firstNameSoundex == null ? false : Boolean.valueOf(firstNameSoundex));
+                                    customerSearchEvaluator.setFirstNameSoundex(Boolean.parseBoolean(form.getFirstNameSoundex()));
                                     customerSearchEvaluator.setMiddleName(form.getMiddleName());
-                                    customerSearchEvaluator.setMiddleNameSoundex(middleNameSoundex == null ? false : Boolean.valueOf(middleNameSoundex));
+                                    customerSearchEvaluator.setMiddleNameSoundex(Boolean.parseBoolean(form.getMiddleNameSoundex()));
                                     customerSearchEvaluator.setLastName(form.getLastName());
-                                    customerSearchEvaluator.setLastNameSoundex(lastNameSoundex == null ? false : Boolean.valueOf(lastNameSoundex));
+                                    customerSearchEvaluator.setLastNameSoundex(Boolean.parseBoolean(form.getLastNameSoundex()));
                                     customerSearchEvaluator.setQ(this, form.getName());
                                     customerSearchEvaluator.setCountryGeoCode(countryGeoCode);
                                     customerSearchEvaluator.setAreaCode(areaCode);
@@ -202,6 +200,7 @@ public class SearchCustomersCommand
                                     customerSearchEvaluator.setPartyAliasType(partyAliasType);
                                     customerSearchEvaluator.setAlias(alias);
                                     customerSearchEvaluator.setCustomerName(form.getCustomerName());
+                                    customerSearchEvaluator.setPartyName(form.getPartyName());
                                     customerSearchEvaluator.setCreatedSince(createdSince == null ? null : Long.valueOf(createdSince));
                                     customerSearchEvaluator.setModifiedSince(modifiedSince == null ? null : Long.valueOf(modifiedSince));
                                     customerSearchEvaluator.setFields(fields == null ? null : Splitter.on(':').trimResults().omitEmptyStrings().splitToList(fields).toArray(new String[0]));

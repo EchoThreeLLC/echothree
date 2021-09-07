@@ -111,6 +111,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -290,9 +291,9 @@ public class VendorControl
     public VendorTypeChoicesBean getVendorTypeChoices(String defaultVendorTypeChoice, Language language,
             boolean allowNullChoice) {
         List<VendorType> vendorTypes = getVendorTypes();
-        int size = vendorTypes.size();
-        List<String> labels = new ArrayList<>(size);
-        List<String> values = new ArrayList<>(size);
+        var size = vendorTypes.size();
+        var labels = new ArrayList<String>(size);
+        var values = new ArrayList<String>(size);
         String defaultValue = null;
         
         if(allowNullChoice) {
@@ -306,13 +307,13 @@ public class VendorControl
         
         for(var vendorType : vendorTypes) {
             VendorTypeDetail vendorTypeDetail = vendorType.getLastDetail();
-            String label = getBestVendorTypeDescription(vendorType, language);
-            String value = vendorTypeDetail.getVendorTypeName();
+            var label = getBestVendorTypeDescription(vendorType, language);
+            var value = vendorTypeDetail.getVendorTypeName();
             
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultVendorTypeChoice != null && defaultVendorTypeChoice.equals(value);
+            var usingDefaultChoice = defaultVendorTypeChoice != null && defaultVendorTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && vendorTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -628,12 +629,59 @@ public class VendorControl
         return vendor;
     }
 
+    public long countVendors() {
+        return session.queryForLong(
+                "SELECT COUNT(*) " +
+                        "FROM vendors " +
+                        "WHERE vndr_thrutime = ?",
+                Session.MAX_TIME);
+    }
+
     public long countVendorByFilter(Filter filter) {
         return session.queryForLong(
                 "SELECT COUNT(*) " +
                 "FROM vendors " +
                 "WHERE vndr_vendoritemcostfilterid = ? AND vndr_thrutime = ?",
                 filter, Session.MAX_TIME_LONG);
+    }
+
+    private List<Vendor> getVendors(EntityPermission entityPermission) {
+        List<Vendor> vendors;
+
+        try {
+            String query = null;
+
+            if(entityPermission.equals(EntityPermission.READ_ONLY)) {
+                query = "SELECT _ALL_ " +
+                        "FROM vendors " +
+                        "WHERE vndr_thrutime = ? " +
+                        "ORDER BY vndr_vendorname " +
+                        "_LIMIT_";
+            } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
+                query = "SELECT _ALL_ " +
+                        "FROM vendors " +
+                        "WHERE vndr_thrutime = ? " +
+                        "FOR UPDATE";
+            }
+
+            PreparedStatement ps = VendorFactory.getInstance().prepareStatement(query);
+
+            ps.setLong(1, Session.MAX_TIME);
+
+            vendors = VendorFactory.getInstance().getEntitiesFromQuery(entityPermission, ps);
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return vendors;
+    }
+
+    public List<Vendor> getVendors() {
+        return getVendors(EntityPermission.READ_ONLY);
+    }
+
+    public List<Vendor> getVendorsForUpdate() {
+        return getVendors(EntityPermission.READ_WRITE);
     }
 
     private Vendor getVendor(Party party, EntityPermission entityPermission) {
@@ -795,13 +843,28 @@ public class VendorControl
     }
 
     public VendorTransfer getVendorTransfer(UserVisit userVisit, Vendor vendor) {
-        return getVendorTransferCaches(userVisit).getVendorTransferCache().getVendorTransfer(vendor);
+        return getVendorTransferCaches(userVisit).getVendorTransferCache().getTransfer(vendor);
     }
     
     public VendorTransfer getVendorTransfer(UserVisit userVisit, Party party) {
-        return getVendorTransferCaches(userVisit).getVendorTransferCache().getVendorTransfer(party);
+        return getVendorTransferCaches(userVisit).getVendorTransferCache().getTransfer(party);
     }
-    
+
+    public List<VendorTransfer> getVendorTransfers(UserVisit userVisit, Collection<Vendor> vendors) {
+        var vendorTransfers = new ArrayList<VendorTransfer>(vendors.size());
+        var vendorTransferCache = getVendorTransferCaches(userVisit).getVendorTransferCache();
+
+        vendors.forEach((vendor) ->
+                vendorTransfers.add(vendorTransferCache.getTransfer(vendor))
+        );
+
+        return vendorTransfers;
+    }
+
+    public List<VendorTransfer> getVendorTransfers(UserVisit userVisit) {
+        return getVendorTransfers(userVisit, getVendors());
+    }
+
     public void updateVendorFromValue(VendorValue vendorValue, BasePK updatedBy) {
         if(vendorValue.hasBeenModified()) {
             Vendor vendor = VendorFactory.getInstance().getEntityFromPK(EntityPermission.READ_WRITE, vendorValue.getPrimaryKey());
@@ -1629,9 +1692,9 @@ public class VendorControl
     public ItemPurchasingCategoryChoicesBean getItemPurchasingCategoryChoices(String defaultItemPurchasingCategoryChoice,
             Language language, boolean allowNullChoice) {
         List<ItemPurchasingCategory> itemPurchasingCategories = getItemPurchasingCategories();
-        int size = itemPurchasingCategories.size();
-        List<String> labels = new ArrayList<>(size);
-        List<String> values = new ArrayList<>(size);
+        var size = itemPurchasingCategories.size();
+        var labels = new ArrayList<String>(size);
+        var values = new ArrayList<String>(size);
         String defaultValue = null;
         
         if(allowNullChoice) {
@@ -1646,13 +1709,13 @@ public class VendorControl
         for(var itemPurchasingCategory : itemPurchasingCategories) {
             ItemPurchasingCategoryDetail itemPurchasingCategoryDetail = itemPurchasingCategory.getLastDetail();
             
-            String label = getBestItemPurchasingCategoryDescription(itemPurchasingCategory, language);
-            String value = itemPurchasingCategoryDetail.getItemPurchasingCategoryName();
+            var label = getBestItemPurchasingCategoryDescription(itemPurchasingCategory, language);
+            var value = itemPurchasingCategoryDetail.getItemPurchasingCategoryName();
             
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultItemPurchasingCategoryChoice != null && defaultItemPurchasingCategoryChoice.equals(value);
+            var usingDefaultChoice = defaultItemPurchasingCategoryChoice != null && defaultItemPurchasingCategoryChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && itemPurchasingCategoryDetail.getIsDefault())) {
                 defaultValue = value;
             }

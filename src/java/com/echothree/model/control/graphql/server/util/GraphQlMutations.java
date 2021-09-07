@@ -66,7 +66,13 @@ import com.echothree.control.user.payment.common.result.EditPaymentProcessorResu
 import com.echothree.control.user.payment.common.result.EditPaymentProcessorTypeResult;
 import com.echothree.control.user.search.common.SearchUtil;
 import com.echothree.control.user.search.common.result.SearchCustomersResult;
-import com.echothree.control.user.search.server.graphql.SearchCustomersResultObject;
+import com.echothree.control.user.search.common.result.SearchEmployeesResult;
+import com.echothree.control.user.search.common.result.SearchItemsResult;
+import com.echothree.control.user.search.common.result.SearchVendorsResult;
+import com.echothree.model.control.search.server.graphql.SearchCustomersResultObject;
+import com.echothree.model.control.search.server.graphql.SearchEmployeesResultObject;
+import com.echothree.model.control.search.server.graphql.SearchItemsResultObject;
+import com.echothree.model.control.search.server.graphql.SearchVendorsResultObject;
 import com.echothree.control.user.sequence.common.SequenceUtil;
 import com.echothree.control.user.sequence.common.result.CreateSequenceResult;
 import com.echothree.control.user.sequence.common.result.CreateSequenceTypeResult;
@@ -3060,11 +3066,12 @@ public class GraphQlMutations
             @GraphQLName("telephoneNumber") final String telephoneNumber,
             @GraphQLName("telephoneExtension") final String telephoneExtension,
             @GraphQLName("customerName") final String customerName,
+            @GraphQLName("partyName") final String partyName,
             @GraphQLName("partyAliasTypeName") final String partyAliasTypeName,
             @GraphQLName("alias") final String alias,
             @GraphQLName("createdSince") final String createdSince,
             @GraphQLName("modifiedSince") final String modifiedSince) {
-        SearchCustomersResultObject commandResultObject = new SearchCustomersResultObject();
+        var commandResultObject = new SearchCustomersResultObject();
 
         try {
             var commandForm = SearchUtil.getHome().getSearchCustomersForm();
@@ -3084,6 +3091,7 @@ public class GraphQlMutations
             commandForm.setTelephoneNumber(telephoneNumber);
             commandForm.setTelephoneExtension(telephoneExtension);
             commandForm.setCustomerName(customerName);
+            commandForm.setPartyName(partyName);
             commandForm.setPartyAliasTypeName(partyAliasTypeName);
             commandForm.setAlias(alias);
             commandForm.setCreatedSince(createdSince);
@@ -3111,6 +3119,218 @@ public class GraphQlMutations
             commandForm.setSearchTypeName(searchTypeName);
 
             var commandResult = SearchUtil.getHome().clearCustomerResults(getUserVisitPK(env), commandForm);
+            commandResultObject.setCommandResult(commandResult);
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return commandResultObject;
+    }
+
+    @GraphQLField
+    @GraphQLRelayMutation
+    public static SearchEmployeesResultObject searchEmployees(final DataFetchingEnvironment env,
+            @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName,
+            @GraphQLName("firstName") final String firstName,
+            @GraphQLName("firstNameSoundex") final String firstNameSoundex,
+            @GraphQLName("middleName") final String middleName,
+            @GraphQLName("middleNameSoundex") final String middleNameSoundex,
+            @GraphQLName("lastName") final String lastName,
+            @GraphQLName("lastNameSoundex") final String lastNameSoundex,
+            @GraphQLName("employeeName") final String employeeName,
+            @GraphQLName("partyName") final String partyName,
+            @GraphQLName("partyAliasTypeName") final String partyAliasTypeName,
+            @GraphQLName("alias") final String alias,
+            @GraphQLName("employeeStatusChoice") final String employeeStatusChoice,
+            @GraphQLName("employeeAvailabilityChoice") final String employeeAvailabilityChoice,
+            @GraphQLName("createdSince") final String createdSince,
+            @GraphQLName("modifiedSince") final String modifiedSince,
+            @GraphQLName("fields") final String fields) {
+        var commandResultObject = new SearchEmployeesResultObject();
+
+        try {
+            var commandForm = SearchUtil.getHome().getSearchEmployeesForm();
+
+            commandForm.setSearchTypeName(searchTypeName);
+            commandForm.setFirstName(firstName);
+            commandForm.setFirstNameSoundex(firstNameSoundex);
+            commandForm.setMiddleName(middleName);
+            commandForm.setMiddleNameSoundex(middleNameSoundex);
+            commandForm.setLastName(lastName);
+            commandForm.setLastNameSoundex(lastNameSoundex);
+            commandForm.setEmployeeName(employeeName);
+            commandForm.setPartyName(partyName);
+            commandForm.setPartyAliasTypeName(partyAliasTypeName);
+            commandForm.setAlias(alias);
+            commandForm.setEmployeeStatusChoice(employeeStatusChoice);
+            commandForm.setEmployeeAvailabilityChoice(employeeAvailabilityChoice);
+            commandForm.setCreatedSince(createdSince);
+            commandForm.setModifiedSince(modifiedSince);
+            commandForm.setFields(fields);
+
+
+            var commandResult = SearchUtil.getHome().searchEmployees(getUserVisitPK(env), commandForm);
+            commandResultObject.setCommandResult(commandResult);
+            commandResultObject.setResult(commandResult.hasErrors() ? null : (SearchEmployeesResult)commandResult.getExecutionResult().getResult());
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return commandResultObject;
+    }
+
+    @GraphQLField
+    @GraphQLRelayMutation
+    public static CommandResultObject clearEmployeeResults(final DataFetchingEnvironment env,
+            @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName) {
+        var commandResultObject = new CommandResultObject();
+
+        try {
+            var commandForm = SearchUtil.getHome().getClearEmployeeResultsForm();
+
+            commandForm.setSearchTypeName(searchTypeName);
+
+            var commandResult = SearchUtil.getHome().clearEmployeeResults(getUserVisitPK(env), commandForm);
+            commandResultObject.setCommandResult(commandResult);
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return commandResultObject;
+    }
+
+    @GraphQLField
+    @GraphQLRelayMutation
+    public static SearchItemsResultObject searchItems(final DataFetchingEnvironment env,
+            @GraphQLName("languageIsoName") final String languageIsoName,
+            @GraphQLName("searchDefaultOperatorName") final String searchDefaultOperatorName,
+            @GraphQLName("searchSortDirectionName") final String searchSortDirectionName,
+            @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName,
+            @GraphQLName("searchSortOrderName") final String searchSortOrderName,
+            @GraphQLName("itemNameOrAlias") final String itemNameOrAlias,
+            @GraphQLName("description") final String description,
+            @GraphQLName("itemTypeName") final String itemTypeName,
+            @GraphQLName("itemUseTypeName") final String itemUseTypeName,
+            @GraphQLName("itemStatusChoice") final String itemStatusChoice,
+            @GraphQLName("itemStatusChoices") final String itemStatusChoices,
+            @GraphQLName("createdSince") final String createdSince,
+            @GraphQLName("modifiedSince") final String modifiedSince,
+            @GraphQLName("fields") final String fields,
+            @GraphQLName("rememberPreferences") final String rememberPreferences,
+            @GraphQLName("searchUseTypeName") final String searchUseTypeName) {
+        var commandResultObject = new SearchItemsResultObject();
+
+        try {
+            var commandForm = SearchUtil.getHome().getSearchItemsForm();
+
+            commandForm.setLanguageIsoName(languageIsoName);
+            commandForm.setSearchDefaultOperatorName(searchDefaultOperatorName);
+            commandForm.setSearchSortDirectionName(searchSortDirectionName);
+            commandForm.setSearchTypeName(searchTypeName);
+            commandForm.setSearchSortOrderName(searchSortOrderName);
+            commandForm.setItemNameOrAlias(itemNameOrAlias);
+            commandForm.setDescription(description);
+            commandForm.setItemTypeName(itemTypeName);
+            commandForm.setItemUseTypeName(itemUseTypeName);
+            commandForm.setItemStatusChoice(itemStatusChoice);
+            commandForm.setItemStatusChoices(itemStatusChoices);
+            commandForm.setCreatedSince(createdSince);
+            commandForm.setModifiedSince(modifiedSince);
+            commandForm.setFields(fields);
+            commandForm.setRememberPreferences(rememberPreferences);
+            commandForm.setSearchUseTypeName(searchUseTypeName);
+
+            var commandResult = SearchUtil.getHome().searchItems(getUserVisitPK(env), commandForm);
+            commandResultObject.setCommandResult(commandResult);
+            commandResultObject.setResult(commandResult.hasErrors() ? null : (SearchItemsResult)commandResult.getExecutionResult().getResult());
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return commandResultObject;
+    }
+
+    @GraphQLField
+    @GraphQLRelayMutation
+    public static CommandResultObject clearItemResults(final DataFetchingEnvironment env,
+            @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName) {
+        var commandResultObject = new CommandResultObject();
+
+        try {
+            var commandForm = SearchUtil.getHome().getClearItemResultsForm();
+
+            commandForm.setSearchTypeName(searchTypeName);
+
+            var commandResult = SearchUtil.getHome().clearItemResults(getUserVisitPK(env), commandForm);
+            commandResultObject.setCommandResult(commandResult);
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return commandResultObject;
+    }
+
+    @GraphQLField
+    @GraphQLRelayMutation
+    public static SearchVendorsResultObject searchVendors(final DataFetchingEnvironment env,
+            @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName,
+            @GraphQLName("firstName") final String firstName,
+            @GraphQLName("firstNameSoundex") final String firstNameSoundex,
+            @GraphQLName("middleName") final String middleName,
+            @GraphQLName("middleNameSoundex") final String middleNameSoundex,
+            @GraphQLName("lastName") final String lastName,
+            @GraphQLName("lastNameSoundex") final String lastNameSoundex,
+            @GraphQLName("name") final String name,
+            @GraphQLName("vendorName") final String vendorName,
+            @GraphQLName("partyName") final String partyName,
+            @GraphQLName("partyAliasTypeName") final String partyAliasTypeName,
+            @GraphQLName("alias") final String alias,
+            @GraphQLName("createdSince") final String createdSince,
+            @GraphQLName("modifiedSince") final String modifiedSince,
+            @GraphQLName("fields") final String fields) {
+        var commandResultObject = new SearchVendorsResultObject();
+
+        try {
+            var commandForm = SearchUtil.getHome().getSearchVendorsForm();
+
+            commandForm.setSearchTypeName(searchTypeName);
+            commandForm.setFirstName(firstName);
+            commandForm.setFirstNameSoundex(firstNameSoundex);
+            commandForm.setMiddleName(middleName);
+            commandForm.setMiddleNameSoundex(middleNameSoundex);
+            commandForm.setLastName(lastName);
+            commandForm.setLastNameSoundex(lastNameSoundex);
+            commandForm.setName(name);
+            commandForm.setVendorName(vendorName);
+            commandForm.setPartyName(partyName);
+            commandForm.setPartyAliasTypeName(partyAliasTypeName);
+            commandForm.setAlias(alias);
+            commandForm.setCreatedSince(createdSince);
+            commandForm.setModifiedSince(modifiedSince);
+            commandForm.setFields(fields);
+
+            var commandResult = SearchUtil.getHome().searchVendors(getUserVisitPK(env), commandForm);
+            commandResultObject.setCommandResult(commandResult);
+            commandResultObject.setResult(commandResult.hasErrors() ? null : (SearchVendorsResult)commandResult.getExecutionResult().getResult());
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return commandResultObject;
+    }
+
+    @GraphQLField
+    @GraphQLRelayMutation
+    public static CommandResultObject clearVendorResults(final DataFetchingEnvironment env,
+            @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName) {
+        var commandResultObject = new CommandResultObject();
+
+        try {
+            var commandForm = SearchUtil.getHome().getClearVendorResultsForm();
+
+            commandForm.setSearchTypeName(searchTypeName);
+
+            var commandResult = SearchUtil.getHome().clearVendorResults(getUserVisitPK(env), commandForm);
             commandResultObject.setCommandResult(commandResult);
         } catch (NamingException ex) {
             throw new RuntimeException(ex);

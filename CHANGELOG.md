@@ -1,5 +1,33 @@
 # Changelog
 
+## 2021-09-05-01
+
+* GraphQL Objects for Departments [319](https://gitlab.echothree.com/echothree/echothree/-/issues/319)
+* Apache Lucene 8.9.0 Upgrade [326](https://gitlab.echothree.com/echothree/echothree/-/issues/326)
+* jOOQ 3.15.2 Upgrade [327](https://gitlab.echothree.com/echothree/echothree/-/issues/327)
+* ClassGraph 4.8.115 Upgrade [328](https://gitlab.echothree.com/echothree/echothree/-/issues/328)
+* Error Prone 2.9.0 Upgrade [329](https://gitlab.echothree.com/echothree/echothree/-/issues/329)
+* Gson 2.8.8 Upgrade [330](https://gitlab.echothree.com/echothree/echothree/-/issues/330)
+* cucumber-java8/cucumber-junit 6.11.0 Upgrade [331](https://gitlab.echothree.com/echothree/echothree/-/issues/331)
+* GraphQL Objects for Entity Attribute Groups [332](https://gitlab.echothree.com/echothree/echothree/-/issues/332)
+* Add entityAttributeGroups Field to BaseEntityInstanceObject [333](https://gitlab.echothree.com/echothree/echothree/-/issues/333)
+* GraphQL Objects for Employees [334](https://gitlab.echothree.com/echothree/echothree/-/issues/334)
+
+## 2021-08-22-01
+
+* GraphQL Objects for Companies [317](https://gitlab.echothree.com/echothree/echothree/-/issues/317)
+* GraphQL Objects for Divisions [318](https://gitlab.echothree.com/echothree/echothree/-/issues/318)
+* WildFly 24.0.1 Upgrade [322](https://gitlab.echothree.com/echothree/echothree/-/issues/322)
+
+## 2021-08-08-01
+
+* GraphQL Objects and Mutations for Item Search [212](https://gitlab.echothree.com/echothree/echothree/-/issues/212)
+* GraphQL Objects and Mutations for Vendor Search [218](https://gitlab.echothree.com/echothree/echothree/-/issues/218)
+* Add itemCount and items Fields to Item Category GraphQL Objects [313](https://gitlab.echothree.com/echothree/echothree/-/issues/313)
+* Stop Sending Null Events to SentEventEventBus [316](https://gitlab.echothree.com/echothree/echothree/-/issues/316)
+* GraphQL Objects for Customers [320](https://gitlab.echothree.com/echothree/echothree/-/issues/320)
+* Add salesOrderSequence Field to Offer and Offer Use GraphQL Objects [321](https://gitlab.echothree.com/echothree/echothree/-/issues/321)
+
 ## 2021-07-25-01
 
 * GraphQL Objects and Mutations for Filter Steps [157](https://gitlab.echothree.com/echothree/echothree/-/issues/157)

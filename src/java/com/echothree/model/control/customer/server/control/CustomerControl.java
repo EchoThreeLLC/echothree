@@ -95,6 +95,7 @@ import com.echothree.util.server.persistence.Session;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -282,9 +283,9 @@ public class CustomerControl
     public CustomerTypeChoicesBean getCustomerTypeChoices(String defaultCustomerTypeChoice, Language language,
             boolean allowNullChoice) {
         List<CustomerType> customerTypes = getCustomerTypes();
-        int size = customerTypes.size();
-        List<String> labels = new ArrayList<>(size);
-        List<String> values = new ArrayList<>(size);
+        var size = customerTypes.size();
+        var labels = new ArrayList<String>(size);
+        var values = new ArrayList<String>(size);
         String defaultValue = null;
         
         if(allowNullChoice) {
@@ -298,13 +299,13 @@ public class CustomerControl
         
         for(var customerType : customerTypes) {
             CustomerTypeDetail customerTypeDetail = customerType.getLastDetail();
-            String label = getBestCustomerTypeDescription(customerType, language);
-            String value = customerTypeDetail.getCustomerTypeName();
+            var label = getBestCustomerTypeDescription(customerType, language);
+            var value = customerTypeDetail.getCustomerTypeName();
             
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultCustomerTypeChoice != null && defaultCustomerTypeChoice.equals(value);
+            var usingDefaultChoice = defaultCustomerTypeChoice != null && defaultCustomerTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && customerTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -628,6 +629,14 @@ public class CustomerControl
         return customer;
     }
 
+    public long countCustomers() {
+        return session.queryForLong(
+                "SELECT COUNT(*) " +
+                        "FROM customers " +
+                        "WHERE cu_thrutime = ?",
+                Session.MAX_TIME);
+    }
+
     public long countCustomersByInitialOfferUse(OfferUse initialOfferUse) {
         return session.queryForLong(
                 "SELECT COUNT(*) " +
@@ -636,6 +645,45 @@ public class CustomerControl
                 initialOfferUse, Session.MAX_TIME);
     }
 
+    private List<Customer> getCustomers(EntityPermission entityPermission) {
+        List<Customer> customers;
+
+        try {
+            String query = null;
+
+            if(entityPermission.equals(EntityPermission.READ_ONLY)) {
+                query = "SELECT _ALL_ " +
+                        "FROM customers " +
+                        "WHERE cu_thrutime = ? " +
+                        "ORDER BY cu_customername " +
+                        "_LIMIT_";
+            } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
+                query = "SELECT _ALL_ " +
+                        "FROM customers " +
+                        "WHERE cu_thrutime = ? " +
+                        "FOR UPDATE";
+            }
+
+            PreparedStatement ps = CustomerFactory.getInstance().prepareStatement(query);
+
+            ps.setLong(1, Session.MAX_TIME);
+
+            customers = CustomerFactory.getInstance().getEntitiesFromQuery(entityPermission, ps);
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return customers;
+    }
+
+    public List<Customer> getCustomers() {
+        return getCustomers(EntityPermission.READ_ONLY);
+    }
+
+    public List<Customer> getCustomersForUpdate() {
+        return getCustomers(EntityPermission.READ_WRITE);
+    }
+    
     public Customer getCustomer(Party party, EntityPermission entityPermission) {
         Customer customer;
         
@@ -673,8 +721,7 @@ public class CustomerControl
     public Customer getCustomerForUpdate(Party party) {
         return getCustomer(party, EntityPermission.READ_WRITE);
     }
-
-
+    
     private Customer getCustomerByName(String customerName, EntityPermission entityPermission) {
         Customer customer;
         
@@ -722,13 +769,28 @@ public class CustomerControl
     }
     
     public CustomerTransfer getCustomerTransfer(UserVisit userVisit, Customer customer) {
-        return getCustomerTransferCaches(userVisit).getCustomerTransferCache().getCustomerTransfer(customer);
+        return getCustomerTransferCaches(userVisit).getCustomerTransferCache().getTransfer(customer);
     }
     
     public CustomerTransfer getCustomerTransfer(UserVisit userVisit, Party party) {
-        return getCustomerTransferCaches(userVisit).getCustomerTransferCache().getCustomerTransfer(party);
+        return getCustomerTransferCaches(userVisit).getCustomerTransferCache().getTransfer(party);
     }
-    
+
+    public List<CustomerTransfer> getCustomerTransfers(UserVisit userVisit, Collection<Customer> customers) {
+        var customerTransfers = new ArrayList<CustomerTransfer>(customers.size());
+        var customerTransferCache = getCustomerTransferCaches(userVisit).getCustomerTransferCache();
+
+        customers.forEach((customer) ->
+                customerTransfers.add(customerTransferCache.getTransfer(customer))
+        );
+
+        return customerTransfers;
+    }
+
+    public List<CustomerTransfer> getCustomerTransfers(UserVisit userVisit) {
+        return getCustomerTransfers(userVisit, getCustomers());
+    }
+
     public void updateCustomerFromValue(CustomerValue customerValue, BasePK updatedBy) {
         if(customerValue.hasBeenModified()) {
             Customer customer = CustomerFactory.getInstance().getEntityFromPK(EntityPermission.READ_WRITE, customerValue.getPrimaryKey());

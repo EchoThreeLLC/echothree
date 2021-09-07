@@ -71,6 +71,9 @@ import com.echothree.model.control.employee.server.transfer.TerminationReasonTra
 import com.echothree.model.control.employee.server.transfer.TerminationTypeDescriptionTransferCache;
 import com.echothree.model.control.employee.server.transfer.TerminationTypeTransferCache;
 import com.echothree.model.control.search.common.SearchOptions;
+import com.echothree.model.control.search.server.control.SearchControl;
+import static com.echothree.model.control.search.server.control.SearchControl.ENI_ENTITYUNIQUEID_COLUMN_INDEX;
+import com.echothree.model.control.search.server.graphql.EmployeeResultObject;
 import com.echothree.model.control.sequence.common.SequenceTypes;
 import com.echothree.model.control.sequence.server.control.SequenceControl;
 import com.echothree.model.control.sequence.server.logic.SequenceGeneratorLogic;
@@ -163,7 +166,6 @@ import com.echothree.model.data.party.common.pk.PartyPK;
 import com.echothree.model.data.party.server.entity.Language;
 import com.echothree.model.data.party.server.entity.Party;
 import com.echothree.model.data.search.server.entity.UserVisitSearch;
-import com.echothree.model.data.search.server.factory.SearchResultFactory;
 import com.echothree.model.data.sequence.server.entity.Sequence;
 import com.echothree.model.data.user.server.entity.UserVisit;
 import com.echothree.model.data.workflow.server.entity.WorkflowDestination;
@@ -178,6 +180,7 @@ import com.echothree.util.server.persistence.Session;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -362,9 +365,9 @@ public class EmployeeControl
     public ResponsibilityTypeChoicesBean getResponsibilityTypeChoices(String defaultResponsibilityTypeChoice, Language language,
             boolean allowNullChoice) {
         List<ResponsibilityType> responsibilityTypes = getResponsibilityTypes();
-        int size = responsibilityTypes.size();
-        List<String> labels = new ArrayList<>(size);
-        List<String> values = new ArrayList<>(size);
+        var size = responsibilityTypes.size();
+        var labels = new ArrayList<String>(size);
+        var values = new ArrayList<String>(size);
         String defaultValue = null;
         
         if(allowNullChoice) {
@@ -379,13 +382,13 @@ public class EmployeeControl
         for(var responsibilityType : responsibilityTypes) {
             ResponsibilityTypeDetail responsibilityTypeDetail = responsibilityType.getLastDetail();
             
-            String label = getBestResponsibilityTypeDescription(responsibilityType, language);
-            String value = responsibilityTypeDetail.getResponsibilityTypeName();
+            var label = getBestResponsibilityTypeDescription(responsibilityType, language);
+            var value = responsibilityTypeDetail.getResponsibilityTypeName();
             
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultResponsibilityTypeChoice != null && defaultResponsibilityTypeChoice.equals(value);
+            var usingDefaultChoice = defaultResponsibilityTypeChoice != null && defaultResponsibilityTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && responsibilityTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -789,9 +792,9 @@ public class EmployeeControl
     
     public SkillTypeChoicesBean getSkillTypeChoices(String defaultSkillTypeChoice, Language language, boolean allowNullChoice) {
         List<SkillType> skillTypes = getSkillTypes();
-        int size = skillTypes.size();
-        List<String> labels = new ArrayList<>(size);
-        List<String> values = new ArrayList<>(size);
+        var size = skillTypes.size();
+        var labels = new ArrayList<String>(size);
+        var values = new ArrayList<String>(size);
         String defaultValue = null;
         
         if(allowNullChoice) {
@@ -806,13 +809,13 @@ public class EmployeeControl
         for(var skillType : skillTypes) {
             SkillTypeDetail skillTypeDetail = skillType.getLastDetail();
             
-            String label = getBestSkillTypeDescription(skillType, language);
-            String value = skillTypeDetail.getSkillTypeName();
+            var label = getBestSkillTypeDescription(skillType, language);
+            var value = skillTypeDetail.getSkillTypeName();
             
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultSkillTypeChoice != null && defaultSkillTypeChoice.equals(value);
+            var usingDefaultChoice = defaultSkillTypeChoice != null && defaultSkillTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && skillTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -1221,9 +1224,9 @@ public class EmployeeControl
 
     public LeaveTypeChoicesBean getLeaveTypeChoices(String defaultLeaveTypeChoice, Language language, boolean allowNullChoice) {
         List<LeaveType> leaveTypes = getLeaveTypes();
-        int size = leaveTypes.size();
-        List<String> labels = new ArrayList<>(size);
-        List<String> values = new ArrayList<>(size);
+        var size = leaveTypes.size();
+        var labels = new ArrayList<String>(size);
+        var values = new ArrayList<String>(size);
         String defaultValue = null;
 
         if(allowNullChoice) {
@@ -1238,13 +1241,13 @@ public class EmployeeControl
         for(var leaveType : leaveTypes) {
             LeaveTypeDetail leaveTypeDetail = leaveType.getLastDetail();
 
-            String label = getBestLeaveTypeDescription(leaveType, language);
-            String value = leaveTypeDetail.getLeaveTypeName();
+            var label = getBestLeaveTypeDescription(leaveType, language);
+            var value = leaveTypeDetail.getLeaveTypeName();
 
             labels.add(label == null? value: label);
             values.add(value);
 
-            boolean usingDefaultChoice = defaultLeaveTypeChoice != null && defaultLeaveTypeChoice.equals(value);
+            var usingDefaultChoice = defaultLeaveTypeChoice != null && defaultLeaveTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && leaveTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -1638,9 +1641,9 @@ public class EmployeeControl
 
     public LeaveReasonChoicesBean getLeaveReasonChoices(String defaultLeaveReasonChoice, Language language, boolean allowNullChoice) {
         List<LeaveReason> leaveReasons = getLeaveReasons();
-        int size = leaveReasons.size();
-        List<String> labels = new ArrayList<>(size);
-        List<String> values = new ArrayList<>(size);
+        var size = leaveReasons.size();
+        var labels = new ArrayList<String>(size);
+        var values = new ArrayList<String>(size);
         String defaultValue = null;
 
         if(allowNullChoice) {
@@ -1655,13 +1658,13 @@ public class EmployeeControl
         for(var leaveReason : leaveReasons) {
             LeaveReasonDetail leaveReasonDetail = leaveReason.getLastDetail();
 
-            String label = getBestLeaveReasonDescription(leaveReason, language);
-            String value = leaveReasonDetail.getLeaveReasonName();
+            var label = getBestLeaveReasonDescription(leaveReason, language);
+            var value = leaveReasonDetail.getLeaveReasonName();
 
             labels.add(label == null? value: label);
             values.add(value);
 
-            boolean usingDefaultChoice = defaultLeaveReasonChoice != null && defaultLeaveReasonChoice.equals(value);
+            var usingDefaultChoice = defaultLeaveReasonChoice != null && defaultLeaveReasonChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && leaveReasonDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -2397,9 +2400,9 @@ public class EmployeeControl
     public TerminationReasonChoicesBean getTerminationReasonChoices(String defaultTerminationReasonChoice, Language language,
             boolean allowNullChoice) {
         List<TerminationReason> terminationReasons = getTerminationReasons();
-        int size = terminationReasons.size();
-        List<String> labels = new ArrayList<>(size);
-        List<String> values = new ArrayList<>(size);
+        var size = terminationReasons.size();
+        var labels = new ArrayList<String>(size);
+        var values = new ArrayList<String>(size);
         String defaultValue = null;
         
         if(allowNullChoice) {
@@ -2414,13 +2417,13 @@ public class EmployeeControl
         for(var terminationReason : terminationReasons) {
             TerminationReasonDetail terminationReasonDetail = terminationReason.getLastDetail();
             
-            String label = getBestTerminationReasonDescription(terminationReason, language);
-            String value = terminationReasonDetail.getTerminationReasonName();
+            var label = getBestTerminationReasonDescription(terminationReason, language);
+            var value = terminationReasonDetail.getTerminationReasonName();
             
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultTerminationReasonChoice != null && defaultTerminationReasonChoice.equals(value);
+            var usingDefaultChoice = defaultTerminationReasonChoice != null && defaultTerminationReasonChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && terminationReasonDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -2825,9 +2828,9 @@ public class EmployeeControl
     public TerminationTypeChoicesBean getTerminationTypeChoices(String defaultTerminationTypeChoice, Language language,
             boolean allowNullChoice) {
         List<TerminationType> terminationTypes = getTerminationTypes();
-        int size = terminationTypes.size();
-        List<String> labels = new ArrayList<>(size);
-        List<String> values = new ArrayList<>(size);
+        var size = terminationTypes.size();
+        var labels = new ArrayList<String>(size);
+        var values = new ArrayList<String>(size);
         String defaultValue = null;
         
         if(allowNullChoice) {
@@ -2842,13 +2845,13 @@ public class EmployeeControl
         for(var terminationType : terminationTypes) {
             TerminationTypeDetail terminationTypeDetail = terminationType.getLastDetail();
             
-            String label = getBestTerminationTypeDescription(terminationType, language);
-            String value = terminationTypeDetail.getTerminationTypeName();
+            var label = getBestTerminationTypeDescription(terminationType, language);
+            var value = terminationTypeDetail.getTerminationTypeName();
             
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultTerminationTypeChoice != null && defaultTerminationTypeChoice.equals(value);
+            var usingDefaultChoice = defaultTerminationTypeChoice != null && defaultTerminationTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && terminationTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -3548,9 +3551,9 @@ public class EmployeeControl
     public EmployeeTypeChoicesBean getEmployeeTypeChoices(String defaultEmployeeTypeChoice, Language language,
             boolean allowNullChoice) {
         List<EmployeeType> employeeTypes = getEmployeeTypes();
-        int size = employeeTypes.size();
-        List<String> labels = new ArrayList<>(size);
-        List<String> values = new ArrayList<>(size);
+        var size = employeeTypes.size();
+        var labels = new ArrayList<String>(size);
+        var values = new ArrayList<String>(size);
         String defaultValue = null;
         
         if(allowNullChoice) {
@@ -3564,13 +3567,13 @@ public class EmployeeControl
         
         for(var employeeType : employeeTypes) {
             EmployeeTypeDetail employeeTypeDetail = employeeType.getLastDetail();
-            String label = getBestEmployeeTypeDescription(employeeType, language);
-            String value = employeeTypeDetail.getEmployeeTypeName();
+            var label = getBestEmployeeTypeDescription(employeeType, language);
+            var value = employeeTypeDetail.getEmployeeTypeName();
             
             labels.add(label == null? value: label);
             values.add(value);
             
-            boolean usingDefaultChoice = defaultEmployeeTypeChoice != null && defaultEmployeeTypeChoice.equals(value);
+            var usingDefaultChoice = defaultEmployeeTypeChoice != null && defaultEmployeeTypeChoice.equals(value);
             if(usingDefaultChoice || (defaultValue == null && employeeTypeDetail.getIsDefault())) {
                 defaultValue = value;
             }
@@ -3860,7 +3863,15 @@ public class EmployeeControl
         
         return partyEmployee;
     }
-    
+
+    public long countPartyEmployees() {
+        return session.queryForLong(
+                "SELECT COUNT(*) " +
+                "FROM partyemployees " +
+                "WHERE pemp_thrutime = ?",
+                Session.MAX_TIME);
+    }
+
     public List<PartyEmployee> getPartyEmployees() {
         List<PartyEmployee> partyEmployees;
         
@@ -3869,7 +3880,8 @@ public class EmployeeControl
                     "SELECT _ALL_ " +
                     "FROM partyemployees " +
                     "WHERE pemp_thrutime = ? " +
-                    "ORDER BY pemp_partyemployeename");
+                    "ORDER BY pemp_partyemployeename " +
+                    "_LIMIT_");
             
             ps.setLong(1, Session.MAX_TIME);
             
@@ -4024,27 +4036,26 @@ public class EmployeeControl
             eea.addExecutionError(ExecutionErrors.UnknownEmployeeAvailabilityChoice.name(), employeeAvailabilityChoice);
         }
     }
-    
-    public List<EmployeeTransfer> getEmployeeTransfers(UserVisit userVisit, boolean includeInactive) {
-        var workflowControl = getWorkflowControl();
-        List<PartyEmployee> partyEmployees = getPartyEmployees();
+
+    public List<EmployeeTransfer> getEmployeeTransfers(UserVisit userVisit, Collection<PartyEmployee> partyEmployees) {
         List<EmployeeTransfer> employeeTransfers = new ArrayList<>(partyEmployees.size());
         EmployeeTransferCache employeeTransferCache = getEmployeeTransferCaches(userVisit).getEmployeeTransferCache();
-        
-        partyEmployees.stream().map((partyEmployee) -> partyEmployee.getParty()).forEach((party) -> {
-            EntityInstance entityInstance = getEntityInstanceByBasePK(party.getPrimaryKey());
-            WorkflowEntityStatus workflowEntityStatus = workflowControl.getWorkflowEntityStatusByEntityInstanceUsingNames(EmployeeStatusConstants.Workflow_EMPLOYEE_STATUS, entityInstance);
-            boolean active = workflowEntityStatus.getWorkflowStep().getLastDetail().getWorkflowStepName().equals(EmployeeStatusConstants.WorkflowStep_ACTIVE);
-            if (active || includeInactive) {
-                employeeTransfers.add(employeeTransferCache.getEmployeeTransfer(party));
-            }
-        });
-        
+
+        partyEmployees.stream().map((partyEmployee) -> partyEmployee.getParty()).forEach((party) -> employeeTransfers.add(employeeTransferCache.getTransfer(party)));
+
         return employeeTransfers;
     }
-    
+
+    public List<EmployeeTransfer> getEmployeeTransfers(UserVisit userVisit) {
+        return getEmployeeTransfers(userVisit, getPartyEmployees());
+    }
+
+    public EmployeeTransfer getEmployeeTransfer(UserVisit userVisit, PartyEmployee partyEmployee) {
+        return getEmployeeTransferCaches(userVisit).getEmployeeTransferCache().getTransfer(partyEmployee);
+    }
+
     public EmployeeTransfer getEmployeeTransfer(UserVisit userVisit, Party party) {
-        return getEmployeeTransferCaches(userVisit).getEmployeeTransferCache().getEmployeeTransfer(party);
+        return getEmployeeTransferCaches(userVisit).getEmployeeTransferCache().getTransfer(party);
     }
     
     public void updatePartyEmployeeFromValue(PartyEmployeeValue partyEmployeeValue, BasePK updatedBy) {
@@ -4466,7 +4477,7 @@ public class EmployeeControl
     // --------------------------------------------------------------------------------
 
     public List<EmployeeResultTransfer> getEmployeeResultTransfers(UserVisit userVisit, UserVisitSearch userVisitSearch) {
-        var search = userVisitSearch.getSearch();
+        var searchControl = Session.getModelController(SearchControl.class);
         var employeeResultTransfers = new ArrayList<EmployeeResultTransfer>();
         var includeEmployee = false;
 
@@ -4475,32 +4486,37 @@ public class EmployeeControl
             includeEmployee = options.contains(SearchOptions.EmployeeResultIncludeEmployee);
         }
 
-        try {
+        try (var rs = searchControl.getUserVisitSearchResultSet(userVisitSearch)) {
             var employeeControl = Session.getModelController(EmployeeControl.class);
-            var ps = SearchResultFactory.getInstance().prepareStatement(
-                    "SELECT eni_entityuniqueid " +
-                            "FROM searchresults, entityinstances " +
-                            "WHERE srchr_srch_searchid = ? AND srchr_eni_entityinstanceid = eni_entityinstanceid " +
-                            "ORDER BY srchr_sortorder, srchr_eni_entityinstanceid " +
-                            "_LIMIT_");
 
-            ps.setLong(1, search.getPrimaryKey().getEntityId());
+            while(rs.next()) {
+                var party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
 
-            try (var rs = ps.executeQuery()) {
-                while(rs.next()) {
-                    Party party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(1)));
-
-                    employeeResultTransfers.add(new EmployeeResultTransfer(party.getLastDetail().getPartyName(),
-                            includeEmployee ? employeeControl.getEmployeeTransfer(userVisit, party) : null));
-                }
-            } catch (SQLException se) {
-                throw new PersistenceDatabaseException(se);
+                employeeResultTransfers.add(new EmployeeResultTransfer(party.getLastDetail().getPartyName(),
+                        includeEmployee ? employeeControl.getEmployeeTransfer(userVisit, party) : null));
             }
         } catch (SQLException se) {
             throw new PersistenceDatabaseException(se);
         }
 
         return employeeResultTransfers;
+    }
+
+    public List<EmployeeResultObject> getEmployeeResultObjects(UserVisitSearch userVisitSearch) {
+        var searchControl = Session.getModelController(SearchControl.class);
+        var employeeResultObjects = new ArrayList<EmployeeResultObject>();
+
+        try (var rs = searchControl.getUserVisitSearchResultSet(userVisitSearch)) {
+            while(rs.next()) {
+                var party = getPartyControl().getPartyByPK(new PartyPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
+
+                employeeResultObjects.add(new EmployeeResultObject(party));
+            }
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return employeeResultObjects;
     }
 
 }

@@ -62,15 +62,15 @@ public class RemoveEmployeFromDepartmentCommand
 
         if(!hasExecutionErrors()) {
             String companyName = form.getCompanyName();
-            PartyCompany partyCompany = CompanyLogic.getInstance().getPartyCompanyByName(this, companyName, null, false);
+            PartyCompany partyCompany = CompanyLogic.getInstance().getPartyCompanyByName(this, companyName, null, null, false);
 
             if(!hasExecutionErrors()) {
                 String divisionName = form.getDivisionName();
-                PartyDivision partyDivision = DivisionLogic.getInstance().getPartyDivisionByName(this, partyCompany == null ? null : partyCompany.getParty(), divisionName, null, false);
+                PartyDivision partyDivision = DivisionLogic.getInstance().getPartyDivisionByName(this, partyCompany == null ? null : partyCompany.getParty(), divisionName, null, null, false);
 
                 if(!hasExecutionErrors()) {
                     String departmentName = form.getDepartmentName();
-                    PartyDepartment partyDepartment = DepartmentLogic.getInstance().getPartyDepartmentByName(this, partyDivision == null ? null : partyDivision.getParty(), departmentName, null, true);
+                    PartyDepartment partyDepartment = DepartmentLogic.getInstance().getPartyDepartmentByName(this, partyDivision == null ? null : partyDivision.getParty(), departmentName, null, null, true);
 
                     if(!hasExecutionErrors()) {
                         Party departmentParty = partyDepartment.getParty();

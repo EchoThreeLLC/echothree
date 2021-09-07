@@ -14,14 +14,19 @@
 // limitations under the License.
 // --------------------------------------------------------------------------------
 
-package com.echothree.control.user.party.common.form;
+package com.echothree.control.user.customer.common.result;
 
-import com.echothree.util.common.form.BaseForm;
+import com.echothree.model.control.customer.common.transfer.CustomerTransfer;
+import com.echothree.util.common.command.BaseResult;
+import java.util.List;
 
-public interface GetEmployeesForm
-        extends BaseForm {
-    
-    String getIncludeInactive();
-    void setIncludeInactive(String includeInactive);
+public interface GetCustomersResult
+        extends BaseResult {
+
+    Long getCustomerCount();
+    void setCustomerCount(Long customerCount);
+
+    List<CustomerTransfer> getCustomers();
+    void setCustomers(List<CustomerTransfer> customers);
     
 }

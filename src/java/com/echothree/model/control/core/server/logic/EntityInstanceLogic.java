@@ -133,7 +133,7 @@ public class EntityInstanceLogic
     
     public EntityInstance getEntityInstance(final ExecutionErrorAccumulator eea, final String entityRef, final String key,
             final String guid, final String ulid, final String componentVendorName, final String... entityTypeNames) {
-        int parameterCount = countPossibleEntitySpecs(entityRef, key, guid, ulid);
+        var parameterCount = countPossibleEntitySpecs(entityRef, key, guid, ulid);
         EntityInstance entityInstance = null;
         
         if(parameterCount == 1) {
@@ -195,19 +195,25 @@ public class EntityInstanceLogic
         return (entityRef == null ? 0 : 1) + (key == null ? 0 : 1) + (guid == null ? 0 : 1) + (ulid == null ? 0 : 1);
     }
     
-    public int countPossibleEntitySpecs(final EntityRefSpec entityRefSpec, final KeySpec keySpec, final GuidSpec guidSpec, final UlidSpec ulidSpec) {
-        return countPossibleEntitySpecs(entityRefSpec.getEntityRef(), keySpec.getKey(), guidSpec.getGuid(), ulidSpec.getUlid());
+    public int countPossibleEntitySpecs(final EntityRefSpec entityRefSpec, final KeySpec keySpec, final GuidSpec guidSpec,
+            final UlidSpec ulidSpec) {
+        return countPossibleEntitySpecs(entityRefSpec == null ? null : entityRefSpec.getEntityRef(),
+                keySpec == null ? null : keySpec.getKey(), guidSpec == null ? null : guidSpec.getGuid(),
+                ulidSpec == null ? null : ulidSpec.getUlid());
     }
     
     public int countPossibleEntitySpecs(final UniversalEntitySpec universalEntitySpec) {
-        return countPossibleEntitySpecs(universalEntitySpec.getEntityRef(), universalEntitySpec.getKey(), universalEntitySpec.getGuid(), universalEntitySpec.getUlid());
+        return universalEntitySpec == null ? 0 : countPossibleEntitySpecs(universalEntitySpec.getEntityRef(),
+                universalEntitySpec.getKey(), universalEntitySpec.getGuid(), universalEntitySpec.getUlid());
     }
     
     public String getEntityRefFromEntityInstance(EntityInstance entityInstance) {
-        EntityTypeDetail entityTypeDetail = entityInstance.getEntityType().getLastDetail();
-        ComponentVendorDetail componentVendorDetail = entityTypeDetail.getComponentVendor().getLastDetail();
+        var entityTypeDetail = entityInstance.getEntityType().getLastDetail();
+        var componentVendorDetail = entityTypeDetail.getComponentVendor().getLastDetail();
         
-        return new StringBuilder(componentVendorDetail.getComponentVendorName()).append('.').append(entityTypeDetail.getEntityTypeName()).append('.').append(entityInstance.getEntityUniqueId()).toString();
+        return new StringBuilder(componentVendorDetail.getComponentVendorName()).append('.')
+                .append(entityTypeDetail.getEntityTypeName()).append('.')
+                .append(entityInstance.getEntityUniqueId()).toString();
     }
 
 }
