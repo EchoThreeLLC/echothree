@@ -89,7 +89,7 @@ public class CreateContactListCommand
                     var contactListFrequency = contactListFrequencyName == null ? null : contactListControl.getContactListFrequencyByName(contactListFrequencyName);
 
                     if(contactListFrequencyName == null || contactListFrequency != null) {
-                        var workflowControl = (WorkflowControl)Session.getModelController(WorkflowControl.class);
+                        var workflowControl = Session.getModelController(WorkflowControl.class);
                         var defaultPartyContactListStatusChoice = form.getDefaultPartyContactListStatusChoice();
                         var workflow = workflowControl.getWorkflowByName(PartyContactListStatusConstants.Workflow_PARTY_CONTACT_LIST_STATUS);
                         var defaultPartyContactListStatus = workflowControl.getWorkflowEntranceByName(workflow, defaultPartyContactListStatusChoice);

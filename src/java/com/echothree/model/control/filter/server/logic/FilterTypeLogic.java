@@ -165,7 +165,7 @@ public class FilterTypeLogic
                 }
             }
         } else if(nameParameterCount == 0 && possibleEntitySpecs == 1) {
-            EntityInstance entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, universalSpec,
+            var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, universalSpec,
                     ComponentVendors.ECHOTHREE.name(), EntityTypes.FilterType.name());
 
             if(!eea.hasExecutionErrors()) {
@@ -187,7 +187,6 @@ public class FilterTypeLogic
             boolean allowDefault) {
         return getFilterTypeByUniversalSpec(eea, universalSpec, allowDefault, EntityPermission.READ_WRITE);
     }
-
 
     public void deleteFilterType(final ExecutionErrorAccumulator eea, final FilterType filterType,
             final BasePK deletedBy) {

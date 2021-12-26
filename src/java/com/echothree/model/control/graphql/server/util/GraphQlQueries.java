@@ -157,15 +157,25 @@ import com.echothree.control.user.queue.common.QueueUtil;
 import com.echothree.control.user.queue.server.command.GetQueueTypeCommand;
 import com.echothree.control.user.queue.server.command.GetQueueTypesCommand;
 import com.echothree.control.user.search.common.SearchUtil;
+import com.echothree.control.user.search.common.result.CheckItemSpellingResult;
+import com.echothree.control.user.search.common.result.SearchCustomersResult;
+import com.echothree.control.user.search.server.command.CheckItemSpellingCommand;
 import com.echothree.control.user.search.server.command.GetCustomerResultsCommand;
 import com.echothree.control.user.search.server.command.GetEmployeeResultsCommand;
 import com.echothree.control.user.search.server.command.GetItemResultsCommand;
+import com.echothree.control.user.search.server.command.GetSearchCheckSpellingActionTypeCommand;
+import com.echothree.control.user.search.server.command.GetSearchCheckSpellingActionTypesCommand;
 import com.echothree.control.user.search.server.command.GetVendorResultsCommand;
+import com.echothree.control.user.security.common.SecurityUtil;
+import com.echothree.control.user.security.server.command.GetSecurityRoleGroupCommand;
+import com.echothree.control.user.security.server.command.GetSecurityRoleGroupsCommand;
 import com.echothree.control.user.selector.common.SelectorUtil;
+import com.echothree.control.user.selector.server.command.GetSelectorCommand;
 import com.echothree.control.user.selector.server.command.GetSelectorKindCommand;
 import com.echothree.control.user.selector.server.command.GetSelectorKindsCommand;
 import com.echothree.control.user.selector.server.command.GetSelectorTypeCommand;
 import com.echothree.control.user.selector.server.command.GetSelectorTypesCommand;
+import com.echothree.control.user.selector.server.command.GetSelectorsCommand;
 import com.echothree.control.user.sequence.common.SequenceUtil;
 import com.echothree.control.user.sequence.server.command.GetSequenceChecksumTypeCommand;
 import com.echothree.control.user.sequence.server.command.GetSequenceChecksumTypesCommand;
@@ -194,6 +204,15 @@ import com.echothree.control.user.user.server.command.GetUserLoginCommand;
 import com.echothree.control.user.vendor.common.VendorUtil;
 import com.echothree.control.user.vendor.server.command.GetVendorCommand;
 import com.echothree.control.user.vendor.server.command.GetVendorsCommand;
+import com.echothree.control.user.workflow.common.WorkflowUtil;
+import com.echothree.control.user.workflow.server.command.GetWorkflowCommand;
+import com.echothree.control.user.workflow.server.command.GetWorkflowStepCommand;
+import com.echothree.control.user.workflow.server.command.GetWorkflowStepTypeCommand;
+import com.echothree.control.user.workflow.server.command.GetWorkflowStepTypesCommand;
+import com.echothree.control.user.workflow.server.command.GetWorkflowStepsCommand;
+import com.echothree.control.user.workflow.server.command.GetWorkflowTypeCommand;
+import com.echothree.control.user.workflow.server.command.GetWorkflowTypesCommand;
+import com.echothree.control.user.workflow.server.command.GetWorkflowsCommand;
 import com.echothree.model.control.accounting.server.graphql.CurrencyObject;
 import com.echothree.model.control.content.server.graphql.ContentCatalogItemObject;
 import com.echothree.model.control.content.server.graphql.ContentCatalogObject;
@@ -260,11 +279,15 @@ import com.echothree.model.control.payment.server.graphql.PaymentProcessorTypeCo
 import com.echothree.model.control.payment.server.graphql.PaymentProcessorTypeCodeTypeObject;
 import com.echothree.model.control.payment.server.graphql.PaymentProcessorTypeObject;
 import com.echothree.model.control.queue.server.graphql.QueueTypeObject;
+import com.echothree.model.control.search.server.graphql.CheckItemSpellingObject;
 import com.echothree.model.control.search.server.graphql.CustomerResultsObject;
 import com.echothree.model.control.search.server.graphql.EmployeeResultsObject;
 import com.echothree.model.control.search.server.graphql.ItemResultsObject;
+import com.echothree.model.control.search.server.graphql.SearchCheckSpellingActionTypeObject;
 import com.echothree.model.control.search.server.graphql.VendorResultsObject;
+import com.echothree.model.control.security.server.graphql.SecurityRoleGroupObject;
 import com.echothree.model.control.selector.server.graphql.SelectorKindObject;
+import com.echothree.model.control.selector.server.graphql.SelectorObject;
 import com.echothree.model.control.selector.server.graphql.SelectorTypeObject;
 import com.echothree.model.control.sequence.server.graphql.SequenceChecksumTypeObject;
 import com.echothree.model.control.sequence.server.graphql.SequenceEncoderTypeObject;
@@ -280,6 +303,10 @@ import com.echothree.model.control.user.server.graphql.UserLoginObject;
 import com.echothree.model.control.user.server.graphql.UserSessionObject;
 import com.echothree.model.control.user.server.graphql.UserVisitObject;
 import com.echothree.model.control.vendor.server.graphql.VendorObject;
+import com.echothree.model.control.workflow.server.graphql.WorkflowObject;
+import com.echothree.model.control.workflow.server.graphql.WorkflowStepObject;
+import com.echothree.model.control.workflow.server.graphql.WorkflowStepTypeObject;
+import com.echothree.model.control.workflow.server.graphql.WorkflowTypeObject;
 import com.echothree.model.data.accounting.server.entity.Currency;
 import com.echothree.model.data.content.server.entity.ContentCatalog;
 import com.echothree.model.data.content.server.entity.ContentCatalogItem;
@@ -346,6 +373,9 @@ import com.echothree.model.data.payment.server.entity.PaymentProcessorType;
 import com.echothree.model.data.payment.server.entity.PaymentProcessorTypeCode;
 import com.echothree.model.data.payment.server.entity.PaymentProcessorTypeCodeType;
 import com.echothree.model.data.queue.server.entity.QueueType;
+import com.echothree.model.data.search.server.entity.SearchCheckSpellingActionType;
+import com.echothree.model.data.security.server.entity.SecurityRoleGroup;
+import com.echothree.model.data.selector.server.entity.Selector;
 import com.echothree.model.data.selector.server.entity.SelectorKind;
 import com.echothree.model.data.selector.server.entity.SelectorType;
 import com.echothree.model.data.sequence.server.entity.Sequence;
@@ -362,6 +392,10 @@ import com.echothree.model.data.user.server.entity.UserLogin;
 import com.echothree.model.data.user.server.entity.UserSession;
 import com.echothree.model.data.user.server.entity.UserVisit;
 import com.echothree.model.data.vendor.server.entity.Vendor;
+import com.echothree.model.data.workflow.server.entity.Workflow;
+import com.echothree.model.data.workflow.server.entity.WorkflowStep;
+import com.echothree.model.data.workflow.server.entity.WorkflowStepType;
+import com.echothree.model.data.workflow.server.entity.WorkflowType;
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLID;
 import graphql.annotations.annotationTypes.GraphQLName;
@@ -375,6 +409,254 @@ import javax.naming.NamingException;
 @GraphQLName("query")
 public final class GraphQlQueries
         extends BaseGraphQl {
+
+    @GraphQLField
+    @GraphQLName("searchCheckSpellingActionType")
+    public static SearchCheckSpellingActionTypeObject searchCheckSpellingActionType(final DataFetchingEnvironment env,
+            @GraphQLName("searchCheckSpellingActionTypeName") final String searchCheckSpellingActionTypeName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        SearchCheckSpellingActionType searchCheckSpellingActionType;
+
+        try {
+            var commandForm = SearchUtil.getHome().getGetSearchCheckSpellingActionTypeForm();
+
+            commandForm.setSearchCheckSpellingActionTypeName(searchCheckSpellingActionTypeName);
+            commandForm.setUlid(id);
+
+            searchCheckSpellingActionType = new GetSearchCheckSpellingActionTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return searchCheckSpellingActionType == null ? null : new SearchCheckSpellingActionTypeObject(searchCheckSpellingActionType);
+    }
+
+    @GraphQLField
+    @GraphQLName("searchCheckSpellingActionTypes")
+    public static Collection<SearchCheckSpellingActionTypeObject> searchCheckSpellingActionTypes(final DataFetchingEnvironment env) {
+        Collection<SearchCheckSpellingActionType> searchCheckSpellingActionTypes;
+        Collection<SearchCheckSpellingActionTypeObject> searchCheckSpellingActionTypeObjects;
+
+        try {
+            var commandForm = SearchUtil.getHome().getGetSearchCheckSpellingActionTypesForm();
+
+            searchCheckSpellingActionTypes = new GetSearchCheckSpellingActionTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(searchCheckSpellingActionTypes == null) {
+            searchCheckSpellingActionTypeObjects = emptyList();
+        } else {
+            searchCheckSpellingActionTypeObjects = new ArrayList<>(searchCheckSpellingActionTypes.size());
+
+            searchCheckSpellingActionTypes.stream()
+                    .map(SearchCheckSpellingActionTypeObject::new)
+                    .forEachOrdered(searchCheckSpellingActionTypeObjects::add);
+        }
+
+        return searchCheckSpellingActionTypeObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("workflow")
+    public static WorkflowObject workflow(final DataFetchingEnvironment env,
+            @GraphQLName("workflowName") final String workflowName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        Workflow workflow;
+
+        try {
+            var commandForm = WorkflowUtil.getHome().getGetWorkflowForm();
+
+            commandForm.setWorkflowName(workflowName);
+            commandForm.setUlid(id);
+
+            workflow = new GetWorkflowCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return workflow == null ? null : new WorkflowObject(workflow);
+    }
+
+    @GraphQLField
+    @GraphQLName("workflows")
+    public static Collection<WorkflowObject> workflows(final DataFetchingEnvironment env,
+            @GraphQLName("selectorKindName") final String selectorKindName) {
+        Collection<Workflow> workflows;
+        Collection<WorkflowObject> workflowObjects;
+
+        try {
+            var commandForm = WorkflowUtil.getHome().getGetWorkflowsForm();
+
+            commandForm.setSelectorKindName(selectorKindName);
+
+            workflows = new GetWorkflowsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(workflows == null) {
+            workflowObjects = emptyList();
+        } else {
+            workflowObjects = new ArrayList<>(workflows.size());
+
+            workflows.stream()
+                    .map(WorkflowObject::new)
+                    .forEachOrdered(workflowObjects::add);
+        }
+
+        return workflowObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("workflowStep")
+    public static WorkflowStepObject workflowStep(final DataFetchingEnvironment env,
+            @GraphQLName("workflowName") final String workflowName,
+            @GraphQLName("workflowStepName") final String workflowStepName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        WorkflowStep workflowStep;
+
+        try {
+            var commandForm = WorkflowUtil.getHome().getGetWorkflowStepForm();
+
+            commandForm.setWorkflowName(workflowName);
+            commandForm.setWorkflowStepName(workflowStepName);
+            commandForm.setUlid(id);
+
+            workflowStep = new GetWorkflowStepCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return workflowStep == null ? null : new WorkflowStepObject(workflowStep);
+    }
+
+    @GraphQLField
+    @GraphQLName("workflowSteps")
+    public static Collection<WorkflowStepObject> workflowSteps(final DataFetchingEnvironment env,
+            @GraphQLName("workflowName") @GraphQLNonNull final String workflowName) {
+        Collection<WorkflowStep> workflowSteps;
+        Collection<WorkflowStepObject> workflowStepObjects;
+
+        try {
+            var commandForm = WorkflowUtil.getHome().getGetWorkflowStepsForm();
+
+            commandForm.setWorkflowName(workflowName);
+
+            workflowSteps = new GetWorkflowStepsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(workflowSteps == null) {
+            workflowStepObjects = emptyList();
+        } else {
+            workflowStepObjects = new ArrayList<>(workflowSteps.size());
+
+            workflowSteps.stream()
+                    .map(WorkflowStepObject::new)
+                    .forEachOrdered(workflowStepObjects::add);
+        }
+
+        return workflowStepObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("workflowType")
+    public static WorkflowTypeObject workflowType(final DataFetchingEnvironment env,
+            @GraphQLName("workflowTypeName") final String workflowTypeName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        WorkflowType workflowType;
+
+        try {
+            var commandForm = WorkflowUtil.getHome().getGetWorkflowTypeForm();
+
+            commandForm.setWorkflowTypeName(workflowTypeName);
+            commandForm.setUlid(id);
+
+            workflowType = new GetWorkflowTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return workflowType == null ? null : new WorkflowTypeObject(workflowType);
+    }
+
+    @GraphQLField
+    @GraphQLName("workflowTypes")
+    public static Collection<WorkflowTypeObject> workflowTypes(final DataFetchingEnvironment env) {
+        Collection<WorkflowType> workflowTypes;
+        Collection<WorkflowTypeObject> workflowTypeObjects;
+
+        try {
+            var commandForm = WorkflowUtil.getHome().getGetWorkflowTypesForm();
+
+            workflowTypes = new GetWorkflowTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(workflowTypes == null) {
+            workflowTypeObjects = emptyList();
+        } else {
+            workflowTypeObjects = new ArrayList<>(workflowTypes.size());
+
+            workflowTypes.stream()
+                    .map(WorkflowTypeObject::new)
+                    .forEachOrdered(workflowTypeObjects::add);
+        }
+
+        return workflowTypeObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("workflowStepType")
+    public static WorkflowStepTypeObject workflowStepType(final DataFetchingEnvironment env,
+            @GraphQLName("workflowStepTypeName") final String workflowStepTypeName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        WorkflowStepType workflowStepType;
+
+        try {
+            var commandForm = WorkflowUtil.getHome().getGetWorkflowStepTypeForm();
+
+            commandForm.setWorkflowStepTypeName(workflowStepTypeName);
+            commandForm.setUlid(id);
+
+            workflowStepType = new GetWorkflowStepTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return workflowStepType == null ? null : new WorkflowStepTypeObject(workflowStepType);
+    }
+
+    @GraphQLField
+    @GraphQLName("workflowStepTypes")
+    public static Collection<WorkflowStepTypeObject> workflowStepTypes(final DataFetchingEnvironment env) {
+        Collection<WorkflowStepType> workflowStepTypes;
+        Collection<WorkflowStepTypeObject> workflowStepTypeObjects;
+
+        try {
+            var commandForm = WorkflowUtil.getHome().getGetWorkflowStepTypesForm();
+
+            workflowStepTypes = new GetWorkflowStepTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(workflowStepTypes == null) {
+            workflowStepTypeObjects = emptyList();
+        } else {
+            workflowStepTypeObjects = new ArrayList<>(workflowStepTypes.size());
+
+            workflowStepTypes.stream()
+                    .map(WorkflowStepTypeObject::new)
+                    .forEachOrdered(workflowStepTypeObjects::add);
+        }
+
+        return workflowStepTypeObjects;
+    }
 
     @GraphQLField
     @GraphQLName("sequence")
@@ -480,7 +762,7 @@ public final class GraphQlQueries
     @GraphQLField
     @GraphQLName("sequenceChecksumType")
     public static SequenceChecksumTypeObject sequenceChecksumType(final DataFetchingEnvironment env,
-            @GraphQLName("sequenceChecksumTypeName") final String sequenceChecksumTypeName) {
+            @GraphQLName("sequenceChecksumTypeName") @GraphQLNonNull final String sequenceChecksumTypeName) {
         SequenceChecksumType sequenceChecksumType;
 
         try {
@@ -526,7 +808,7 @@ public final class GraphQlQueries
     @GraphQLField
     @GraphQLName("sequenceEncoderType")
     public static SequenceEncoderTypeObject sequenceEncoderType(final DataFetchingEnvironment env,
-            @GraphQLName("sequenceEncoderTypeName") final String sequenceEncoderTypeName) {
+            @GraphQLName("sequenceEncoderTypeName") @GraphQLNonNull final String sequenceEncoderTypeName) {
         SequenceEncoderType sequenceEncoderType;
 
         try {
@@ -668,6 +950,63 @@ public final class GraphQlQueries
         }
 
         return selectorTypeObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("selector")
+    public static SelectorObject selector(final DataFetchingEnvironment env,
+            @GraphQLName("selectorKindName") final String selectorKindName,
+            @GraphQLName("selectorTypeName") final String selectorTypeName,
+            @GraphQLName("selectorName") final String selectorName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        Selector selector;
+
+        try {
+            var commandForm = SelectorUtil.getHome().getGetSelectorForm();
+
+            commandForm.setSelectorKindName(selectorKindName);
+            commandForm.setSelectorTypeName(selectorTypeName);
+            commandForm.setSelectorName(selectorName);
+            commandForm.setUlid(id);
+
+            selector = new GetSelectorCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return selector == null ? null : new SelectorObject(selector);
+    }
+
+    @GraphQLField
+    @GraphQLName("selectors")
+    public static Collection<SelectorObject> selectors(final DataFetchingEnvironment env,
+            @GraphQLName("selectorKindName") final String selectorKindName,
+            @GraphQLName("selectorTypeName") final String selectorTypeName) {
+        Collection<Selector> selectors;
+        Collection<SelectorObject> selectorObjects;
+
+        try {
+            var commandForm = SelectorUtil.getHome().getGetSelectorsForm();
+
+            commandForm.setSelectorKindName(selectorKindName);
+            commandForm.setSelectorTypeName(selectorTypeName);
+
+            selectors = new GetSelectorsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(selectors == null) {
+            selectorObjects = emptyList();
+        } else {
+            selectorObjects = new ArrayList<>(selectors.size());
+
+            selectors.stream()
+                    .map(SelectorObject::new)
+                    .forEachOrdered(selectorObjects::add);
+        }
+
+        return selectorObjects;
     }
 
     @GraphQLField
@@ -3414,7 +3753,7 @@ public final class GraphQlQueries
 
             commandForm.setSearchTypeName(searchTypeName);
 
-            if(new GetCustomerResultsCommand(getUserVisitPK(env), commandForm).canGetResultsForGraphQl()) {
+            if(new GetCustomerResultsCommand(getUserVisitPK(env), commandForm).canQueryByGraphQl()) {
                 customerResultsObject.setForm(commandForm);
             }
         } catch (NamingException ex) {
@@ -3435,7 +3774,7 @@ public final class GraphQlQueries
 
             commandForm.setSearchTypeName(searchTypeName);
 
-            if(new GetEmployeeResultsCommand(getUserVisitPK(env), commandForm).canGetResultsForGraphQl()) {
+            if(new GetEmployeeResultsCommand(getUserVisitPK(env), commandForm).canQueryByGraphQl()) {
                 employeeResultsObject.setForm(commandForm);
             }
         } catch (NamingException ex) {
@@ -3456,7 +3795,7 @@ public final class GraphQlQueries
 
             commandForm.setSearchTypeName(searchTypeName);
 
-            if(new GetItemResultsCommand(getUserVisitPK(env), commandForm).canGetResultsForGraphQl()) {
+            if(new GetItemResultsCommand(getUserVisitPK(env), commandForm).canQueryByGraphQl()) {
                 itemResultsObject.setForm(commandForm);
             }
         } catch (NamingException ex) {
@@ -3464,6 +3803,33 @@ public final class GraphQlQueries
         }
 
         return itemResultsObject;
+    }
+
+    @GraphQLField
+    @GraphQLName("checkItemSpelling")
+    public static CheckItemSpellingObject checkItemSpelling(final DataFetchingEnvironment env,
+            @GraphQLName("languageIsoName") final String languageIsoName,
+            @GraphQLName("searchDefaultOperatorName") final String searchDefaultOperatorName,
+            @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName,
+            @GraphQLName("q") final String q) {
+        var checkItemSpellingObject = new CheckItemSpellingObject();
+
+        try {
+            var commandForm = SearchUtil.getHome().getCheckItemSpellingForm();
+
+            commandForm.setLanguageIsoName(languageIsoName);
+            commandForm.setSearchDefaultOperatorName(searchDefaultOperatorName);
+            commandForm.setSearchTypeName(searchTypeName);
+            commandForm.setQ(q);
+
+            var commandResult = SearchUtil.getHome().checkItemSpelling(getUserVisitPK(env), commandForm);
+            checkItemSpellingObject.setCommandResult(commandResult);
+            checkItemSpellingObject.setResult(commandResult.hasErrors() ? null : (CheckItemSpellingResult)commandResult.getExecutionResult().getResult());
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return checkItemSpellingObject;
     }
 
     @GraphQLField
@@ -3477,7 +3843,7 @@ public final class GraphQlQueries
 
             commandForm.setSearchTypeName(searchTypeName);
 
-            if(new GetVendorResultsCommand(getUserVisitPK(env), commandForm).canGetResultsForGraphQl()) {
+            if(new GetVendorResultsCommand(getUserVisitPK(env), commandForm).canQueryByGraphQl()) {
                 vendorResultsObject.setForm(commandForm);
             }
         } catch (NamingException ex) {
@@ -4424,6 +4790,57 @@ public final class GraphQlQueries
         }
         
         return itemCategoryObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("securityRoleGroup")
+    public static SecurityRoleGroupObject securityRoleGroup(final DataFetchingEnvironment env,
+            @GraphQLName("securityRoleGroupName") final String securityRoleGroupName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        SecurityRoleGroup securityRoleGroup;
+
+        try {
+            var commandForm = SecurityUtil.getHome().getGetSecurityRoleGroupForm();
+
+            commandForm.setSecurityRoleGroupName(securityRoleGroupName);
+            commandForm.setUlid(id);
+
+            securityRoleGroup = new GetSecurityRoleGroupCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return securityRoleGroup == null ? null : new SecurityRoleGroupObject(securityRoleGroup);
+    }
+
+    @GraphQLField
+    @GraphQLName("securityRoleGroups")
+    public static Collection<SecurityRoleGroupObject> securityRoleGroups(final DataFetchingEnvironment env,
+            @GraphQLName("parentSecurityRoleGroupName") final String parentSecurityRoleGroupName) {
+        Collection<SecurityRoleGroup> securityRoleGroups;
+        Collection<SecurityRoleGroupObject> securityRoleGroupObjects;
+
+        try {
+            var commandForm = SecurityUtil.getHome().getGetSecurityRoleGroupsForm();
+
+            commandForm.setParentSecurityRoleGroupName(parentSecurityRoleGroupName);
+
+            securityRoleGroups = new GetSecurityRoleGroupsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(securityRoleGroups == null) {
+            securityRoleGroupObjects = emptyList();
+        } else {
+            securityRoleGroupObjects = new ArrayList<>(securityRoleGroups.size());
+
+            securityRoleGroups.stream()
+                    .map(SecurityRoleGroupObject::new)
+                    .forEachOrdered(securityRoleGroupObjects::add);
+        }
+
+        return securityRoleGroupObjects;
     }
 
     @GraphQLField

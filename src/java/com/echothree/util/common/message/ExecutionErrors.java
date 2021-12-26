@@ -151,6 +151,7 @@ public enum ExecutionErrors {
     DuplicateSecurityRoleDescription,
     DuplicateSecurityRoleGroupDescription,
     DuplicateSecurityRoleGroupName,
+    UnknownDefaultSecurityRoleGroup,
     DuplicateSecurityRoleName,
     DuplicateSelectorBooleanTypeDescription,
     DuplicateSelectorComparisonTypeDescription,
@@ -2231,5 +2232,10 @@ public enum ExecutionErrors {
     UnknownDefaultFilterAdjustmentSource,
     UnknownDefaultFilterAdjustment,
     UnknownDefaultFilter,
+    UnknownDefaultSelector,
+    UnknownDefaultWorkflowType,
+    UnknownDefaultWorkflowStepType,
+    UnknownDefaultWorkflowStep,
+    MissingRequiredWorkflowName,
 
 }

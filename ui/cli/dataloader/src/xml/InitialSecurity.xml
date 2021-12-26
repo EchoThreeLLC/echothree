@@ -1806,11 +1806,26 @@
         </securityRoleGroup>
         <securityRoleGroup securityRoleGroupName="Selector" parentSecurityRoleGroupName="SelectorComponent" isDefault="false" sortOrder="1">
             <securityRoleGroupDescription languageIsoName="en" description="Selector" />
+            <securityRole securityRoleName="Create" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Selector Create" />
+            </securityRole>
+            <securityRole securityRoleName="Edit" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Selector Edit" />
+            </securityRole>
+            <securityRole securityRoleName="Delete" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Selector Delete" />
+            </securityRole>
             <securityRole securityRoleName="List" isDefault="true" sortOrder="1">
                 <securityRoleDescription languageIsoName="en" description="Selector List" />
             </securityRole>
             <securityRole securityRoleName="Review" isDefault="false" sortOrder="1">
                 <securityRoleDescription languageIsoName="en" description="Selector Review" />
+            </securityRole>
+            <securityRole securityRoleName="Choices" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Selector Choices" />
+            </securityRole>
+            <securityRole securityRoleName="Description" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Selector Description" />
             </securityRole>
         </securityRoleGroup>
         <securityRoleGroup securityRoleGroupName="SequenceComponent" parentSecurityRoleGroupName="ROOT" isDefault="false" sortOrder="1">
@@ -2413,6 +2428,18 @@
         <securityRoleGroup securityRoleGroupName="WorkflowComponent" parentSecurityRoleGroupName="ROOT" isDefault="false" sortOrder="1">
             <securityRoleGroupDescription languageIsoName="en" description="Workflow Component" />
         </securityRoleGroup>
+        <securityRoleGroup securityRoleGroupName="WorkflowType" parentSecurityRoleGroupName="WorkflowComponent" isDefault="false" sortOrder="1">
+            <securityRoleGroupDescription languageIsoName="en" description="Workflow Type" />
+            <securityRole securityRoleName="List" isDefault="true" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Workflow Type List" />
+            </securityRole>
+            <securityRole securityRoleName="Review" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Workflow Type Review" />
+            </securityRole>
+            <securityRole securityRoleName="Choices" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Workflow Type Choices" />
+            </securityRole>
+        </securityRoleGroup>
         <securityRoleGroup securityRoleGroupName="Workflow" parentSecurityRoleGroupName="WorkflowComponent" isDefault="false" sortOrder="1">
             <securityRoleGroupDescription languageIsoName="en" description="Workflow" />
             <securityRole securityRoleName="Create" isDefault="false" sortOrder="1">
@@ -2477,6 +2504,18 @@
             </securityRole>
             <securityRole securityRoleName="WorkflowStep" isDefault="false" sortOrder="1">
                 <securityRoleDescription languageIsoName="en" description="Workflow Entrance Step" />
+            </securityRole>
+        </securityRoleGroup>
+        <securityRoleGroup securityRoleGroupName="WorkflowStepType" parentSecurityRoleGroupName="WorkflowComponent" isDefault="false" sortOrder="1">
+            <securityRoleGroupDescription languageIsoName="en" description="Workflow Step Type" />
+            <securityRole securityRoleName="List" isDefault="true" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Workflow Step Type List" />
+            </securityRole>
+            <securityRole securityRoleName="Review" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Workflow Step Type Review" />
+            </securityRole>
+            <securityRole securityRoleName="Choices" isDefault="false" sortOrder="1">
+                <securityRoleDescription languageIsoName="en" description="Workflow Step Type Choices" />
             </securityRole>
         </securityRoleGroup>
         <securityRoleGroup securityRoleGroupName="WorkflowStep" parentSecurityRoleGroupName="WorkflowComponent" isDefault="false" sortOrder="1">
@@ -6537,12 +6576,6 @@
             <securityRole securityRoleName="Delete" isDefault="false" sortOrder="1">
                 <securityRoleDescription languageIsoName="en" description="Search Check Spelling Action Type Delete" />
             </securityRole>
-            <securityRole securityRoleName="List" isDefault="true" sortOrder="1">
-                <securityRoleDescription languageIsoName="en" description="Search Check Spelling Action Type List" />
-            </securityRole>
-            <securityRole securityRoleName="Review" isDefault="false" sortOrder="1">
-                <securityRoleDescription languageIsoName="en" description="Search Check Spelling Action Type Review" />
-            </securityRole>
             <securityRole securityRoleName="Choices" isDefault="false" sortOrder="1">
                 <securityRoleDescription languageIsoName="en" description="Search Check Spelling Action Type Choices" />
             </securityRole>
@@ -7770,8 +7803,13 @@
             <partySecurityRoleTemplateRole securityRoleGroupName="SelectorType" securityRoleName="Review" />
             <partySecurityRoleTemplateRole securityRoleGroupName="SelectorType" securityRoleName="Choices" />
             <partySecurityRoleTemplateRole securityRoleGroupName="SelectorType" securityRoleName="Description" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="Selector" securityRoleName="Create" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="Selector" securityRoleName="Edit" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="Selector" securityRoleName="Delete" />
             <partySecurityRoleTemplateRole securityRoleGroupName="Selector" securityRoleName="List" />
             <partySecurityRoleTemplateRole securityRoleGroupName="Selector" securityRoleName="Review" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="Selector" securityRoleName="Choices" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="Selector" securityRoleName="Description" />
             <partySecurityRoleTemplateRole securityRoleGroupName="SequenceEncoderType" securityRoleName="Create" />
             <partySecurityRoleTemplateRole securityRoleGroupName="SequenceEncoderType" securityRoleName="Edit" />
             <partySecurityRoleTemplateRole securityRoleGroupName="SequenceEncoderType" securityRoleName="Delete" />
@@ -7967,6 +8005,9 @@
             <partySecurityRoleTemplateRole securityRoleGroupName="Warehouse" securityRoleName="Review" />
             <partySecurityRoleTemplateRole securityRoleGroupName="Wishlist" securityRoleName="List" />
             <partySecurityRoleTemplateRole securityRoleGroupName="Wishlist" securityRoleName="Search" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="WorkflowType" securityRoleName="List" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="WorkflowType" securityRoleName="Review" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="WorkflowType" securityRoleName="Choices" />
             <partySecurityRoleTemplateRole securityRoleGroupName="Workflow" securityRoleName="Create" />
             <partySecurityRoleTemplateRole securityRoleGroupName="Workflow" securityRoleName="Edit" />
             <partySecurityRoleTemplateRole securityRoleGroupName="Workflow" securityRoleName="Delete" />
@@ -7986,6 +8027,9 @@
             <partySecurityRoleTemplateRole securityRoleGroupName="WorkflowEntrance" securityRoleName="SecurityRole" />
             <partySecurityRoleTemplateRole securityRoleGroupName="WorkflowEntrance" securityRoleName="Selector" />
             <partySecurityRoleTemplateRole securityRoleGroupName="WorkflowEntrance" securityRoleName="WorkflowStep" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="WorkflowStepType" securityRoleName="List" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="WorkflowStepType" securityRoleName="Review" />
+            <partySecurityRoleTemplateRole securityRoleGroupName="WorkflowStepType" securityRoleName="Choices" />
             <partySecurityRoleTemplateRole securityRoleGroupName="WorkflowStep" securityRoleName="Create" />
             <partySecurityRoleTemplateRole securityRoleGroupName="WorkflowStep" securityRoleName="Edit" />
             <partySecurityRoleTemplateRole securityRoleGroupName="WorkflowStep" securityRoleName="Delete" />
@@ -8935,8 +8979,6 @@
             <partySecurityRoleTemplateRole securityRoleGroupName="SearchCheckSpellingActionType" securityRoleName="Create" />
             <partySecurityRoleTemplateRole securityRoleGroupName="SearchCheckSpellingActionType" securityRoleName="Edit" />
             <partySecurityRoleTemplateRole securityRoleGroupName="SearchCheckSpellingActionType" securityRoleName="Delete" />
-            <partySecurityRoleTemplateRole securityRoleGroupName="SearchCheckSpellingActionType" securityRoleName="List" />
-            <partySecurityRoleTemplateRole securityRoleGroupName="SearchCheckSpellingActionType" securityRoleName="Review" />
             <partySecurityRoleTemplateRole securityRoleGroupName="SearchCheckSpellingActionType" securityRoleName="Choices" />
             <partySecurityRoleTemplateRole securityRoleGroupName="SearchCheckSpellingActionType" securityRoleName="Description" />
             <partySecurityRoleTemplateRole securityRoleGroupName="CacheEntry" securityRoleName="List" />
