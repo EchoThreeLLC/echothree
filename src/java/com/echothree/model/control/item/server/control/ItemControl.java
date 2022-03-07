@@ -80,6 +80,7 @@ import com.echothree.model.control.item.common.transfer.RelatedItemTransfer;
 import com.echothree.model.control.item.common.transfer.RelatedItemTypeDescriptionTransfer;
 import com.echothree.model.control.item.common.transfer.RelatedItemTypeTransfer;
 import com.echothree.model.control.item.common.workflow.ItemStatusConstants;
+import com.echothree.model.control.item.server.graphql.ItemObject;
 import com.echothree.model.control.item.server.transfer.HarmonizedTariffScheduleCodeTransferCache;
 import com.echothree.model.control.item.server.transfer.HarmonizedTariffScheduleCodeUnitTransferCache;
 import com.echothree.model.control.item.server.transfer.HarmonizedTariffScheduleCodeUseTypeTransferCache;
@@ -121,7 +122,6 @@ import com.echothree.model.control.offer.server.logic.OfferItemLogic;
 import com.echothree.model.control.search.common.SearchOptions;
 import com.echothree.model.control.search.server.control.SearchControl;
 import static com.echothree.model.control.search.server.control.SearchControl.ENI_ENTITYUNIQUEID_COLUMN_INDEX;
-import com.echothree.model.control.search.server.graphql.ItemResultObject;
 import com.echothree.model.control.vendor.server.control.VendorControl;
 import com.echothree.model.data.accounting.common.pk.CurrencyPK;
 import com.echothree.model.data.accounting.common.pk.ItemAccountingCategoryPK;
@@ -350,6 +350,10 @@ import com.echothree.model.data.party.common.pk.LanguagePK;
 import com.echothree.model.data.party.common.pk.PartyPK;
 import com.echothree.model.data.party.server.entity.Language;
 import com.echothree.model.data.party.server.entity.Party;
+import com.echothree.model.data.payment.common.pk.PaymentProcessorPK;
+import com.echothree.model.data.payment.server.entity.PaymentProcessor;
+import com.echothree.model.data.payment.server.factory.PaymentProcessorFactory;
+import com.echothree.model.data.payment.server.value.PaymentProcessorDetailValue;
 import com.echothree.model.data.returnpolicy.common.pk.ReturnPolicyPK;
 import com.echothree.model.data.returnpolicy.server.entity.ReturnPolicy;
 import com.echothree.model.data.search.common.CachedExecutedSearchResultConstants;
@@ -379,6 +383,7 @@ import com.echothree.util.server.control.BaseModelControl;
 import com.echothree.util.server.message.ExecutionErrorAccumulator;
 import com.echothree.util.server.persistence.EntityPermission;
 import com.echothree.util.server.persistence.Session;
+import static java.lang.Math.toIntExact;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -2972,8 +2977,8 @@ public class ItemControl
         return itemAlias;
     }
     
-    public int countItemAliases(Item item, UnitOfMeasureType unitOfMeasureType, ItemAliasType itemAliasType) {
-        return session.queryForInteger(
+    public long countItemAliases(Item item, UnitOfMeasureType unitOfMeasureType, ItemAliasType itemAliasType) {
+        return session.queryForLong(
                 "SELECT COUNT(*) " +
                 "FROM itemaliases " +
                 "WHERE itmal_itm_itemid = ? AND itmal_uomt_unitofmeasuretypeid = ? AND itmal_iat_itemaliastypeid = ? AND itmal_thrutime = ?",
@@ -5370,7 +5375,39 @@ public class ItemControl
         
         return itemPrice;
     }
-    
+
+    public long countItemPricesByItem(Item item) {
+        return session.queryForLong("""
+                SELECT COUNT(*)
+                FROM itemprices
+                WHERE itmp_itm_itemid = ? AND itmp_thrutime = ?""",
+                item, Session.MAX_TIME);
+    }
+
+    public long countItemPricesByInventoryCondition(InventoryCondition inventoryCondition) {
+        return session.queryForLong("""
+                SELECT COUNT(*)
+                FROM itemprices
+                WHERE itmp_invcon_inventoryconditionid = ? AND itmp_thrutime = ?""",
+                inventoryCondition, Session.MAX_TIME);
+    }
+
+    public long countItemPricesByUnitOfMeasureType(UnitOfMeasureType unitOfMeasureType) {
+        return session.queryForLong("""
+                SELECT COUNT(*)
+                FROM itemprices
+                WHERE itmp_uomt_unitofmeasuretypeid = ? AND itmp_thrutime = ?""",
+                unitOfMeasureType, Session.MAX_TIME);
+    }
+
+    public long countItemPricesByCurrency(Currency currency) {
+        return session.queryForLong("""
+                SELECT COUNT(*)
+                FROM itemprices
+                WHERE itmp_cur_currencyid = ? AND itmp_thrutime = ?""",
+                currency, Session.MAX_TIME);
+    }
+
     private List<ItemPrice> getItemPricesByItem(Item item, EntityPermission entityPermission) {
         List<ItemPrice> itemPrices;
         
@@ -5384,7 +5421,8 @@ public class ItemControl
                         "AND itmp_invcon_inventoryconditionid = invcon_inventoryconditionid AND invcon_lastdetailid = invcondt_inventoryconditiondetailid " +
                         "AND itmp_uomt_unitofmeasuretypeid = uomt_unitofmeasuretypeid AND uomt_lastdetailid = uomtdt_unitofmeasuretypedetailid " +
                         "AND itmp_cur_currencyid = cur_currencyid " +
-                        "ORDER BY invcondt_sortorder, invcondt_inventoryconditionname, uomtdt_sortorder, uomtdt_unitofmeasuretypename, cur_sortorder, cur_currencyisoname";
+                        "ORDER BY invcondt_sortorder, invcondt_inventoryconditionname, uomtdt_sortorder, uomtdt_unitofmeasuretypename, cur_sortorder, cur_currencyisoname " +
+                        "_LIMIT_";
             } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
                 query = "SELECT _ALL_ " +
                         "FROM itemprices " +
@@ -5426,7 +5464,8 @@ public class ItemControl
                         "AND itmp_itm_itemid = itm_itemid AND itm_lastdetailid = itmdt_itemdetailid " +
                         "AND itmp_uomt_unitofmeasuretypeid = uomt_unitofmeasuretypeid AND uomt_lastdetailid = uomtdt_unitofmeasuretypedetailid " +
                         "AND itmp_cur_currencyid = cur_currencyid " +
-                        "ORDER BY itmdt_itemname, uomtdt_sortorder, uomtdt_unitofmeasuretypename, cur_sortorder, cur_currencyisoname";
+                        "ORDER BY itmdt_itemname, uomtdt_sortorder, uomtdt_unitofmeasuretypename, cur_sortorder, cur_currencyisoname " +
+                        "_LIMIT_";
             } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
                 query = "SELECT _ALL_ " +
                         "FROM itemprices " +
@@ -5454,13 +5493,13 @@ public class ItemControl
     public List<ItemPrice> getItemPricesByInventoryConditionForUpdate(InventoryCondition inventoryCondition) {
         return getItemPricesByInventoryCondition(inventoryCondition, EntityPermission.READ_WRITE);
     }
-    
+
     private List<ItemPrice> getItemPricesByUnitOfMeasureType(UnitOfMeasureType unitOfMeasureType, EntityPermission entityPermission) {
         List<ItemPrice> itemPrices;
-        
+
         try {
             String query = null;
-            
+
             if(entityPermission.equals(EntityPermission.READ_ONLY)) {
                 query = "SELECT _ALL_ " +
                         "FROM itemprices, items, itemdetails, inventoryconditions, inventoryconditiondetails, currencies " +
@@ -5468,35 +5507,79 @@ public class ItemControl
                         "AND itmp_itm_itemid = itm_itemid AND itm_lastdetailid = itmdt_itemdetailid " +
                         "AND itmp_invcon_inventoryconditionid = invcon_inventoryconditionid AND invcon_lastdetailid = invcondt_inventoryconditiondetailid " +
                         "AND itmp_cur_currencyid = cur_currencyid " +
-                        "ORDER BY itmdt_itemname, invcondt_sortorder, invcondt_inventoryconditionname, cur_sortorder, cur_currencyisoname";
+                        "ORDER BY itmdt_itemname, invcondt_sortorder, invcondt_inventoryconditionname, cur_sortorder, cur_currencyisoname " +
+                        "_LIMIT_";
             } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
                 query = "SELECT _ALL_ " +
                         "FROM itemprices " +
                         "WHERE itmp_uomt_unitofmeasuretypeid = ? AND itmp_thrutime = ? " +
                         "FOR UPDATE";
             }
-            
+
             PreparedStatement ps = ItemPriceFactory.getInstance().prepareStatement(query);
-            
+
             ps.setLong(1, unitOfMeasureType.getPrimaryKey().getEntityId());
             ps.setLong(2, Session.MAX_TIME);
-            
+
             itemPrices = ItemPriceFactory.getInstance().getEntitiesFromQuery(entityPermission, ps);
         } catch (SQLException se) {
             throw new PersistenceDatabaseException(se);
         }
-        
+
         return itemPrices;
     }
-    
+
     public List<ItemPrice> getItemPricesByUnitOfMeasureType(UnitOfMeasureType unitOfMeasureType) {
         return getItemPricesByUnitOfMeasureType(unitOfMeasureType, EntityPermission.READ_ONLY);
     }
-    
+
     public List<ItemPrice> getItemPricesByUnitOfMeasureTypeForUpdate(UnitOfMeasureType unitOfMeasureType) {
         return getItemPricesByUnitOfMeasureType(unitOfMeasureType, EntityPermission.READ_WRITE);
     }
-    
+
+    private List<ItemPrice> getItemPricesByCurrency(Currency currency, EntityPermission entityPermission) {
+        List<ItemPrice> itemPrices;
+
+        try {
+            String query = null;
+
+            if(entityPermission.equals(EntityPermission.READ_ONLY)) {
+                query = "SELECT _ALL_ " +
+                        "FROM itemprices, items, itemdetails, inventoryconditions, inventoryconditiondetails, unitofmeasuretypes, unitofmeasuretypedetails " +
+                        "WHERE itmp_cur_currencyid = ? AND itmp_thrutime = ? " +
+                        "AND itmp_itm_itemid = itm_itemid AND itm_lastdetailid = itmdt_itemdetailid " +
+                        "AND itmp_invcon_inventoryconditionid = invcon_inventoryconditionid AND invcon_lastdetailid = invcondt_inventoryconditiondetailid " +
+                        "AND itmp_uomt_unitofmeasuretypeid = uomt_unitofmeasuretypeid AND uomt_lastdetailid = uomtdt_unitofmeasuretypedetailid " +
+                        "ORDER BY itmdt_itemname, invcondt_sortorder, invcondt_inventoryconditionname, uomtdt_sortorder, uomtdt_unitofmeasuretypename " +
+                        "_LIMIT_";
+            } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
+                query = "SELECT _ALL_ " +
+                        "FROM itemprices " +
+                        "WHERE itmp_cur_currencyid = ? AND itmp_thrutime = ? " +
+                        "FOR UPDATE";
+            }
+
+            PreparedStatement ps = ItemPriceFactory.getInstance().prepareStatement(query);
+
+            ps.setLong(1, currency.getPrimaryKey().getEntityId());
+            ps.setLong(2, Session.MAX_TIME);
+
+            itemPrices = ItemPriceFactory.getInstance().getEntitiesFromQuery(entityPermission, ps);
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return itemPrices;
+    }
+
+    public List<ItemPrice> getItemPricesByCurrency(Currency currency) {
+        return getItemPricesByCurrency(currency, EntityPermission.READ_ONLY);
+    }
+
+    public List<ItemPrice> getItemPricesByCurrencyForUpdate(Currency currency) {
+        return getItemPricesByCurrency(currency, EntityPermission.READ_WRITE);
+    }
+
     public List<ItemPrice> getItemPricesByItemAndUnitOfMeasureTypeForUpdate(Item item, UnitOfMeasureType unitOfMeasureType) {
         List<ItemPrice> itemPrices;
         
@@ -5531,7 +5614,8 @@ public class ItemControl
                         "FROM itemprices, currencies " +
                         "WHERE itmp_itm_itemid = ? AND itmp_invcon_inventoryconditionid = ? AND itmp_uomt_unitofmeasuretypeid = ? " +
                         "AND itmp_thrutime = ? AND itmp_cur_currencyid = cur_currencyid " +
-                        "ORDER BY cur_sortorder, cur_currencyisoname";
+                        "ORDER BY cur_sortorder, cur_currencyisoname " +
+                        "_LIMIT_";
             } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
                 query = "SELECT _ALL_ " +
                         "FROM itemprices " +
@@ -5613,7 +5697,7 @@ public class ItemControl
         return getItemTransferCaches(userVisit).getItemPriceTransferCache().getTransfer(itemPrice);
     }
     
-    private List<ItemPriceTransfer> getItemPriceTransfers(UserVisit userVisit, List<ItemPrice> itemPrices) {
+    public List<ItemPriceTransfer> getItemPriceTransfers(UserVisit userVisit, Collection<ItemPrice> itemPrices) {
         List<ItemPriceTransfer> itemPriceTransfers = new ArrayList<>(itemPrices.size());
         ItemPriceTransferCache itemPriceTransferCache = getItemTransferCaches(userVisit).getItemPriceTransferCache();
         
@@ -5929,6 +6013,33 @@ public class ItemControl
         return itemDescriptionType;
     }
 
+    /** Assume that the entityInstance passed to this function is a ECHOTHREE.ItemDescriptionType */
+    public ItemDescriptionType getItemDescriptionTypeByEntityInstance(final EntityInstance entityInstance,
+            final EntityPermission entityPermission) {
+        var pk = new ItemDescriptionTypePK(entityInstance.getEntityUniqueId());
+
+        return ItemDescriptionTypeFactory.getInstance().getEntityFromPK(entityPermission, pk);
+    }
+
+    public ItemDescriptionType getItemDescriptionTypeByEntityInstance(final EntityInstance entityInstance) {
+        return getItemDescriptionTypeByEntityInstance(entityInstance, EntityPermission.READ_ONLY);
+    }
+
+    public ItemDescriptionType getItemDescriptionTypeByEntityInstanceForUpdate(final EntityInstance entityInstance) {
+        return getItemDescriptionTypeByEntityInstance(entityInstance, EntityPermission.READ_WRITE);
+    }
+
+    public ItemDescriptionTypeDetailValue getItemDescriptionTypeDetailValueForUpdate(ItemDescriptionType itemDescriptionType) {
+        return itemDescriptionType.getLastDetailForUpdate().getItemDescriptionTypeDetailValue().clone();
+    }
+
+    public long countItemDescriptionTypes() {
+        return session.queryForLong(
+                "SELECT COUNT(*) " +
+                    "FROM itemdescriptiontypes, itemdescriptiontypedetails " +
+                    "WHERE idt_activedetailid = idtdt_itemdescriptiontypedetailid");
+    }
+
     private static final Map<EntityPermission, String> getItemDescriptionTypeByNameQueries;
 
     static {
@@ -5948,7 +6059,7 @@ public class ItemControl
         getItemDescriptionTypeByNameQueries = Collections.unmodifiableMap(queryMap);
     }
 
-    private ItemDescriptionType getItemDescriptionTypeByName(String itemDescriptionTypeName, EntityPermission entityPermission) {
+    public ItemDescriptionType getItemDescriptionTypeByName(String itemDescriptionTypeName, EntityPermission entityPermission) {
         return ItemDescriptionTypeFactory.getInstance().getEntityFromQuery(entityPermission, getItemDescriptionTypeByNameQueries, itemDescriptionTypeName);
     }
 
@@ -5958,10 +6069,6 @@ public class ItemControl
 
     public ItemDescriptionType getItemDescriptionTypeByNameForUpdate(String itemDescriptionTypeName) {
         return getItemDescriptionTypeByName(itemDescriptionTypeName, EntityPermission.READ_WRITE);
-    }
-
-    public ItemDescriptionTypeDetailValue getItemDescriptionTypeDetailValueForUpdate(ItemDescriptionType itemDescriptionType) {
-        return itemDescriptionType == null? null: itemDescriptionType.getLastDetailForUpdate().getItemDescriptionTypeDetailValue().clone();
     }
 
     public ItemDescriptionTypeDetailValue getItemDescriptionTypeDetailValueByNameForUpdate(String itemDescriptionTypeName) {
@@ -6055,7 +6162,7 @@ public class ItemControl
         getDefaultItemDescriptionTypeQueries = Collections.unmodifiableMap(queryMap);
     }
 
-    private ItemDescriptionType getDefaultItemDescriptionType(EntityPermission entityPermission) {
+    public ItemDescriptionType getDefaultItemDescriptionType(EntityPermission entityPermission) {
         return ItemDescriptionTypeFactory.getInstance().getEntityFromQuery(entityPermission, getDefaultItemDescriptionTypeQueries);
     }
 
@@ -6139,7 +6246,7 @@ public class ItemControl
         return getItemTransferCaches(userVisit).getItemDescriptionTypeTransferCache().getTransfer(itemDescriptionType);
     }
 
-    public List<ItemDescriptionTypeTransfer> getItemDescriptionTypeTransfers(UserVisit userVisit, List<ItemDescriptionType> itemDescriptionTypes) {
+    public List<ItemDescriptionTypeTransfer> getItemDescriptionTypeTransfers(UserVisit userVisit, Collection<ItemDescriptionType> itemDescriptionTypes) {
         List<ItemDescriptionTypeTransfer> itemDescriptionTypeTransfers = new ArrayList<>(itemDescriptionTypes.size());
         ItemDescriptionTypeTransferCache itemDescriptionTypeTransferCache = getItemTransferCaches(userVisit).getItemDescriptionTypeTransferCache();
 
@@ -11387,7 +11494,7 @@ public class ItemControl
 
     public List<ItemResultTransfer> getItemResultTransfers(UserVisitSearch userVisitSearch) {
         var searchControl = Session.getModelController(SearchControl.class);
-        var itemResultTransfers = new ArrayList<ItemResultTransfer>(searchControl.countSearchResults(userVisitSearch));;
+        var itemResultTransfers = new ArrayList<ItemResultTransfer>(toIntExact(searchControl.countSearchResults(userVisitSearch)));;
         var includeItem = false;
 
         // ItemTransfer objects are not included unless specifically requested;
@@ -11416,9 +11523,9 @@ public class ItemControl
         return itemResultTransfers;
     }
 
-    public List<ItemResultObject> getItemResultObjects(UserVisitSearch userVisitSearch) {
+    public List<ItemObject> getItemObjectsFromUserVisitSearch(UserVisitSearch userVisitSearch) {
         var searchControl = Session.getModelController(SearchControl.class);
-        var itemResultObjects = new ArrayList<ItemResultObject>();
+        var itemObjects = new ArrayList<ItemObject>();
 
         try (var rs = searchControl.getUserVisitSearchResultSet(userVisitSearch)) {
             var itemControl = Session.getModelController(ItemControl.class);
@@ -11426,13 +11533,13 @@ public class ItemControl
             while(rs.next()) {
                 var item = itemControl.getItemByPK(new ItemPK(rs.getLong(ENI_ENTITYUNIQUEID_COLUMN_INDEX)));
 
-                itemResultObjects.add(new ItemResultObject(item));
+                itemObjects.add(new ItemObject(item));
             }
         } catch (SQLException se) {
             throw new PersistenceDatabaseException(se);
         }
 
-        return itemResultObjects;
+        return itemObjects;
     }
 
 }

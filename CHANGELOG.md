@@ -1,5 +1,61 @@
 # Changelog
 
+## 2022-03-06-01
+
+* GraphQL Objects for Item Description Types [412](https://gitlab.echothree.com/echothree/echothree/-/issues/412)
+* jOOQ 3.16.4 Upgrade [419](https://gitlab.echothree.com/echothree/echothree/-/issues/419)
+* cucumber-java8/cucumber-junit 7.2.3 Upgrade [420](https://gitlab.echothree.com/echothree/echothree/-/issues/420)
+* ClassGraph 4.8.141 Upgrade [421](https://gitlab.echothree.com/echothree/echothree/-/issues/421)
+* Add Permissions to Entity Attribute Commands [422](https://gitlab.echothree.com/echothree/echothree/-/issues/422)
+
+## 2022-02-20-01
+
+* Remove Jakarta Standard Taglib [418](https://gitlab.echothree.com/echothree/echothree/-/issues/418)
+
+## 2022-02-06-01
+
+* GraphQL Mutations for Offer Items [135](https://gitlab.echothree.com/echothree/echothree/-/issues/135)
+* GraphQL Mutations for Offer Item Prices [136](https://gitlab.echothree.com/echothree/echothree/-/issues/136)
+* GraphQL Mutations for Item Prices [403](https://gitlab.echothree.com/echothree/echothree/-/issues/403)
+* Error Prone 2.11.0 Upgrade [407](https://gitlab.echothree.com/echothree/echothree/-/issues/407)
+* jOOQ 3.16.3 Upgrade [408](https://gitlab.echothree.com/echothree/echothree/-/issues/408)
+* JFreeChart 1.5.3 Upgrade [409](https://gitlab.echothree.com/echothree/echothree/-/issues/409)
+* WildFly 26.0.1 Upgrade [410](https://gitlab.echothree.com/echothree/echothree/-/issues/410)
+* GraphQL Mutations for Items [411](https://gitlab.echothree.com/echothree/echothree/-/issues/411)
+
+## 2022-01-23-01
+
+* Convert all count* Functions to Return longs [393](https://gitlab.echothree.com/echothree/echothree/-/issues/393)
+* Apply Appearances in Item Category List [396](https://gitlab.echothree.com/echothree/echothree/-/issues/396)
+* GraphQL Objects for Item Prices [397](https://gitlab.echothree.com/echothree/echothree/-/issues/397)
+* GraphQL Objects for Offer Items [398](https://gitlab.echothree.com/echothree/echothree/-/issues/398)
+* GraphQL Objects for Offer Item Prices [399](https://gitlab.echothree.com/echothree/echothree/-/issues/399)
+* CountedObjects Should Allow Any Object [400](https://gitlab.echothree.com/echothree/echothree/-/issues/400)
+* jOOQ 3.16.2 Upgrade [401](https://gitlab.echothree.com/echothree/echothree/-/issues/401)
+* ClassGraph 4.8.138 Upgrade [402](https://gitlab.echothree.com/echothree/echothree/-/issues/402)
+* Gson 2.8.9 Upgrade [404](https://gitlab.echothree.com/echothree/echothree/-/issues/404)
+* MySQL Connector/J 8.0.28 Upgrade [406](https://gitlab.echothree.com/echothree/echothree/-/issues/406)
+
+## 2022-01-09-01
+
+* 2022 Copyright Update [358](https://gitlab.echothree.com/echothree/echothree/-/issues/358)
+* Add totalCount to GraphQL Pagination [379](https://gitlab.echothree.com/echothree/echothree/-/issues/379)
+* Implement Alternative to Deprecated GraphQL Context [380](https://gitlab.echothree.com/echothree/echothree/-/issues/380)
+* Add Pagination to items Query [381](https://gitlab.echothree.com/echothree/echothree/-/issues/381)
+* Add Pagination to items in Company, Remove itemCount [382](https://gitlab.echothree.com/echothree/echothree/-/issues/382)
+* Remove itemCount from ItemCategory Object [383](https://gitlab.echothree.com/echothree/echothree/-/issues/383)
+* Session.prepareStatement(...) Caching Prepared Statements Before Substitutions [384](https://gitlab.echothree.com/echothree/echothree/-/issues/384)
+* Apache Lucene 9.0.0 Upgrade [385](https://gitlab.echothree.com/echothree/echothree/-/issues/385)
+* ICU4J 70.1 Upgrade [386](https://gitlab.echothree.com/echothree/echothree/-/issues/386)
+* SLF4J 1.7.32 Upgrade [387](https://gitlab.echothree.com/echothree/echothree/-/issues/387)
+* Add Pagination to customerResults, employeeResults and vendorResults Queries [388](https://gitlab.echothree.com/echothree/echothree/-/issues/388)
+* Add Pagination to divisions in Company, Remove divisionCount [389](https://gitlab.echothree.com/echothree/echothree/-/issues/389)
+* Add Pagination to departments in Division, Remove departmentCount [390](https://gitlab.echothree.com/echothree/echothree/-/issues/390)
+* Add Pagination to offers in Department, Remove offerCount [391](https://gitlab.echothree.com/echothree/echothree/-/issues/391)
+* Add description to Item Object [392](https://gitlab.echothree.com/echothree/echothree/-/issues/392)
+* jOOQ 3.16.0 Upgrade [394](https://gitlab.echothree.com/echothree/echothree/-/issues/394)
+* jOOQ 3.16.1 Upgrade [395](https://gitlab.echothree.com/echothree/echothree/-/issues/395)
+
 ## 2021-12-26-01
 
 * Prototype GraphQL Pagination [362](https://gitlab.echothree.com/echothree/echothree/-/issues/362)

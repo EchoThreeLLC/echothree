@@ -16,8 +16,13 @@
 
 package com.echothree.model.control.item.server.graphql;
 
+import com.echothree.control.user.item.server.command.GetItemCategoriesCommand;
 import com.echothree.control.user.item.server.command.GetItemCategoryCommand;
 import com.echothree.control.user.item.server.command.GetItemCommand;
+import com.echothree.control.user.item.server.command.GetItemDescriptionTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemDescriptionTypesCommand;
+import com.echothree.control.user.item.server.command.GetItemPriceCommand;
+import com.echothree.control.user.item.server.command.GetItemPricesCommand;
 import com.echothree.control.user.item.server.command.GetItemsCommand;
 import com.echothree.model.control.graphql.server.util.BaseGraphQl;
 import graphql.schema.DataFetchingEnvironment;
@@ -41,8 +46,28 @@ public final class ItemSecurityUtils
         return getGraphQlExecutionContext(env).hasAccess(GetItemsCommand.class);
     }
 
+    public boolean getHasItemPriceAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemPriceCommand.class);
+    }
+
+    public boolean getHasItemPricesAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemPricesCommand.class);
+    }
+
     public boolean getHasItemCategoryAccess(final DataFetchingEnvironment env) {
         return getGraphQlExecutionContext(env).hasAccess(GetItemCategoryCommand.class);
     }
-    
+
+    public boolean getHasItemCategoriesAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemCategoriesCommand.class);
+    }
+
+    public boolean getHasItemDescriptionTypeAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemDescriptionTypeCommand.class);
+    }
+
+    public boolean getHasItemDescriptionTypesAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemDescriptionTypesCommand.class);
+    }
+
 }

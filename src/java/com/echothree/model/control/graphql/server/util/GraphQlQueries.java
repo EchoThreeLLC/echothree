@@ -109,9 +109,17 @@ import com.echothree.control.user.item.common.ItemUtil;
 import com.echothree.control.user.item.server.command.GetItemCategoriesCommand;
 import com.echothree.control.user.item.server.command.GetItemCategoryCommand;
 import com.echothree.control.user.item.server.command.GetItemCommand;
+import com.echothree.control.user.item.server.command.GetItemDescriptionTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemDescriptionTypesCommand;
+import com.echothree.control.user.item.server.command.GetItemPriceCommand;
+import com.echothree.control.user.item.server.command.GetItemPricesCommand;
 import com.echothree.control.user.item.server.command.GetItemsCommand;
 import com.echothree.control.user.offer.common.OfferUtil;
 import com.echothree.control.user.offer.server.command.GetOfferCommand;
+import com.echothree.control.user.offer.server.command.GetOfferItemCommand;
+import com.echothree.control.user.offer.server.command.GetOfferItemPriceCommand;
+import com.echothree.control.user.offer.server.command.GetOfferItemPricesCommand;
+import com.echothree.control.user.offer.server.command.GetOfferItemsCommand;
 import com.echothree.control.user.offer.server.command.GetOfferNameElementCommand;
 import com.echothree.control.user.offer.server.command.GetOfferNameElementsCommand;
 import com.echothree.control.user.offer.server.command.GetOfferUseCommand;
@@ -251,6 +259,7 @@ import com.echothree.model.control.filter.server.graphql.FilterObject;
 import com.echothree.model.control.filter.server.graphql.FilterStepObject;
 import com.echothree.model.control.filter.server.graphql.FilterTypeObject;
 import com.echothree.model.control.graphql.server.graphql.ObjectLimiter;
+import com.echothree.model.control.graphql.server.graphql.count.Connections;
 import com.echothree.model.control.graphql.server.graphql.count.CountedObjects;
 import com.echothree.model.control.graphql.server.graphql.count.CountingDataConnectionFetcher;
 import com.echothree.model.control.graphql.server.graphql.count.CountingPaginatedData;
@@ -258,7 +267,11 @@ import com.echothree.model.control.inventory.server.graphql.InventoryConditionOb
 import com.echothree.model.control.inventory.server.graphql.LotObject;
 import com.echothree.model.control.item.server.control.ItemControl;
 import com.echothree.model.control.item.server.graphql.ItemCategoryObject;
+import com.echothree.model.control.item.server.graphql.ItemDescriptionTypeObject;
 import com.echothree.model.control.item.server.graphql.ItemObject;
+import com.echothree.model.control.item.server.graphql.ItemPriceObject;
+import com.echothree.model.control.offer.server.graphql.OfferItemObject;
+import com.echothree.model.control.offer.server.graphql.OfferItemPriceObject;
 import com.echothree.model.control.offer.server.graphql.OfferNameElementObject;
 import com.echothree.model.control.offer.server.graphql.OfferObject;
 import com.echothree.model.control.offer.server.graphql.OfferUseObject;
@@ -354,7 +367,11 @@ import com.echothree.model.data.inventory.server.entity.Lot;
 import com.echothree.model.data.item.common.ItemConstants;
 import com.echothree.model.data.item.server.entity.Item;
 import com.echothree.model.data.item.server.entity.ItemCategory;
+import com.echothree.model.data.item.server.entity.ItemDescriptionType;
+import com.echothree.model.data.item.server.entity.ItemPrice;
 import com.echothree.model.data.offer.server.entity.Offer;
+import com.echothree.model.data.offer.server.entity.OfferItem;
+import com.echothree.model.data.offer.server.entity.OfferItemPrice;
 import com.echothree.model.data.offer.server.entity.OfferNameElement;
 import com.echothree.model.data.offer.server.entity.OfferUse;
 import com.echothree.model.data.offer.server.entity.Use;
@@ -1660,6 +1677,116 @@ public final class GraphQlQueries
         }
 
         return offerObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("offerItem")
+    public static OfferItemObject offerItem(final DataFetchingEnvironment env,
+            @GraphQLName("offerName") @GraphQLNonNull final String offerName,
+            @GraphQLName("itemName") @GraphQLNonNull final String itemName) {
+        OfferItem offerItem;
+
+        try {
+            var commandForm = OfferUtil.getHome().getGetOfferItemForm();
+
+            commandForm.setOfferName(offerName);
+            commandForm.setItemName(itemName);
+
+            offerItem = new GetOfferItemCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return offerItem == null ? null : new OfferItemObject(offerItem);
+    }
+
+    @GraphQLField
+    @GraphQLName("offerItems")
+    public static Collection<OfferItemObject> offerItems(final DataFetchingEnvironment env,
+            @GraphQLName("offerName") @GraphQLNonNull final String offerName) {
+        Collection<OfferItem> offerItem;
+        Collection<OfferItemObject> offerItemObjects;
+
+        try {
+            var commandForm = OfferUtil.getHome().getGetOfferItemsForm();
+
+            commandForm.setOfferName(offerName);
+
+            offerItem = new GetOfferItemsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(offerItem == null) {
+            offerItemObjects = emptyList();
+        } else {
+            offerItemObjects = new ArrayList<>(offerItem.size());
+
+            offerItem.stream()
+                    .map(OfferItemObject::new)
+                    .forEachOrdered(offerItemObjects::add);
+        }
+
+        return offerItemObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("offerItemPrice")
+    public static OfferItemPriceObject offerItemPrice(final DataFetchingEnvironment env,
+            @GraphQLName("offerName") @GraphQLNonNull final String offerName,
+            @GraphQLName("itemName") @GraphQLNonNull final String itemName,
+            @GraphQLName("inventoryConditionName") @GraphQLNonNull final String inventoryConditionName,
+            @GraphQLName("unitOfMeasureTypeName") @GraphQLNonNull final String unitOfMeasureTypeName,
+            @GraphQLName("currencyIsoName") @GraphQLNonNull final String currencyIsoName) {
+        OfferItemPrice offerItemPrice;
+
+        try {
+            var commandForm = OfferUtil.getHome().getGetOfferItemPriceForm();
+
+            commandForm.setOfferName(offerName);
+            commandForm.setItemName(itemName);
+            commandForm.setInventoryConditionName(inventoryConditionName);
+            commandForm.setUnitOfMeasureTypeName(unitOfMeasureTypeName);
+            commandForm.setCurrencyIsoName(currencyIsoName);
+
+            offerItemPrice = new GetOfferItemPriceCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return offerItemPrice == null ? null : new OfferItemPriceObject(offerItemPrice);
+    }
+
+    @GraphQLField
+    @GraphQLName("offerItemPrices")
+    public static Collection<OfferItemPriceObject> offerItemPrices(final DataFetchingEnvironment env,
+            @GraphQLName("offerName") @GraphQLNonNull final String offerName,
+            @GraphQLName("itemName") @GraphQLNonNull final String itemName) {
+        Collection<OfferItemPrice> offerItemPrice;
+        Collection<OfferItemPriceObject> offerItemPriceObjects;
+
+        try {
+            var commandForm = OfferUtil.getHome().getGetOfferItemPricesForm();
+
+            commandForm.setOfferName(offerName);
+            commandForm.setItemName(itemName);
+
+            offerItemPrice = new GetOfferItemPricesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(offerItemPrice == null) {
+            offerItemPriceObjects = emptyList();
+        } else {
+            offerItemPriceObjects = new ArrayList<>(offerItemPrice.size());
+
+            offerItemPrice.stream()
+                    .map(OfferItemPriceObject::new)
+                    .forEachOrdered(offerItemPriceObjects::add);
+        }
+
+        return offerItemPriceObjects;
     }
 
     @GraphQLField
@@ -4708,17 +4835,18 @@ public final class GraphQlQueries
             commandForm.setItemName(itemName);
             commandForm.setItemNameOrAlias(itemNameOrAlias);
             commandForm.setUlid(id);
-        
+
             item = new GetItemCommand(getUserVisitPK(env), commandForm).runForGraphQl();
         } catch (NamingException ex) {
             throw new RuntimeException(ex);
         }
-        
+
         return item == null ? null : new ItemObject(item);
     }
 
     @GraphQLField
     @GraphQLName("items")
+    @GraphQLNonNull
     @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
     public static CountingPaginatedData<ItemObject> items(final DataFetchingEnvironment env) {
         CountingPaginatedData<ItemObject> data;
@@ -4732,7 +4860,7 @@ public final class GraphQlQueries
                 var entities = new GetItemsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
 
                 if(entities == null) {
-                    data = null;
+                    data = Connections.emptyConnection();
                 } else {
                     var items = entities.stream().map(ItemObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
 
@@ -4747,6 +4875,61 @@ public final class GraphQlQueries
     }
 
     @GraphQLField
+    @GraphQLName("itemPrice")
+    public static ItemPriceObject itemPrice(final DataFetchingEnvironment env,
+            @GraphQLName("itemName") @GraphQLNonNull final String itemName,
+            @GraphQLName("inventoryConditionName") @GraphQLNonNull final String inventoryConditionName,
+            @GraphQLName("unitOfMeasureTypeName") @GraphQLNonNull final String unitOfMeasureTypeName,
+            @GraphQLName("currencyIsoName") @GraphQLNonNull final String currencyIsoName) {
+        ItemPrice itemPrice;
+
+        try {
+            var commandForm = ItemUtil.getHome().getGetItemPriceForm();
+
+            commandForm.setItemName(itemName);
+            commandForm.setInventoryConditionName(inventoryConditionName);
+            commandForm.setUnitOfMeasureTypeName(unitOfMeasureTypeName);
+            commandForm.setCurrencyIsoName(currencyIsoName);
+
+            itemPrice = new GetItemPriceCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return itemPrice == null ? null : new ItemPriceObject(itemPrice);
+    }
+
+    @GraphQLField
+    @GraphQLName("itemPrices")
+    public static Collection<ItemPriceObject> itemPrices(final DataFetchingEnvironment env,
+            @GraphQLName("itemName") @GraphQLNonNull final String itemName) {
+        Collection<ItemPrice> itemPrice;
+        Collection<ItemPriceObject> itemPriceObjects;
+
+        try {
+            var commandForm = ItemUtil.getHome().getGetItemPricesForm();
+
+            commandForm.setItemName(itemName);
+
+            itemPrice = new GetItemPricesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(itemPrice == null) {
+            itemPriceObjects = emptyList();
+        } else {
+            itemPriceObjects = new ArrayList<>(itemPrice.size());
+
+            itemPrice.stream()
+                    .map(ItemPriceObject::new)
+                    .forEachOrdered(itemPriceObjects::add);
+        }
+
+        return itemPriceObjects;
+    }
+
+    @GraphQLField
     @GraphQLName("itemCategory")
     public static ItemCategoryObject itemCategory(final DataFetchingEnvironment env,
             @GraphQLName("itemCategoryName") final String itemCategoryName,
@@ -4758,12 +4941,12 @@ public final class GraphQlQueries
 
             commandForm.setItemCategoryName(itemCategoryName);
             commandForm.setUlid(id);
-        
+
             itemCategory = new GetItemCategoryCommand(getUserVisitPK(env), commandForm).runForGraphQl();
         } catch (NamingException ex) {
             throw new RuntimeException(ex);
         }
-        
+
         return itemCategory == null ? null : new ItemCategoryObject(itemCategory);
     }
 
@@ -4773,17 +4956,17 @@ public final class GraphQlQueries
             @GraphQLName("parentItemCategoryName") final String parentItemCategoryName) {
         Collection<ItemCategory> itemCategories;
         Collection<ItemCategoryObject> itemCategoryObjects;
-        
+
         try {
             var commandForm = ItemUtil.getHome().getGetItemCategoriesForm();
 
             commandForm.setParentItemCategoryName(parentItemCategoryName);
-        
+
             itemCategories = new GetItemCategoriesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
         } catch (NamingException ex) {
             throw new RuntimeException(ex);
         }
-        
+
         if(itemCategories == null) {
             itemCategoryObjects = emptyList();
         } else {
@@ -4793,8 +4976,59 @@ public final class GraphQlQueries
                     .map(ItemCategoryObject::new)
                     .forEachOrdered(itemCategoryObjects::add);
         }
-        
+
         return itemCategoryObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("itemDescriptionType")
+    public static ItemDescriptionTypeObject itemDescriptionType(final DataFetchingEnvironment env,
+            @GraphQLName("itemDescriptionTypeName") final String itemDescriptionTypeName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        ItemDescriptionType itemDescriptionType;
+
+        try {
+            var commandForm = ItemUtil.getHome().getGetItemDescriptionTypeForm();
+
+            commandForm.setItemDescriptionTypeName(itemDescriptionTypeName);
+            commandForm.setUlid(id);
+
+            itemDescriptionType = new GetItemDescriptionTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return itemDescriptionType == null ? null : new ItemDescriptionTypeObject(itemDescriptionType);
+    }
+
+    @GraphQLField
+    @GraphQLName("itemDescriptionTypes")
+    public static Collection<ItemDescriptionTypeObject> itemDescriptionTypes(final DataFetchingEnvironment env,
+            @GraphQLName("parentItemDescriptionTypeName") final String parentItemDescriptionTypeName) {
+        Collection<ItemDescriptionType> itemDescriptionTypes;
+        Collection<ItemDescriptionTypeObject> itemDescriptionTypeObjects;
+
+        try {
+            var commandForm = ItemUtil.getHome().getGetItemDescriptionTypesForm();
+
+            commandForm.setParentItemDescriptionTypeName(parentItemDescriptionTypeName);
+
+            itemDescriptionTypes = new GetItemDescriptionTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(itemDescriptionTypes == null) {
+            itemDescriptionTypeObjects = emptyList();
+        } else {
+            itemDescriptionTypeObjects = new ArrayList<>(itemDescriptionTypes.size());
+
+            itemDescriptionTypes.stream()
+                    .map(ItemDescriptionTypeObject::new)
+                    .forEachOrdered(itemDescriptionTypeObjects::add);
+        }
+
+        return itemDescriptionTypeObjects;
     }
 
     @GraphQLField

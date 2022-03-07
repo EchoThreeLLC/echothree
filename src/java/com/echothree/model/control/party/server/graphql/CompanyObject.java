@@ -17,6 +17,7 @@
 package com.echothree.model.control.party.server.graphql;
 
 import com.echothree.model.control.graphql.server.graphql.ObjectLimiter;
+import com.echothree.model.control.graphql.server.graphql.count.Connections;
 import com.echothree.model.control.graphql.server.graphql.count.CountedObjects;
 import com.echothree.model.control.graphql.server.graphql.count.CountingDataConnectionFetcher;
 import com.echothree.model.control.graphql.server.graphql.count.CountingPaginatedData;
@@ -88,31 +89,27 @@ public class CompanyObject
 
     @GraphQLField
     @GraphQLDescription("divisions")
-    public List<DivisionObject> getDivisions(final DataFetchingEnvironment env) {
+    @GraphQLNonNull
+    @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
+    public CountingPaginatedData<DivisionObject> getDivisions(final DataFetchingEnvironment env) {
         if(PartySecurityUtils.getInstance().getHasDivisionsAccess(env)) {
             var partyControl = Session.getModelController(PartyControl.class);
-            var entities = partyControl.getDivisionsByCompany(party);
+            var totalCount = partyControl.countPartyDivisions(party);
 
-            return entities.stream().map(DivisionObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
+            try(var objectLimiter = new ObjectLimiter(env, ItemConstants.ENTITY_TYPE_NAME, totalCount)) {
+                var entities = partyControl.getDivisionsByCompany(party);
+                var divisions = entities.stream().map(DivisionObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
+
+                return new CountedObjects<>(objectLimiter, divisions);
+            }
         } else {
-            return null;
-        }
-    }
-
-    @GraphQLField
-    @GraphQLDescription("division count")
-    public Long getDivisionCount(final DataFetchingEnvironment env) {
-        if(PartySecurityUtils.getInstance().getHasDivisionsAccess(env)) {
-            var partyControl = Session.getModelController(PartyControl.class);
-
-            return partyControl.countPartyDivisions(party);
-        } else {
-            return null;
+            return Connections.emptyConnection();
         }
     }
 
     @GraphQLField
     @GraphQLDescription("items")
+    @GraphQLNonNull
     @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
     public CountingPaginatedData<ItemObject> getItems(final DataFetchingEnvironment env) {
         if(ItemSecurityUtils.getInstance().getHasItemsAccess(env)) {
@@ -126,7 +123,7 @@ public class CompanyObject
                 return new CountedObjects<>(objectLimiter, items);
             }
         } else {
-            return null;
+            return Connections.emptyConnection();
         }
     }
 
