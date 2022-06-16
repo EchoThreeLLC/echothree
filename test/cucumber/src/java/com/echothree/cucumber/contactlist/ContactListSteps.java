@@ -69,7 +69,7 @@ public class ContactListSteps implements En {
 
                     assertThat(persona.createContactListForm).isNull();
                     assertThat(persona.deleteContactListForm).isNull();
-                    assertThat(persona.entityListItemSpec).isNull();
+                    assertThat(persona.entityListItemUniversalSpec).isNull();
 
                     persona.deleteContactListForm = ContactListUtil.getHome().getDeleteContactListForm();
                 });
@@ -92,7 +92,7 @@ public class ContactListSteps implements En {
 
                     assertThat(persona.createContactListForm).isNull();
                     assertThat(persona.deleteContactListForm).isNull();
-                    assertThat(persona.entityListItemSpec).isNull();
+                    assertThat(persona.entityListItemUniversalSpec).isNull();
 
                     persona.contactListSpec = ContactListUtil.getHome().getContactListUniversalSpec();
                 });
