@@ -109,10 +109,24 @@ import com.echothree.control.user.item.common.ItemUtil;
 import com.echothree.control.user.item.server.command.GetItemCategoriesCommand;
 import com.echothree.control.user.item.server.command.GetItemCategoryCommand;
 import com.echothree.control.user.item.server.command.GetItemCommand;
+import com.echothree.control.user.item.server.command.GetItemDeliveryTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemDeliveryTypesCommand;
+import com.echothree.control.user.item.server.command.GetItemDescriptionCommand;
 import com.echothree.control.user.item.server.command.GetItemDescriptionTypeCommand;
 import com.echothree.control.user.item.server.command.GetItemDescriptionTypesCommand;
+import com.echothree.control.user.item.server.command.GetItemDescriptionsCommand;
+import com.echothree.control.user.item.server.command.GetItemImageTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemImageTypesCommand;
+import com.echothree.control.user.item.server.command.GetItemInventoryTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemInventoryTypesCommand;
 import com.echothree.control.user.item.server.command.GetItemPriceCommand;
+import com.echothree.control.user.item.server.command.GetItemPriceTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemPriceTypesCommand;
 import com.echothree.control.user.item.server.command.GetItemPricesCommand;
+import com.echothree.control.user.item.server.command.GetItemTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemTypesCommand;
+import com.echothree.control.user.item.server.command.GetItemUseTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemUseTypesCommand;
 import com.echothree.control.user.item.server.command.GetItemsCommand;
 import com.echothree.control.user.offer.common.OfferUtil;
 import com.echothree.control.user.offer.server.command.GetOfferCommand;
@@ -267,9 +281,16 @@ import com.echothree.model.control.inventory.server.graphql.InventoryConditionOb
 import com.echothree.model.control.inventory.server.graphql.LotObject;
 import com.echothree.model.control.item.server.control.ItemControl;
 import com.echothree.model.control.item.server.graphql.ItemCategoryObject;
+import com.echothree.model.control.item.server.graphql.ItemDeliveryTypeObject;
+import com.echothree.model.control.item.server.graphql.ItemDescriptionObject;
 import com.echothree.model.control.item.server.graphql.ItemDescriptionTypeObject;
+import com.echothree.model.control.item.server.graphql.ItemImageTypeObject;
+import com.echothree.model.control.item.server.graphql.ItemInventoryTypeObject;
 import com.echothree.model.control.item.server.graphql.ItemObject;
 import com.echothree.model.control.item.server.graphql.ItemPriceObject;
+import com.echothree.model.control.item.server.graphql.ItemPriceTypeObject;
+import com.echothree.model.control.item.server.graphql.ItemTypeObject;
+import com.echothree.model.control.item.server.graphql.ItemUseTypeObject;
 import com.echothree.model.control.offer.server.graphql.OfferItemObject;
 import com.echothree.model.control.offer.server.graphql.OfferItemPriceObject;
 import com.echothree.model.control.offer.server.graphql.OfferNameElementObject;
@@ -365,10 +386,23 @@ import com.echothree.model.data.filter.server.entity.FilterType;
 import com.echothree.model.data.inventory.server.entity.InventoryCondition;
 import com.echothree.model.data.inventory.server.entity.Lot;
 import com.echothree.model.data.item.common.ItemConstants;
+import com.echothree.model.data.item.common.ItemDeliveryTypeConstants;
+import com.echothree.model.data.item.common.ItemImageTypeConstants;
+import com.echothree.model.data.item.common.ItemInventoryTypeConstants;
+import com.echothree.model.data.item.common.ItemPriceTypeConstants;
+import com.echothree.model.data.item.common.ItemTypeConstants;
+import com.echothree.model.data.item.common.ItemUseTypeConstants;
 import com.echothree.model.data.item.server.entity.Item;
 import com.echothree.model.data.item.server.entity.ItemCategory;
+import com.echothree.model.data.item.server.entity.ItemDeliveryType;
+import com.echothree.model.data.item.server.entity.ItemDescription;
 import com.echothree.model.data.item.server.entity.ItemDescriptionType;
+import com.echothree.model.data.item.server.entity.ItemImageType;
+import com.echothree.model.data.item.server.entity.ItemInventoryType;
 import com.echothree.model.data.item.server.entity.ItemPrice;
+import com.echothree.model.data.item.server.entity.ItemPriceType;
+import com.echothree.model.data.item.server.entity.ItemType;
+import com.echothree.model.data.item.server.entity.ItemUseType;
 import com.echothree.model.data.offer.server.entity.Offer;
 import com.echothree.model.data.offer.server.entity.OfferItem;
 import com.echothree.model.data.offer.server.entity.OfferItemPrice;
@@ -4229,7 +4263,7 @@ public final class GraphQlQueries
     @GraphQLName("userLogin")
     public static UserLoginObject userLogin(final DataFetchingEnvironment env,
             @GraphQLName("username") final String username,
-            @GraphQLName("partyId") final String partyId) {
+            @GraphQLName("id") @GraphQLID final String id) {
         UserLogin userLogin;
         UserLogin foundByUsernameUserLogin;
 
@@ -4237,7 +4271,7 @@ public final class GraphQlQueries
             var commandForm = UserUtil.getHome().getGetUserLoginForm();
 
             commandForm.setUsername(username);
-            commandForm.setUlid(partyId);
+            commandForm.setUlid(id);
         
             GetUserLoginCommand getUserLoginCommand = new GetUserLoginCommand(getUserVisitPK(env), commandForm);
             userLogin = getUserLoginCommand.runForGraphQl();
@@ -4875,6 +4909,322 @@ public final class GraphQlQueries
     }
 
     @GraphQLField
+    @GraphQLName("itemDescription")
+    public static ItemDescriptionObject itemDescription(final DataFetchingEnvironment env,
+            @GraphQLName("itemDescriptionTypeName") final String itemDescriptionTypeName,
+            @GraphQLName("itemName") final String itemName,
+            @GraphQLName("languageIsoName") final String languageIsoName,
+            @GraphQLName("id") @GraphQLID final String id,
+            @GraphQLName("referrer") final String referrer) {
+        ItemDescription itemDescription;
+
+        try {
+            var commandForm = ItemUtil.getHome().getGetItemDescriptionForm();
+
+            commandForm.setItemDescriptionTypeName(itemDescriptionTypeName);
+            commandForm.setItemName(itemName);
+            commandForm.setLanguageIsoName(languageIsoName);
+            commandForm.setUlid(id);
+            commandForm.setReferrer(referrer);
+
+            itemDescription = new GetItemDescriptionCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return itemDescription == null ? null : new ItemDescriptionObject(itemDescription);
+    }
+
+    @GraphQLField
+    @GraphQLName("itemDescriptions")
+    public static Collection<ItemDescriptionObject> itemDescriptions(final DataFetchingEnvironment env,
+            @GraphQLName("itemName") @GraphQLNonNull final String itemName,
+            @GraphQLName("itemDescriptionTypeUseTypeName") final String itemDescriptionTypeUseTypeName,
+            @GraphQLName("languageIsoName") final String languageIsoName) {
+        Collection<ItemDescription> itemDescriptions;
+        Collection<ItemDescriptionObject> itemDescriptionObjects;
+
+        try {
+            var commandForm = ItemUtil.getHome().getGetItemDescriptionsForm();
+
+            commandForm.setItemName(itemName);
+            commandForm.setItemDescriptionTypeUseTypeName(itemDescriptionTypeUseTypeName);
+            commandForm.setLanguageIsoName(languageIsoName);
+
+            itemDescriptions = new GetItemDescriptionsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(itemDescriptions == null) {
+            itemDescriptionObjects = emptyList();
+        } else {
+            itemDescriptionObjects = new ArrayList<>(itemDescriptions.size());
+
+            itemDescriptions.stream()
+                    .map(ItemDescriptionObject::new)
+                    .forEachOrdered(itemDescriptionObjects::add);
+        }
+
+        return itemDescriptionObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("itemType")
+    public static ItemTypeObject itemType(final DataFetchingEnvironment env,
+            @GraphQLName("itemTypeName") final String itemTypeName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        ItemType itemType;
+
+        try {
+            var commandForm = ItemUtil.getHome().getGetItemTypeForm();
+
+            commandForm.setItemTypeName(itemTypeName);
+            commandForm.setUlid(id);
+
+            itemType = new GetItemTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return itemType == null ? null : new ItemTypeObject(itemType);
+    }
+
+    @GraphQLField
+    @GraphQLName("itemTypes")
+    @GraphQLNonNull
+    @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
+    public static CountingPaginatedData<ItemTypeObject> itemTypes(final DataFetchingEnvironment env) {
+        CountingPaginatedData<ItemTypeObject> data;
+
+        try {
+            var itemControl = Session.getModelController(ItemControl.class);
+            var totalCount = itemControl.countItemTypes();
+
+            try(var objectLimiter = new ObjectLimiter(env, ItemTypeConstants.ENTITY_TYPE_NAME, totalCount)) {
+                var commandForm = ItemUtil.getHome().getGetItemTypesForm();
+                var entities = new GetItemTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+
+                if(entities == null) {
+                    data = Connections.emptyConnection();
+                } else {
+                    var itemTypes = entities.stream().map(ItemTypeObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
+
+                    data = new CountedObjects<>(objectLimiter, itemTypes);
+                }
+            }
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return data;
+    }
+
+    @GraphQLField
+    @GraphQLName("itemUseType")
+    public static ItemUseTypeObject itemUseType(final DataFetchingEnvironment env,
+            @GraphQLName("itemUseTypeName") final String itemUseTypeName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        ItemUseType itemUseType;
+
+        try {
+            var commandForm = ItemUtil.getHome().getGetItemUseTypeForm();
+
+            commandForm.setItemUseTypeName(itemUseTypeName);
+            commandForm.setUlid(id);
+
+            itemUseType = new GetItemUseTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return itemUseType == null ? null : new ItemUseTypeObject(itemUseType);
+    }
+
+    @GraphQLField
+    @GraphQLName("itemUseTypes")
+    @GraphQLNonNull
+    @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
+    public static CountingPaginatedData<ItemUseTypeObject> itemUseTypes(final DataFetchingEnvironment env) {
+        CountingPaginatedData<ItemUseTypeObject> data;
+
+        try {
+            var itemControl = Session.getModelController(ItemControl.class);
+            var totalCount = itemControl.countItemUseTypes();
+
+            try(var objectLimiter = new ObjectLimiter(env, ItemUseTypeConstants.ENTITY_TYPE_NAME, totalCount)) {
+                var commandForm = ItemUtil.getHome().getGetItemUseTypesForm();
+                var entities = new GetItemUseTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+
+                if(entities == null) {
+                    data = Connections.emptyConnection();
+                } else {
+                    var itemUseTypes = entities.stream().map(ItemUseTypeObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
+
+                    data = new CountedObjects<>(objectLimiter, itemUseTypes);
+                }
+            }
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return data;
+    }
+
+    @GraphQLField
+    @GraphQLName("itemPriceType")
+    public static ItemPriceTypeObject itemPriceType(final DataFetchingEnvironment env,
+            @GraphQLName("itemPriceTypeName") final String itemPriceTypeName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        ItemPriceType itemPriceType;
+
+        try {
+            var commandForm = ItemUtil.getHome().getGetItemPriceTypeForm();
+
+            commandForm.setItemPriceTypeName(itemPriceTypeName);
+            commandForm.setUlid(id);
+
+            itemPriceType = new GetItemPriceTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return itemPriceType == null ? null : new ItemPriceTypeObject(itemPriceType);
+    }
+
+    @GraphQLField
+    @GraphQLName("itemPriceTypes")
+    @GraphQLNonNull
+    @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
+    public static CountingPaginatedData<ItemPriceTypeObject> itemPriceTypes(final DataFetchingEnvironment env) {
+        CountingPaginatedData<ItemPriceTypeObject> data;
+
+        try {
+            var itemControl = Session.getModelController(ItemControl.class);
+            var totalCount = itemControl.countItemPriceTypes();
+
+            try(var objectLimiter = new ObjectLimiter(env, ItemPriceTypeConstants.ENTITY_TYPE_NAME, totalCount)) {
+                var commandForm = ItemUtil.getHome().getGetItemPriceTypesForm();
+                var entities = new GetItemPriceTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+
+                if(entities == null) {
+                    data = Connections.emptyConnection();
+                } else {
+                    var itemPriceTypes = entities.stream().map(ItemPriceTypeObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
+
+                    data = new CountedObjects<>(objectLimiter, itemPriceTypes);
+                }
+            }
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return data;
+    }
+
+    @GraphQLField
+    @GraphQLName("itemDeliveryType")
+    public static ItemDeliveryTypeObject itemDeliveryType(final DataFetchingEnvironment env,
+            @GraphQLName("itemDeliveryTypeName") final String itemDeliveryTypeName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        ItemDeliveryType itemDeliveryType;
+
+        try {
+            var commandForm = ItemUtil.getHome().getGetItemDeliveryTypeForm();
+
+            commandForm.setItemDeliveryTypeName(itemDeliveryTypeName);
+            commandForm.setUlid(id);
+
+            itemDeliveryType = new GetItemDeliveryTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return itemDeliveryType == null ? null : new ItemDeliveryTypeObject(itemDeliveryType);
+    }
+
+    @GraphQLField
+    @GraphQLName("itemDeliveryTypes")
+    @GraphQLNonNull
+    @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
+    public static CountingPaginatedData<ItemDeliveryTypeObject> itemDeliveryTypes(final DataFetchingEnvironment env) {
+        CountingPaginatedData<ItemDeliveryTypeObject> data;
+
+        try {
+            var itemControl = Session.getModelController(ItemControl.class);
+            var totalCount = itemControl.countItemDeliveryTypes();
+
+            try(var objectLimiter = new ObjectLimiter(env, ItemDeliveryTypeConstants.ENTITY_TYPE_NAME, totalCount)) {
+                var commandForm = ItemUtil.getHome().getGetItemDeliveryTypesForm();
+                var entities = new GetItemDeliveryTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+
+                if(entities == null) {
+                    data = Connections.emptyConnection();
+                } else {
+                    var itemDeliveryTypes = entities.stream().map(ItemDeliveryTypeObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
+
+                    data = new CountedObjects<>(objectLimiter, itemDeliveryTypes);
+                }
+            }
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return data;
+    }
+
+    @GraphQLField
+    @GraphQLName("itemInventoryType")
+    public static ItemInventoryTypeObject itemInventoryType(final DataFetchingEnvironment env,
+            @GraphQLName("itemInventoryTypeName") final String itemInventoryTypeName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        ItemInventoryType itemInventoryType;
+
+        try {
+            var commandForm = ItemUtil.getHome().getGetItemInventoryTypeForm();
+
+            commandForm.setItemInventoryTypeName(itemInventoryTypeName);
+            commandForm.setUlid(id);
+
+            itemInventoryType = new GetItemInventoryTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return itemInventoryType == null ? null : new ItemInventoryTypeObject(itemInventoryType);
+    }
+
+    @GraphQLField
+    @GraphQLName("itemInventoryTypes")
+    @GraphQLNonNull
+    @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
+    public static CountingPaginatedData<ItemInventoryTypeObject> itemInventoryTypes(final DataFetchingEnvironment env) {
+        CountingPaginatedData<ItemInventoryTypeObject> data;
+
+        try {
+            var itemControl = Session.getModelController(ItemControl.class);
+            var totalCount = itemControl.countItemInventoryTypes();
+
+            try(var objectLimiter = new ObjectLimiter(env, ItemInventoryTypeConstants.ENTITY_TYPE_NAME, totalCount)) {
+                var commandForm = ItemUtil.getHome().getGetItemInventoryTypesForm();
+                var entities = new GetItemInventoryTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+
+                if(entities == null) {
+                    data = Connections.emptyConnection();
+                } else {
+                    var itemInventoryTypes = entities.stream().map(ItemInventoryTypeObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
+
+                    data = new CountedObjects<>(objectLimiter, itemInventoryTypes);
+                }
+            }
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return data;
+    }
+
+    @GraphQLField
     @GraphQLName("itemPrice")
     public static ItemPriceObject itemPrice(final DataFetchingEnvironment env,
             @GraphQLName("itemName") @GraphQLNonNull final String itemName,
@@ -5031,6 +5381,57 @@ public final class GraphQlQueries
         return itemDescriptionTypeObjects;
     }
 
+    @GraphQLField
+    @GraphQLName("itemImageType")
+    public static ItemImageTypeObject itemImageType(final DataFetchingEnvironment env,
+            @GraphQLName("itemImageTypeName") final String itemImageTypeName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        ItemImageType itemImageType;
+
+        try {
+            var commandForm = ItemUtil.getHome().getGetItemImageTypeForm();
+
+            commandForm.setItemImageTypeName(itemImageTypeName);
+            commandForm.setUlid(id);
+
+            itemImageType = new GetItemImageTypeCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return itemImageType == null ? null : new ItemImageTypeObject(itemImageType);
+    }
+
+    @GraphQLField
+    @GraphQLName("itemImageTypes")
+    @GraphQLNonNull
+    @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
+    public static CountingPaginatedData<ItemImageTypeObject> itemImageTypes(final DataFetchingEnvironment env) {
+        CountingPaginatedData<ItemImageTypeObject> data;
+
+        try {
+            var itemControl = Session.getModelController(ItemControl.class);
+            var totalCount = itemControl.countItemImageTypes();
+
+            try(var objectLimiter = new ObjectLimiter(env, ItemImageTypeConstants.ENTITY_TYPE_NAME, totalCount)) {
+                var commandForm = ItemUtil.getHome().getGetItemImageTypesForm();
+                var entities = new GetItemImageTypesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+
+                if(entities == null) {
+                    data = Connections.emptyConnection();
+                } else {
+                    var itemImageTypes = entities.stream().map(ItemImageTypeObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
+
+                    data = new CountedObjects<>(objectLimiter, itemImageTypes);
+                }
+            }
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return data;
+    }
+    
     @GraphQLField
     @GraphQLName("securityRoleGroup")
     public static SecurityRoleGroupObject securityRoleGroup(final DataFetchingEnvironment env,

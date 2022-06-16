@@ -16,10 +16,12 @@
 
 package com.echothree.model.control.core.server.logic;
 
+import com.echothree.control.user.core.common.edit.EntityListItemAttributeEdit;
 import com.echothree.control.user.core.common.spec.EntityAttributeSpec;
 import com.echothree.control.user.core.common.spec.EntityAttributeUlid;
-import com.echothree.control.user.core.common.spec.EntityListItemSpec;
+import com.echothree.control.user.core.common.spec.EntityAttributeUniversalSpec;
 import com.echothree.control.user.core.common.spec.EntityListItemUlid;
+import com.echothree.control.user.core.common.spec.EntityListItemUniversalSpec;
 import com.echothree.model.control.core.common.ComponentVendors;
 import com.echothree.model.control.core.common.EntityAttributeTypes;
 import com.echothree.model.control.core.common.EntityTypes;
@@ -353,7 +355,50 @@ public class EntityAttributeLogic
     public EntityAttribute getEntityAttributeByUlidForUpdate(final ExecutionErrorAccumulator eea, final String ulid) {
         return getEntityAttributeByUlid(eea, ulid, EntityPermission.READ_WRITE);
     }
-    
+
+    // For when we need to determine the EntityType from what the user passes in:
+    public EntityAttribute getEntityAttributeByUniversalSpec(final ExecutionErrorAccumulator eea, final EntityAttributeUniversalSpec universalSpec,
+            final EntityPermission entityPermission) {
+        EntityAttribute entityAttribute = null;
+        var componentVendorName = universalSpec.getComponentVendorName();
+        var entityTypeName = universalSpec.getEntityTypeName();
+        var entityAttributeName = universalSpec.getEntityAttributeName();
+        var universalSpecCount = EntityInstanceLogic.getInstance().countPossibleEntitySpecs(universalSpec);
+        var parameterCount = (componentVendorName == null && entityTypeName == null && entityAttributeName == null ? 0 : 1)
+                + universalSpecCount;
+
+        switch(parameterCount) {
+            case 1 -> {
+                if(universalSpecCount == 1) {
+                    var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, universalSpec,
+                            ComponentVendors.ECHOTHREE.name(), EntityTypes.EntityAttribute.name());
+
+                    if(!eea.hasExecutionErrors()) {
+                        var coreControl = Session.getModelController(CoreControl.class);
+
+                        entityAttribute = coreControl.getEntityAttributeByEntityInstance(entityInstance, entityPermission);
+                    }
+                } else {
+                    entityAttribute = getEntityAttributeByName(eea, componentVendorName, entityTypeName, entityAttributeName, entityPermission);
+                }
+            }
+            default -> {
+                handleExecutionError(InvalidParameterCountException.class, eea, ExecutionErrors.InvalidParameterCount.name());
+            }
+        }
+
+        return entityAttribute;
+    }
+
+    public EntityAttribute getEntityAttributeByUniversalSpec(final ExecutionErrorAccumulator eea, final EntityAttributeUniversalSpec universalSpec) {
+        return getEntityAttributeByUniversalSpec(eea, universalSpec, EntityPermission.READ_ONLY);
+    }
+
+    public EntityAttribute getEntityAttributeByUniversalSpecForUpdate(final ExecutionErrorAccumulator eea, final EntityAttributeUniversalSpec universalSpec) {
+        return getEntityAttributeByUniversalSpec(eea, universalSpec, EntityPermission.READ_WRITE);
+    }
+
+    // For when we can get the EntityType from the EntityInstance:
     public EntityAttribute getEntityAttribute(final ExecutionErrorAccumulator eea, final EntityInstance entityInstance,
             final EntityAttributeSpec spec, final EntityAttributeUlid ulid, final EntityPermission entityPermission,
             final EntityAttributeTypes... entityAttributeTypes) {
@@ -408,12 +453,12 @@ public class EntityAttributeLogic
     
     public EntityAttribute getEntityAttribute(final ExecutionErrorAccumulator eea, final EntityInstance entityInstance,
             final EntityAttributeSpec spec, final EntityAttributeUlid ulid, final EntityAttributeTypes... entityAttributeTypes) {
-        return getEntityAttribute(eea, entityInstance, spec, ulid, EntityPermission.READ_ONLY);
+        return getEntityAttribute(eea, entityInstance, spec, ulid, EntityPermission.READ_ONLY, entityAttributeTypes);
     }
     
     public EntityAttribute getEntityAttributeForUpdate(final ExecutionErrorAccumulator eea, final EntityInstance entityInstance,
             final EntityAttributeSpec spec, final EntityAttributeUlid ulid, final EntityAttributeTypes... entityAttributeTypes) {
-        return getEntityAttribute(eea, entityInstance, spec, ulid, EntityPermission.READ_WRITE);
+        return getEntityAttribute(eea, entityInstance, spec, ulid, EntityPermission.READ_WRITE, entityAttributeTypes);
     }
     
     private List<EntityInstanceResult> getEntityInstanceResultsByEntityAttributeTypeName(EntityAttribute entityAttribute) {
@@ -618,12 +663,55 @@ public class EntityAttributeLogic
     public EntityListItem getEntityListItemByUlidForUpdate(final ExecutionErrorAccumulator eea, final String ulid) {
         return getEntityListItemByUlid(eea, ulid, EntityPermission.READ_WRITE);
     }
-    
-    public EntityListItem getEntityListItem(final ExecutionErrorAccumulator eea, final EntityAttribute entityAttribute,
-            final EntityListItemSpec spec, final EntityListItemUlid ulid, final EntityPermission entityPermission) {
+
+    public EntityListItem getEntityListItemByUniversalSpec(final ExecutionErrorAccumulator eea, final EntityListItemUniversalSpec universalSpec,
+            final EntityPermission entityPermission) {
         EntityListItem entityListItem = null;
-        String entityListItemName = spec.getEntityListItemName();
-        String entityListItemUlid = ulid.getEntityListItemUlid();
+        var componentVendorName = universalSpec.getComponentVendorName();
+        var entityTypeName = universalSpec.getEntityTypeName();
+        var entityAttributeName = universalSpec.getEntityAttributeName();
+        var entityListItemName = universalSpec.getEntityListItemName();
+        var universalSpecCount = EntityInstanceLogic.getInstance().countPossibleEntitySpecs(universalSpec);
+        var parameterCount = (componentVendorName == null && entityTypeName == null && entityAttributeName == null && entityListItemName == null ? 0 : 1)
+                + universalSpecCount;
+
+        switch(parameterCount) {
+            case 1 -> {
+                if(universalSpecCount == 1) {
+                    var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, universalSpec,
+                            ComponentVendors.ECHOTHREE.name(), EntityTypes.EntityListItem.name());
+
+                    if(!eea.hasExecutionErrors()) {
+                        var coreControl = Session.getModelController(CoreControl.class);
+
+                        entityListItem = coreControl.getEntityListItemByEntityInstance(entityInstance, entityPermission);
+                    }
+                } else {
+                    entityListItem = getEntityListItemByName(eea, componentVendorName, entityTypeName, entityAttributeName,
+                            entityListItemName, entityPermission);
+                }
+            }
+            default -> {
+                handleExecutionError(InvalidParameterCountException.class, eea, ExecutionErrors.InvalidParameterCount.name());
+            }
+        }
+
+        return entityListItem;
+    }
+
+    public EntityListItem getEntityListItemByUniversalSpec(final ExecutionErrorAccumulator eea, final EntityListItemUniversalSpec universalSpec) {
+        return getEntityListItemByUniversalSpec(eea, universalSpec, EntityPermission.READ_ONLY);
+    }
+
+    public EntityListItem getEntityListItemByUniversalSpecForUpdate(final ExecutionErrorAccumulator eea, final EntityListItemUniversalSpec universalSpec) {
+        return getEntityListItemByUniversalSpec(eea, universalSpec, EntityPermission.READ_WRITE);
+    }
+
+    public EntityListItem getEntityListItem(final ExecutionErrorAccumulator eea, final EntityAttribute entityAttribute,
+            final EntityListItemAttributeEdit edit, final EntityPermission entityPermission) {
+        EntityListItem entityListItem = null;
+        String entityListItemName = edit.getEntityListItemName();
+        String entityListItemUlid = edit.getEntityListItemUlid();
         var parameterCount = (entityListItemName == null ? 0 : 1) + (entityListItemUlid == null ? 0 : 1);
 
         if (parameterCount == 1) {
@@ -653,13 +741,13 @@ public class EntityAttributeLogic
     }
     
     public EntityListItem getEntityListItem(final ExecutionErrorAccumulator eea, final EntityAttribute entityAttribute,
-            final EntityListItemSpec spec, final EntityListItemUlid ulid) {
-        return getEntityListItem(eea, entityAttribute, spec, ulid, EntityPermission.READ_ONLY);
+            final EntityListItemAttributeEdit edit) {
+        return getEntityListItem(eea, entityAttribute, edit, EntityPermission.READ_ONLY);
     }
     
     public EntityListItem getEntityListItemForUpdate(final ExecutionErrorAccumulator eea, final EntityAttribute entityAttribute,
-            final EntityListItemSpec spec, final EntityListItemUlid ulid) {
-        return getEntityListItem(eea, entityAttribute, spec, ulid, EntityPermission.READ_WRITE);
+            final EntityListItemAttributeEdit edit, final EntityListItemUlid ulid) {
+        return getEntityListItem(eea, entityAttribute, edit, EntityPermission.READ_WRITE);
     }
     
     public void updateEntityListItemFromValue(final Session session, EntityListItemDetailValue entityListItemDetailValue, BasePK updatedBy) {

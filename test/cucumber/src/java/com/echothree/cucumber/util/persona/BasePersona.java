@@ -75,8 +75,8 @@ import com.echothree.control.user.core.common.form.DeleteEntityAttributeGroupFor
 import com.echothree.control.user.core.common.form.DeleteEntityListItemForm;
 import com.echothree.control.user.core.common.spec.EntityAttributeEntityAttributeGroupSpec;
 import com.echothree.control.user.core.common.spec.EntityAttributeGroupSpec;
-import com.echothree.control.user.core.common.spec.EntityAttributeSpec;
-import com.echothree.control.user.core.common.spec.EntityListItemSpec;
+import com.echothree.control.user.core.common.spec.EntityAttributeUniversalSpec;
+import com.echothree.control.user.core.common.spec.EntityListItemUniversalSpec;
 import com.echothree.control.user.filter.common.edit.FilterEdit;
 import com.echothree.control.user.filter.common.edit.FilterKindEdit;
 import com.echothree.control.user.filter.common.edit.FilterStepEdit;
@@ -129,7 +129,6 @@ import com.echothree.control.user.offer.common.spec.OfferSpec;
 import com.echothree.control.user.offer.common.spec.OfferUseSpec;
 import com.echothree.control.user.offer.common.spec.SourceSpec;
 import com.echothree.control.user.offer.common.spec.UseSpec;
-import com.echothree.control.user.offer.common.spec.UseTypeSpec;
 import com.echothree.control.user.offer.common.spec.UseTypeUniversalSpec;
 import com.echothree.control.user.party.common.form.CreateCustomerWithLoginForm;
 import com.echothree.control.user.party.common.form.CreateVendorForm;
@@ -243,12 +242,12 @@ public class BasePersona {
 
     public CreateEntityAttributeForm createEntityAttributeForm;
     public DeleteEntityAttributeForm deleteEntityAttributeForm;
-    public EntityAttributeSpec entityAttributeSpec;
+    public EntityAttributeUniversalSpec entityAttributeUniversalSpec;
     public EntityAttributeEdit entityAttributeEdit;
 
     public CreateEntityListItemForm createEntityListItemForm;
     public DeleteEntityListItemForm deleteEntityListItemForm;
-    public EntityListItemSpec entityListItemSpec;
+    public EntityListItemUniversalSpec entityListItemUniversalSpec;
     public EntityListItemEdit entityListItemEdit;
 
     public CreateEntityAttributeEntityAttributeGroupForm createEntityAttributeEntityAttributeGroupForm;

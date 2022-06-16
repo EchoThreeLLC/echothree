@@ -19,10 +19,24 @@ package com.echothree.model.control.item.server.graphql;
 import com.echothree.control.user.item.server.command.GetItemCategoriesCommand;
 import com.echothree.control.user.item.server.command.GetItemCategoryCommand;
 import com.echothree.control.user.item.server.command.GetItemCommand;
+import com.echothree.control.user.item.server.command.GetItemDeliveryTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemDeliveryTypesCommand;
+import com.echothree.control.user.item.server.command.GetItemDescriptionCommand;
 import com.echothree.control.user.item.server.command.GetItemDescriptionTypeCommand;
 import com.echothree.control.user.item.server.command.GetItemDescriptionTypesCommand;
+import com.echothree.control.user.item.server.command.GetItemDescriptionsCommand;
+import com.echothree.control.user.item.server.command.GetItemImageTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemImageTypesCommand;
+import com.echothree.control.user.item.server.command.GetItemInventoryTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemInventoryTypesCommand;
 import com.echothree.control.user.item.server.command.GetItemPriceCommand;
+import com.echothree.control.user.item.server.command.GetItemPriceTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemPriceTypesCommand;
 import com.echothree.control.user.item.server.command.GetItemPricesCommand;
+import com.echothree.control.user.item.server.command.GetItemTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemTypesCommand;
+import com.echothree.control.user.item.server.command.GetItemUseTypeCommand;
+import com.echothree.control.user.item.server.command.GetItemUseTypesCommand;
 import com.echothree.control.user.item.server.command.GetItemsCommand;
 import com.echothree.model.control.graphql.server.util.BaseGraphQl;
 import graphql.schema.DataFetchingEnvironment;
@@ -46,12 +60,60 @@ public final class ItemSecurityUtils
         return getGraphQlExecutionContext(env).hasAccess(GetItemsCommand.class);
     }
 
+    public boolean getHasItemDescriptionAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemDescriptionCommand.class);
+    }
+
+    public boolean getHasItemDescriptionsAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemDescriptionsCommand.class);
+    }
+
     public boolean getHasItemPriceAccess(final DataFetchingEnvironment env) {
         return getGraphQlExecutionContext(env).hasAccess(GetItemPriceCommand.class);
     }
 
     public boolean getHasItemPricesAccess(final DataFetchingEnvironment env) {
         return getGraphQlExecutionContext(env).hasAccess(GetItemPricesCommand.class);
+    }
+
+    public boolean getHasItemTypeAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemTypeCommand.class);
+    }
+
+    public boolean getHasItemTypesAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemTypesCommand.class);
+    }
+
+    public boolean getHasItemPriceTypeAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemPriceTypeCommand.class);
+    }
+
+    public boolean getHasItemPriceTypesAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemPriceTypesCommand.class);
+    }
+
+    public boolean getHasItemDeliveryTypeAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemDeliveryTypeCommand.class);
+    }
+
+    public boolean getHasItemDeliveryTypesAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemDeliveryTypesCommand.class);
+    }
+
+    public boolean getHasItemUseTypeAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemUseTypeCommand.class);
+    }
+
+    public boolean getHasItemUseTypesAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemUseTypesCommand.class);
+    }
+
+    public boolean getHasItemInventoryTypeAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemInventoryTypeCommand.class);
+    }
+
+    public boolean getHasItemInventoryTypesAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemInventoryTypesCommand.class);
     }
 
     public boolean getHasItemCategoryAccess(final DataFetchingEnvironment env) {
@@ -68,6 +130,14 @@ public final class ItemSecurityUtils
 
     public boolean getHasItemDescriptionTypesAccess(final DataFetchingEnvironment env) {
         return getGraphQlExecutionContext(env).hasAccess(GetItemDescriptionTypesCommand.class);
+    }
+
+    public boolean getHasItemImageTypeAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemImageTypeCommand.class);
+    }
+
+    public boolean getHasItemImageTypesAccess(final DataFetchingEnvironment env) {
+        return getGraphQlExecutionContext(env).hasAccess(GetItemImageTypesCommand.class);
     }
 
 }

@@ -1,5 +1,65 @@
 # Changelog
 
+## 2022-06-12-01
+
+* Additional Item Object FIelds [438](https://gitlab.echothree.com/echothree/echothree/-/issues/438)
+* Add Cancellation Kind Object [439](https://gitlab.echothree.com/echothree/echothree/-/issues/439)
+* Add Cancellation Policy Object [442](https://gitlab.echothree.com/echothree/echothree/-/issues/442)
+* Add Return Kind Object [445](https://gitlab.echothree.com/echothree/echothree/-/issues/445)
+* Add Return Policy Object [448](https://gitlab.echothree.com/echothree/echothree/-/issues/448)
+* Add Entity Attribute Mutations [481](https://gitlab.echothree.com/echothree/echothree/-/issues/481)
+* Add Entity List Item Mutations [482](https://gitlab.echothree.com/echothree/echothree/-/issues/482)
+* WildFly 26.1.1 Upgrade [484](https://gitlab.echothree.com/echothree/echothree/-/issues/484)
+* Rename partyId to id for User Login Mutations [486](https://gitlab.echothree.com/echothree/echothree/-/issues/486)
+
+## 2022-05-29-01
+
+* Add EntityListItemSequence to Entity Attribute Object [480](https://gitlab.echothree.com/echothree/echothree/-/issues/480)
+* Apache Lucene 9.2.0 Upgrade [483](https://gitlab.echothree.com/echothree/echothree/-/issues/483)
+
+## 2022-05-15-01
+
+* MySQL Connector/J 8.0.29 Upgrade [464](https://gitlab.echothree.com/echothree/echothree/-/issues/464)
+* Entity Attribute Mutations for Booleans, Integers, Longs, and Strings [465](https://gitlab.echothree.com/echothree/echothree/-/issues/465)
+
+## 2022-05-01-01
+
+* GraphQL Objects and Queries for Item Descriptions [416](https://gitlab.echothree.com/echothree/echothree/-/issues/416)
+* WildFly 26.1.0 Upgrade [453](https://gitlab.echothree.com/echothree/echothree/-/issues/453)
+* jOOQ 3.16.6 Upgrade [458](https://gitlab.echothree.com/echothree/echothree/-/issues/458)
+* ICU4J 71.1 Upgrade [459](https://gitlab.echothree.com/echothree/echothree/-/issues/459)
+* Convert Boolean to a BIT(1) [460](https://gitlab.echothree.com/echothree/echothree/-/issues/460)
+* Missing Initial Entity Types [461](https://gitlab.echothree.com/echothree/echothree/-/issues/461)
+* Switch IntelliJ Project from JDK_17_PREVIEW to JDK_17 [462](https://gitlab.echothree.com/echothree/echothree/-/issues/462)
+* Remove Dependency on Spring [463](https://gitlab.echothree.com/echothree/echothree/-/issues/463)
+
+## 2022-04-17-01
+
+* Spring 5.3.18 Upgrade [452](https://gitlab.echothree.com/echothree/echothree/-/issues/452)
+* Error Prone 2.13.0 Upgrade [454](https://gitlab.echothree.com/echothree/echothree/-/issues/454)
+* ClassGraph 4.8.143 Upgrade [455](https://gitlab.echothree.com/echothree/echothree/-/issues/455)
+* JaCoCo 0.8.8 Upgrade [456](https://gitlab.echothree.com/echothree/echothree/-/issues/456)
+
+## 2022-04-03-01
+
+* Apache Lucene 9.1.0 Upgrade [451](https://gitlab.echothree.com/echothree/echothree/-/issues/451)
+
+## 2022-03-20-01
+
+* GraphQL Objects and Queries for Item Image Types [414](https://gitlab.echothree.com/echothree/echothree/-/issues/414)
+* CreateEntityListItemAttributeForm Extends Incorrect Interface [423](https://gitlab.echothree.com/echothree/echothree/-/issues/423)
+* GraphQL Mutations for Entity List Item Attributes [424](https://gitlab.echothree.com/echothree/echothree/-/issues/424)
+* GraphQL Mutations for Entity Multiple List Item Attributes [425](https://gitlab.echothree.com/echothree/echothree/-/issues/425)
+* Allow Anyone to Call GetEntityListItems and Get EntityListItem UCs [428](https://gitlab.echothree.com/echothree/echothree/-/issues/428)
+* Correct GraphQL Description for Entity Attribute Group Object [430](https://gitlab.echothree.com/echothree/echothree/-/issues/430)
+* Guava 31.1-jre Upgrade [431](https://gitlab.echothree.com/echothree/echothree/-/issues/431)
+* GraphQL Objects and Queries for Item Delivery Types [432](https://gitlab.echothree.com/echothree/echothree/-/issues/432)
+* GraphQL Objects and Queries for Item Inventory Types [433](https://gitlab.echothree.com/echothree/echothree/-/issues/433)
+* GraphQL Queries for Item Price Types [434](https://gitlab.echothree.com/echothree/echothree/-/issues/434)
+* GraphQL Queries for Item Types [435](https://gitlab.echothree.com/echothree/echothree/-/issues/435)
+* GraphQL Objects and Queries for Item Use Types [436](https://gitlab.echothree.com/echothree/echothree/-/issues/436)
+* Additional Item Description Type Object FIelds [437](https://gitlab.echothree.com/echothree/echothree/-/issues/437)
+
 ## 2022-03-06-01
 
 * GraphQL Objects for Item Description Types [412](https://gitlab.echothree.com/echothree/echothree/-/issues/412)

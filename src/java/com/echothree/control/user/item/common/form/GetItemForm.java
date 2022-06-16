@@ -16,11 +16,10 @@
 
 package com.echothree.control.user.item.common.form;
 
-import com.echothree.control.user.core.common.spec.UniversalEntitySpec;
-import com.echothree.control.user.item.common.spec.ItemSpec;
+import com.echothree.control.user.item.common.spec.ItemUniversalSpec;
 
 public interface GetItemForm
-        extends ItemSpec, UniversalEntitySpec {
+        extends ItemUniversalSpec {
     
     String getItemNameOrAlias();
     void setItemNameOrAlias(String itemNameOrAlias);
