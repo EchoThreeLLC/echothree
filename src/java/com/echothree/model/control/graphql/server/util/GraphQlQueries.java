@@ -19,6 +19,11 @@ package com.echothree.model.control.graphql.server.util;
 import com.echothree.control.user.accounting.common.AccountingUtil;
 import com.echothree.control.user.accounting.server.command.GetCurrenciesCommand;
 import com.echothree.control.user.accounting.server.command.GetCurrencyCommand;
+import com.echothree.control.user.cancellationpolicy.common.CancellationPolicyUtil;
+import com.echothree.control.user.cancellationpolicy.server.command.GetCancellationKindCommand;
+import com.echothree.control.user.cancellationpolicy.server.command.GetCancellationKindsCommand;
+import com.echothree.control.user.cancellationpolicy.server.command.GetCancellationPoliciesCommand;
+import com.echothree.control.user.cancellationpolicy.server.command.GetCancellationPolicyCommand;
 import com.echothree.control.user.content.common.ContentUtil;
 import com.echothree.control.user.content.server.command.GetContentCatalogCommand;
 import com.echothree.control.user.content.server.command.GetContentCatalogItemCommand;
@@ -178,6 +183,11 @@ import com.echothree.control.user.payment.server.command.GetPaymentProcessorsCom
 import com.echothree.control.user.queue.common.QueueUtil;
 import com.echothree.control.user.queue.server.command.GetQueueTypeCommand;
 import com.echothree.control.user.queue.server.command.GetQueueTypesCommand;
+import com.echothree.control.user.returnpolicy.common.ReturnPolicyUtil;
+import com.echothree.control.user.returnpolicy.server.command.GetReturnKindCommand;
+import com.echothree.control.user.returnpolicy.server.command.GetReturnKindsCommand;
+import com.echothree.control.user.returnpolicy.server.command.GetReturnPoliciesCommand;
+import com.echothree.control.user.returnpolicy.server.command.GetReturnPolicyCommand;
 import com.echothree.control.user.search.common.SearchUtil;
 import com.echothree.control.user.search.common.result.CheckItemSpellingResult;
 import com.echothree.control.user.search.server.command.GetCustomerResultsCommand;
@@ -234,6 +244,9 @@ import com.echothree.control.user.workflow.server.command.GetWorkflowTypeCommand
 import com.echothree.control.user.workflow.server.command.GetWorkflowTypesCommand;
 import com.echothree.control.user.workflow.server.command.GetWorkflowsCommand;
 import com.echothree.model.control.accounting.server.graphql.CurrencyObject;
+import com.echothree.model.control.cancellationpolicy.server.control.CancellationPolicyControl;
+import com.echothree.model.control.cancellationpolicy.server.graphql.CancellationKindObject;
+import com.echothree.model.control.cancellationpolicy.server.graphql.CancellationPolicyObject;
 import com.echothree.model.control.content.server.graphql.ContentCatalogItemObject;
 import com.echothree.model.control.content.server.graphql.ContentCatalogObject;
 import com.echothree.model.control.content.server.graphql.ContentCategoryItemObject;
@@ -316,6 +329,9 @@ import com.echothree.model.control.payment.server.graphql.PaymentProcessorTypeCo
 import com.echothree.model.control.payment.server.graphql.PaymentProcessorTypeCodeTypeObject;
 import com.echothree.model.control.payment.server.graphql.PaymentProcessorTypeObject;
 import com.echothree.model.control.queue.server.graphql.QueueTypeObject;
+import com.echothree.model.control.returnpolicy.server.control.ReturnPolicyControl;
+import com.echothree.model.control.returnpolicy.server.graphql.ReturnKindObject;
+import com.echothree.model.control.returnpolicy.server.graphql.ReturnPolicyObject;
 import com.echothree.model.control.search.server.graphql.CheckItemSpellingObject;
 import com.echothree.model.control.search.server.graphql.CustomerResultsObject;
 import com.echothree.model.control.search.server.graphql.EmployeeResultsObject;
@@ -345,6 +361,9 @@ import com.echothree.model.control.workflow.server.graphql.WorkflowStepObject;
 import com.echothree.model.control.workflow.server.graphql.WorkflowStepTypeObject;
 import com.echothree.model.control.workflow.server.graphql.WorkflowTypeObject;
 import com.echothree.model.data.accounting.server.entity.Currency;
+import com.echothree.model.data.cancellationpolicy.common.CancellationKindConstants;
+import com.echothree.model.data.cancellationpolicy.server.entity.CancellationKind;
+import com.echothree.model.data.cancellationpolicy.server.entity.CancellationPolicy;
 import com.echothree.model.data.content.server.entity.ContentCatalog;
 import com.echothree.model.data.content.server.entity.ContentCatalogItem;
 import com.echothree.model.data.content.server.entity.ContentCategory;
@@ -428,6 +447,9 @@ import com.echothree.model.data.payment.server.entity.PaymentProcessorType;
 import com.echothree.model.data.payment.server.entity.PaymentProcessorTypeCode;
 import com.echothree.model.data.payment.server.entity.PaymentProcessorTypeCodeType;
 import com.echothree.model.data.queue.server.entity.QueueType;
+import com.echothree.model.data.returnpolicy.common.ReturnKindConstants;
+import com.echothree.model.data.returnpolicy.server.entity.ReturnKind;
+import com.echothree.model.data.returnpolicy.server.entity.ReturnPolicy;
 import com.echothree.model.data.search.server.entity.SearchCheckSpellingActionType;
 import com.echothree.model.data.security.server.entity.SecurityRoleGroup;
 import com.echothree.model.data.selector.server.entity.Selector;
@@ -3912,7 +3934,7 @@ public final class GraphQlQueries
     @GraphQLName("customerResults")
     public static CustomerResultsObject customerResults(final DataFetchingEnvironment env,
             @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName) {
-        CustomerResultsObject customerResultsObject = new CustomerResultsObject();
+        CustomerResultsObject customerResultsObject = null;
 
         try {
             var commandForm = SearchUtil.getHome().getGetCustomerResultsForm();
@@ -3920,7 +3942,7 @@ public final class GraphQlQueries
             commandForm.setSearchTypeName(searchTypeName);
 
             if(new GetCustomerResultsCommand(getUserVisitPK(env), commandForm).canQueryByGraphQl()) {
-                customerResultsObject.setForm(commandForm);
+                customerResultsObject = new CustomerResultsObject(commandForm);
             }
         } catch (NamingException ex) {
             throw new RuntimeException(ex);
@@ -3933,7 +3955,7 @@ public final class GraphQlQueries
     @GraphQLName("employeeResults")
     public static EmployeeResultsObject employeeResults(final DataFetchingEnvironment env,
             @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName) {
-        EmployeeResultsObject employeeResultsObject = new EmployeeResultsObject();
+        EmployeeResultsObject employeeResultsObject = null;
 
         try {
             var commandForm = SearchUtil.getHome().getGetEmployeeResultsForm();
@@ -3941,7 +3963,7 @@ public final class GraphQlQueries
             commandForm.setSearchTypeName(searchTypeName);
 
             if(new GetEmployeeResultsCommand(getUserVisitPK(env), commandForm).canQueryByGraphQl()) {
-                employeeResultsObject.setForm(commandForm);
+                employeeResultsObject = new EmployeeResultsObject(commandForm);
             }
         } catch (NamingException ex) {
             throw new RuntimeException(ex);
@@ -3954,7 +3976,7 @@ public final class GraphQlQueries
     @GraphQLName("itemResults")
     public static ItemResultsObject itemResults(final DataFetchingEnvironment env,
             @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName) {
-        ItemResultsObject itemResultsObject = new ItemResultsObject();
+        ItemResultsObject itemResultsObject = null;
 
         try {
             var commandForm = SearchUtil.getHome().getGetItemResultsForm();
@@ -3962,7 +3984,7 @@ public final class GraphQlQueries
             commandForm.setSearchTypeName(searchTypeName);
 
             if(new GetItemResultsCommand(getUserVisitPK(env), commandForm).canQueryByGraphQl()) {
-                itemResultsObject.setForm(commandForm);
+                itemResultsObject = new ItemResultsObject(commandForm);
             }
         } catch (NamingException ex) {
             throw new RuntimeException(ex);
@@ -4002,7 +4024,7 @@ public final class GraphQlQueries
     @GraphQLName("vendorResults")
     public static VendorResultsObject vendorResults(final DataFetchingEnvironment env,
             @GraphQLName("searchTypeName") @GraphQLNonNull final String searchTypeName) {
-        VendorResultsObject vendorResultsObject = new VendorResultsObject();
+        VendorResultsObject vendorResultsObject = null;
 
         try {
             var commandForm = SearchUtil.getHome().getGetVendorResultsForm();
@@ -4010,7 +4032,7 @@ public final class GraphQlQueries
             commandForm.setSearchTypeName(searchTypeName);
 
             if(new GetVendorResultsCommand(getUserVisitPK(env), commandForm).canQueryByGraphQl()) {
-                vendorResultsObject.setForm(commandForm);
+                vendorResultsObject = new VendorResultsObject(commandForm);
             }
         } catch (NamingException ex) {
             throw new RuntimeException(ex);
@@ -4853,6 +4875,214 @@ public final class GraphQlQueries
         }
 
         return departmentObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("cancellationKind")
+    public static CancellationKindObject cancellationKind(final DataFetchingEnvironment env,
+            @GraphQLName("cancellationKindName") final String cancellationKindName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        CancellationKind cancellationKind;
+
+        try {
+            var commandForm = CancellationPolicyUtil.getHome().getGetCancellationKindForm();
+
+            commandForm.setCancellationKindName(cancellationKindName);
+            commandForm.setUlid(id);
+
+            cancellationKind = new GetCancellationKindCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return cancellationKind == null ? null : new CancellationKindObject(cancellationKind);
+    }
+
+    @GraphQLField
+    @GraphQLName("cancellationKinds")
+    @GraphQLNonNull
+    @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
+    public static CountingPaginatedData<CancellationKindObject> cancellationKinds(final DataFetchingEnvironment env) {
+        CountingPaginatedData<CancellationKindObject> data;
+
+        try {
+            var cancellationKindControl = Session.getModelController(CancellationPolicyControl.class);
+            var totalCount = cancellationKindControl.countCancellationKinds();
+
+            try(var objectLimiter = new ObjectLimiter(env, CancellationKindConstants.ENTITY_TYPE_NAME, totalCount)) {
+                var commandForm = CancellationPolicyUtil.getHome().getGetCancellationKindsForm();
+                var entities = new GetCancellationKindsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+
+                if(entities == null) {
+                    data = Connections.emptyConnection();
+                } else {
+                    var cancellationKinds = entities.stream().map(CancellationKindObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
+
+                    data = new CountedObjects<>(objectLimiter, cancellationKinds);
+                }
+            }
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return data;
+    }
+
+    @GraphQLField
+    @GraphQLName("cancellationPolicy")
+    public static CancellationPolicyObject cancellationPolicy(final DataFetchingEnvironment env,
+            @GraphQLName("cancellationKindName") final String cancellationKindName,
+            @GraphQLName("cancellationPolicyName") final String cancellationPolicyName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        CancellationPolicy cancellationPolicy;
+
+        try {
+            var commandForm = CancellationPolicyUtil.getHome().getGetCancellationPolicyForm();
+
+            commandForm.setCancellationKindName(cancellationKindName);
+            commandForm.setCancellationPolicyName(cancellationPolicyName);
+            commandForm.setUlid(id);
+
+            cancellationPolicy = new GetCancellationPolicyCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return cancellationPolicy == null ? null : new CancellationPolicyObject(cancellationPolicy);
+    }
+
+    @GraphQLField
+    @GraphQLName("cancellationPolicies")
+    public static Collection<CancellationPolicyObject> cancellationPolicies(final DataFetchingEnvironment env,
+            @GraphQLName("cancellationKindName") @GraphQLNonNull final String cancellationKindName) {
+        Collection<CancellationPolicy> cancellationPolicies;
+        Collection<CancellationPolicyObject> cancellationPolicyObjects;
+
+        try {
+            var commandForm = CancellationPolicyUtil.getHome().getGetCancellationPoliciesForm();
+
+            commandForm.setCancellationKindName(cancellationKindName);
+
+            cancellationPolicies = new GetCancellationPoliciesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(cancellationPolicies == null) {
+            cancellationPolicyObjects = emptyList();
+        } else {
+            cancellationPolicyObjects = new ArrayList<>(cancellationPolicies.size());
+
+            cancellationPolicies.stream()
+                    .map(CancellationPolicyObject::new)
+                    .forEachOrdered(cancellationPolicyObjects::add);
+        }
+
+        return cancellationPolicyObjects;
+    }
+
+    @GraphQLField
+    @GraphQLName("returnKind")
+    public static ReturnKindObject returnKind(final DataFetchingEnvironment env,
+            @GraphQLName("returnKindName") final String returnKindName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        ReturnKind returnKind;
+
+        try {
+            var commandForm = ReturnPolicyUtil.getHome().getGetReturnKindForm();
+
+            commandForm.setReturnKindName(returnKindName);
+            commandForm.setUlid(id);
+
+            returnKind = new GetReturnKindCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return returnKind == null ? null : new ReturnKindObject(returnKind);
+    }
+
+    @GraphQLField
+    @GraphQLName("returnKinds")
+    @GraphQLNonNull
+    @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
+    public static CountingPaginatedData<ReturnKindObject> returnKinds(final DataFetchingEnvironment env) {
+        CountingPaginatedData<ReturnKindObject> data;
+
+        try {
+            var returnKindControl = Session.getModelController(ReturnPolicyControl.class);
+            var totalCount = returnKindControl.countReturnKinds();
+
+            try(var objectLimiter = new ObjectLimiter(env, ReturnKindConstants.ENTITY_TYPE_NAME, totalCount)) {
+                var commandForm = ReturnPolicyUtil.getHome().getGetReturnKindsForm();
+                var entities = new GetReturnKindsCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+
+                if(entities == null) {
+                    data = Connections.emptyConnection();
+                } else {
+                    var returnKinds = entities.stream().map(ReturnKindObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
+
+                    data = new CountedObjects<>(objectLimiter, returnKinds);
+                }
+            }
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return data;
+    }
+
+    @GraphQLField
+    @GraphQLName("returnPolicy")
+    public static ReturnPolicyObject returnPolicy(final DataFetchingEnvironment env,
+            @GraphQLName("returnKindName") final String returnKindName,
+            @GraphQLName("returnPolicyName") final String returnPolicyName,
+            @GraphQLName("id") @GraphQLID final String id) {
+        ReturnPolicy returnPolicy;
+
+        try {
+            var commandForm = ReturnPolicyUtil.getHome().getGetReturnPolicyForm();
+
+            commandForm.setReturnKindName(returnKindName);
+            commandForm.setReturnPolicyName(returnPolicyName);
+            commandForm.setUlid(id);
+
+            returnPolicy = new GetReturnPolicyCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return returnPolicy == null ? null : new ReturnPolicyObject(returnPolicy);
+    }
+
+    @GraphQLField
+    @GraphQLName("returnPolicies")
+    public static Collection<ReturnPolicyObject> returnPolicies(final DataFetchingEnvironment env,
+            @GraphQLName("returnKindName") @GraphQLNonNull final String returnKindName) {
+        Collection<ReturnPolicy> returnPolicies;
+        Collection<ReturnPolicyObject> returnPolicyObjects;
+
+        try {
+            var commandForm = ReturnPolicyUtil.getHome().getGetReturnPoliciesForm();
+
+            commandForm.setReturnKindName(returnKindName);
+
+            returnPolicies = new GetReturnPoliciesCommand(getUserVisitPK(env), commandForm).runForGraphQl();
+        } catch (NamingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if(returnPolicies == null) {
+            returnPolicyObjects = emptyList();
+        } else {
+            returnPolicyObjects = new ArrayList<>(returnPolicies.size());
+
+            returnPolicies.stream()
+                    .map(ReturnPolicyObject::new)
+                    .forEachOrdered(returnPolicyObjects::add);
+        }
+
+        return returnPolicyObjects;
     }
 
     @GraphQLField

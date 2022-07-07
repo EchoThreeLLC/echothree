@@ -27,12 +27,16 @@ import com.echothree.model.control.core.common.EntityAttributeTypes;
 import com.echothree.model.control.core.common.EntityTypes;
 import com.echothree.model.control.core.common.exception.DuplicateEntityAttributeNameException;
 import com.echothree.model.control.core.common.exception.DuplicateEntityBooleanAttributeException;
+import com.echothree.model.control.core.common.exception.DuplicateEntityClobAttributeException;
+import com.echothree.model.control.core.common.exception.DuplicateEntityDateAttributeException;
 import com.echothree.model.control.core.common.exception.DuplicateEntityIntegerAttributeException;
 import com.echothree.model.control.core.common.exception.DuplicateEntityListItemAttributeException;
 import com.echothree.model.control.core.common.exception.DuplicateEntityListItemNameException;
 import com.echothree.model.control.core.common.exception.DuplicateEntityLongAttributeException;
 import com.echothree.model.control.core.common.exception.DuplicateEntityMultipleListItemAttributeException;
+import com.echothree.model.control.core.common.exception.DuplicateEntityNameAttributeException;
 import com.echothree.model.control.core.common.exception.DuplicateEntityStringAttributeException;
+import com.echothree.model.control.core.common.exception.DuplicateEntityTimeAttributeException;
 import com.echothree.model.control.core.common.exception.InvalidEntityAttributeTypeException;
 import com.echothree.model.control.core.common.exception.InvalidParameterCountException;
 import com.echothree.model.control.core.common.exception.InvalidStringAttributeException;
@@ -79,15 +83,20 @@ import com.echothree.model.data.core.server.entity.EntityAttributeLong;
 import com.echothree.model.data.core.server.entity.EntityAttributeString;
 import com.echothree.model.data.core.server.entity.EntityAttributeType;
 import com.echothree.model.data.core.server.entity.EntityBooleanAttribute;
+import com.echothree.model.data.core.server.entity.EntityClobAttribute;
+import com.echothree.model.data.core.server.entity.EntityDateAttribute;
 import com.echothree.model.data.core.server.entity.EntityInstance;
 import com.echothree.model.data.core.server.entity.EntityIntegerAttribute;
 import com.echothree.model.data.core.server.entity.EntityListItem;
 import com.echothree.model.data.core.server.entity.EntityListItemAttribute;
 import com.echothree.model.data.core.server.entity.EntityLongAttribute;
 import com.echothree.model.data.core.server.entity.EntityMultipleListItemAttribute;
+import com.echothree.model.data.core.server.entity.EntityNameAttribute;
 import com.echothree.model.data.core.server.entity.EntityStringAttribute;
+import com.echothree.model.data.core.server.entity.EntityTimeAttribute;
 import com.echothree.model.data.core.server.entity.EntityType;
 import com.echothree.model.data.core.server.entity.EntityTypeDetail;
+import com.echothree.model.data.core.server.entity.MimeType;
 import com.echothree.model.data.core.server.value.EntityAttributeDetailValue;
 import com.echothree.model.data.core.server.value.EntityListItemDetailValue;
 import com.echothree.model.data.party.common.pk.PartyPK;
@@ -912,13 +921,13 @@ public class EntityAttributeLogic
 
         return entityLongAttribute;
     }
-    
+
     public EntityStringAttribute createEntityStringAttribute(final ExecutionErrorAccumulator eea, final EntityAttribute entityAttribute,
-        final EntityInstance entityInstance, final Language language, final String stringAttribute, final BasePK createdBy) {
+            final EntityInstance entityInstance, final Language language, final String stringAttribute, final BasePK createdBy) {
         EntityStringAttribute entityStringAttribute = null;
-        
+
         checkEntityType(eea, entityAttribute, entityInstance);
-        
+
         if(eea == null || !eea.hasExecutionErrors()) {
             var coreControl = Session.getModelController(CoreControl.class);
             EntityAttributeString entityAttributeString = coreControl.getEntityAttributeString(entityAttribute);
@@ -950,7 +959,101 @@ public class EntityAttributeLogic
 
         return entityStringAttribute;
     }
-    
+
+    public EntityClobAttribute createEntityClobAttribute(final ExecutionErrorAccumulator eea, final EntityAttribute entityAttribute,
+            final EntityInstance entityInstance, final Language language, final String clobAttribute, final MimeType mimeType,
+            final BasePK createdBy) {
+        EntityClobAttribute entityClobAttribute = null;
+
+        checkEntityType(eea, entityAttribute, entityInstance);
+
+        if(eea == null || !eea.hasExecutionErrors()) {
+            var coreControl = Session.getModelController(CoreControl.class);
+
+            entityClobAttribute = coreControl.getEntityClobAttribute(entityAttribute, entityInstance, language);
+
+            if(entityClobAttribute == null) {
+                coreControl.createEntityClobAttribute(entityAttribute, entityInstance, language, clobAttribute, mimeType, createdBy);
+            } else {
+                handleExecutionError(DuplicateEntityClobAttributeException.class, eea, ExecutionErrors.DuplicateEntityClobAttribute.name(),
+                        EntityInstanceLogic.getInstance().getEntityRefFromEntityInstance(entityInstance),
+                        entityAttribute.getLastDetail().getEntityAttributeName(),
+                        language.getLanguageIsoName());
+            }
+        }
+
+        return entityClobAttribute;
+    }
+
+    public EntityNameAttribute createEntityNameAttribute(final ExecutionErrorAccumulator eea, final EntityAttribute entityAttribute,
+            final String nameAttribute, final EntityInstance entityInstance, final BasePK createdBy) {
+        EntityNameAttribute entityNameAttribute = null;
+
+        checkEntityType(eea, entityAttribute, entityInstance);
+
+        if(eea == null || !eea.hasExecutionErrors()) {
+            var coreControl = Session.getModelController(CoreControl.class);
+
+            entityNameAttribute = coreControl.getEntityNameAttribute(entityAttribute, entityInstance);
+
+            if(entityNameAttribute == null) {
+                coreControl.createEntityNameAttribute(entityAttribute, nameAttribute, entityInstance, createdBy);
+            } else {
+                handleExecutionError(DuplicateEntityNameAttributeException.class, eea, ExecutionErrors.DuplicateEntityNameAttribute.name(),
+                        EntityInstanceLogic.getInstance().getEntityRefFromEntityInstance(entityInstance),
+                        entityAttribute.getLastDetail().getEntityAttributeName());
+            }
+        }
+
+        return entityNameAttribute;
+    }
+
+    public EntityDateAttribute createEntityDateAttribute(final ExecutionErrorAccumulator eea, final EntityAttribute entityAttribute,
+            final EntityInstance entityInstance, final Integer dateAttribute, final BasePK createdBy) {
+        EntityDateAttribute entityDateAttribute = null;
+
+        checkEntityType(eea, entityAttribute, entityInstance);
+
+        if(eea == null || !eea.hasExecutionErrors()) {
+            var coreControl = Session.getModelController(CoreControl.class);
+
+            entityDateAttribute = coreControl.getEntityDateAttribute(entityAttribute, entityInstance);
+
+            if(entityDateAttribute == null) {
+                coreControl.createEntityDateAttribute(entityAttribute, entityInstance, dateAttribute, createdBy);
+            } else {
+                handleExecutionError(DuplicateEntityDateAttributeException.class, eea, ExecutionErrors.DuplicateEntityDateAttribute.name(),
+                        EntityInstanceLogic.getInstance().getEntityRefFromEntityInstance(entityInstance),
+                        entityAttribute.getLastDetail().getEntityAttributeName());
+            }
+        }
+
+        return entityDateAttribute;
+    }
+
+    public EntityTimeAttribute createEntityTimeAttribute(final ExecutionErrorAccumulator eea, final EntityAttribute entityAttribute,
+            final EntityInstance entityInstance, final Long timeAttribute, final BasePK createdBy) {
+        EntityTimeAttribute entityTimeAttribute = null;
+
+        checkEntityType(eea, entityAttribute, entityInstance);
+
+        if(eea == null || !eea.hasExecutionErrors()) {
+            var coreControl = Session.getModelController(CoreControl.class);
+
+            entityTimeAttribute = coreControl.getEntityTimeAttribute(entityAttribute, entityInstance);
+
+            if(entityTimeAttribute == null) {
+                coreControl.createEntityTimeAttribute(entityAttribute, entityInstance, timeAttribute, createdBy);
+            } else {
+                handleExecutionError(DuplicateEntityTimeAttributeException.class, eea, ExecutionErrors.DuplicateEntityTimeAttribute.name(),
+                        EntityInstanceLogic.getInstance().getEntityRefFromEntityInstance(entityInstance),
+                        entityAttribute.getLastDetail().getEntityAttributeName());
+            }
+        }
+
+        return entityTimeAttribute;
+    }
+
     public EntityListItemAttribute createEntityListItemAttribute(final ExecutionErrorAccumulator eea, final EntityAttribute entityAttribute,
         final EntityInstance entityInstance, final EntityListItem entityListItem, final BasePK createdBy) {
         EntityListItemAttribute entityListItemAttribute = null;

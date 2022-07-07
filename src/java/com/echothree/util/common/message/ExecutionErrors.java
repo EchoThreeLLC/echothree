@@ -2045,6 +2045,7 @@ public enum ExecutionErrors {
     MinimumValueGreaterThanMaximumValue,
     UnknownEntityListItemSequenceName,
     InvalidStringAttribute,
+    InvalidNameAttribute,
     UnknownIndexTypeDescription,
     UnknownIndexDescription,
     DuplicateDirectory,
@@ -2244,5 +2245,7 @@ public enum ExecutionErrors {
     MissingDefaultItemDeliveryType,
     MissingDefaultItemInventoryType,
     UnknownDefaultItemImageType,
+    UnknownDefaultCancellationKind,
+    UnknownDefaultReturnKind,
 
 }

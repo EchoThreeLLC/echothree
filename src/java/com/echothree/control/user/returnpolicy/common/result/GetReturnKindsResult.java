@@ -22,7 +22,10 @@ import java.util.List;
 
 public interface GetReturnKindsResult
         extends BaseResult {
-    
+
+    Long getReturnKindCount();
+    void setReturnKindCount(Long returnKindCount);
+
     List<ReturnKindTransfer> getReturnKinds();
     void setReturnKinds(List<ReturnKindTransfer> returnKinds);
     

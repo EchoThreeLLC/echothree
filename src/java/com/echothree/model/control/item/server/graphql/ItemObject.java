@@ -17,6 +17,7 @@
 package com.echothree.model.control.item.server.graphql;
 
 import com.echothree.model.control.cancellationpolicy.server.graphql.CancellationPolicyObject;
+import com.echothree.model.control.cancellationpolicy.server.graphql.CancellationPolicySecurityUtils;
 import com.echothree.model.control.graphql.server.graphql.BaseEntityInstanceObject;
 import com.echothree.model.control.graphql.server.graphql.ObjectLimiter;
 import com.echothree.model.control.graphql.server.graphql.count.Connections;
@@ -32,6 +33,7 @@ import com.echothree.model.control.offer.server.graphql.OfferSecurityUtils;
 import com.echothree.model.control.party.server.graphql.CompanyObject;
 import com.echothree.model.control.party.server.graphql.PartySecurityUtils;
 import com.echothree.model.control.returnpolicy.server.graphql.ReturnPolicyObject;
+import com.echothree.model.control.returnpolicy.server.graphql.ReturnPolicySecurityUtils;
 import com.echothree.model.control.sequence.server.graphql.SequenceObject;
 import com.echothree.model.control.sequence.server.graphql.SequenceSecurityUtils;
 import com.echothree.model.control.uom.server.graphql.UnitOfMeasureKindObject;
@@ -263,8 +265,7 @@ public class ItemObject
     public CancellationPolicyObject getCancellationPolicy(final DataFetchingEnvironment env) {
         var cancellationPolicy = getItemDetail().getCancellationPolicy();
 
-        return cancellationPolicy == null ? null : new CancellationPolicyObject(cancellationPolicy);
-        //return CancellationSecurityUtils.getInstance().getHasCancellationPolicyAccess(env) ? new CancellationPolicyObject(getCancellationTypeDetail().getCancellationPolicy()) : null;
+        return cancellationPolicy == null ? null : (CancellationPolicySecurityUtils.getInstance().getHasCancellationPolicyAccess(env) ? new CancellationPolicyObject(cancellationPolicy) : null);
     }
 
     @GraphQLField
@@ -272,8 +273,7 @@ public class ItemObject
     public ReturnPolicyObject getReturnPolicy(final DataFetchingEnvironment env) {
         var returnPolicy = getItemDetail().getReturnPolicy();
 
-        return returnPolicy == null ? null : new ReturnPolicyObject(returnPolicy);
-        //return ReturnSecurityUtils.getInstance().getHasReturnPolicyAccess(env) ? new ReturnPolicyObject(getReturnTypeDetail().getReturnPolicy()) : null;
+        return returnPolicy == null ? null : (ReturnPolicySecurityUtils.getInstance().getHasReturnPolicyAccess(env) ? new ReturnPolicyObject(returnPolicy) : null);
     }
 
     //| itm_stylpth_stylepathid             | bigint      | YES  |     | NULL    |       |

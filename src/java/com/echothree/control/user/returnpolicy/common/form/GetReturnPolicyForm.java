@@ -16,11 +16,11 @@
 
 package com.echothree.control.user.returnpolicy.common.form;
 
-import com.echothree.control.user.returnpolicy.common.spec.ReturnPolicySpec;
+import com.echothree.control.user.returnpolicy.common.spec.ReturnPolicyUniversalSpec;
 
 public interface GetReturnPolicyForm
-        extends ReturnPolicySpec {
+        extends ReturnPolicyUniversalSpec {
     
-    // Nothing additional beyond ReturnPolicySpec
+    // Nothing additional beyond ReturnPolicyUniversalSpec
     
 }

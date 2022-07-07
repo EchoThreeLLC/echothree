@@ -16,11 +16,11 @@
 
 package com.echothree.control.user.cancellationpolicy.common.form;
 
-import com.echothree.control.user.cancellationpolicy.common.spec.CancellationKindSpec;
+import com.echothree.control.user.cancellationpolicy.common.spec.CancellationKindUniversalSpec;
 
 public interface GetCancellationKindForm
-        extends CancellationKindSpec {
+        extends CancellationKindUniversalSpec {
     
-    // Nothing additional beyond CancellationKindSpec
+    // Nothing additional beyond CancellationKindUniversalSpec
     
 }
