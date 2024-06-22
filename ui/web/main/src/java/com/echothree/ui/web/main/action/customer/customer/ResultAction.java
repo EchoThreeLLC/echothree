@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import com.echothree.control.user.search.common.SearchUtil;
 import com.echothree.control.user.search.common.form.GetCustomerResultsForm;
 import com.echothree.control.user.search.common.result.GetCustomerResultsResult;
 import com.echothree.model.control.core.common.CoreOptions;
-import com.echothree.model.control.search.common.SearchConstants;
 import com.echothree.model.control.search.common.SearchOptions;
+import com.echothree.model.control.search.common.SearchTypes;
 import com.echothree.model.data.search.common.SearchResultConstants;
 import com.echothree.ui.web.main.framework.AttributeConstants;
 import com.echothree.ui.web.main.framework.ForwardConstants;
@@ -67,7 +67,7 @@ public class ResultAction
         GetCustomerResultsForm commandForm = SearchUtil.getHome().getGetCustomerResultsForm();
         String results = request.getParameter(ParameterConstants.RESULTS);
 
-        commandForm.setSearchTypeName(SearchConstants.SearchType_ORDER_ENTRY);
+        commandForm.setSearchTypeName(SearchTypes.ORDER_ENTRY.name());
 
         Set<String> options = new HashSet<>();
         options.add(SearchOptions.CustomerResultIncludeCustomer);

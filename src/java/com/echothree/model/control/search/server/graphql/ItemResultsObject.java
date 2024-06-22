@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ package com.echothree.model.control.search.server.graphql;
 import com.echothree.control.user.search.common.form.GetItemResultsForm;
 import com.echothree.model.control.core.common.ComponentVendors;
 import com.echothree.model.control.core.common.EntityTypes;
-import com.echothree.model.control.graphql.server.graphql.ObjectLimiter;
+import com.echothree.model.control.graphql.server.util.count.ObjectLimiter;
 import com.echothree.model.control.graphql.server.graphql.count.Connections;
 import com.echothree.model.control.graphql.server.graphql.count.CountedObjects;
 import com.echothree.model.control.graphql.server.graphql.count.CountingDataConnectionFetcher;
 import com.echothree.model.control.graphql.server.graphql.count.CountingPaginatedData;
 import com.echothree.model.control.item.server.control.ItemControl;
 import com.echothree.model.control.item.server.graphql.ItemObject;
-import com.echothree.model.control.search.common.SearchConstants;
+import com.echothree.model.control.search.common.SearchKinds;
 import com.echothree.model.data.search.common.SearchResultConstants;
 import com.echothree.util.server.persistence.Session;
 import graphql.annotations.annotationTypes.GraphQLDescription;
@@ -42,7 +42,7 @@ public class ItemResultsObject
         extends BaseResultsObject<GetItemResultsForm> {
 
     public ItemResultsObject(GetItemResultsForm form) {
-        super(ComponentVendors.ECHOTHREE.name(), EntityTypes.Item.name(), SearchConstants.SearchKind_ITEM, form);
+        super(ComponentVendors.ECHO_THREE.name(), EntityTypes.Item.name(), SearchKinds.ITEM.name(), form);
     }
 
     @GraphQLField
@@ -57,7 +57,7 @@ public class ItemResultsObject
         } else {
             var totalCount = getTotalCount(env);
 
-            try(var objectLimiter = new ObjectLimiter(env, SearchResultConstants.ENTITY_TYPE_NAME, totalCount)) {
+            try(var objectLimiter = new ObjectLimiter(env, SearchResultConstants.COMPONENT_VENDOR_NAME, SearchResultConstants.ENTITY_TYPE_NAME, totalCount)) {
                 var itemControl = Session.getModelController(ItemControl.class);
                 var items = itemControl.getItemObjectsFromUserVisitSearch(userVisitSearch);
 

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class UserVisitSearchFacetLongObject {
     @GraphQLDescription("entity long range")
     @GraphQLNonNull
     public EntityLongRangeObject getEntityLongRange(final DataFetchingEnvironment env) {
-        return CoreSecurityUtils.getInstance().getHasEntityLongRangeAccess(env) ? new EntityLongRangeObject(entityLongRange) : null;
+        return CoreSecurityUtils.getHasEntityLongRangeAccess(env) ? new EntityLongRangeObject(entityLongRange) : null;
     }
 
     public void setCount(Long count) {

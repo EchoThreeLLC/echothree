@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,12 +27,24 @@ import graphql.schema.DataFetchingEnvironment;
 @GraphQLDescription("entity integer attribute object")
 @GraphQLName("EntityIntegerAttribute")
 public class EntityIntegerAttributeObject
-        extends BaseGraphQl {
+        implements BaseGraphQl, AttributeInterface {
     
     private final EntityIntegerAttribute entityIntegerAttribute; // Always Present
     
     public EntityIntegerAttributeObject(EntityIntegerAttribute entityIntegerAttribute) {
         this.entityIntegerAttribute = entityIntegerAttribute;
+    }
+
+    @GraphQLField
+    @GraphQLDescription("entity attribute")
+    public EntityAttributeObject getEntityAttribute(final DataFetchingEnvironment env) {
+        return CoreSecurityUtils.getHasEntityAttributeAccess(env) ? new EntityAttributeObject(entityIntegerAttribute.getEntityAttribute(), entityIntegerAttribute.getEntityInstance()) : null;
+    }
+
+    @GraphQLField
+    @GraphQLDescription("entity instance")
+    public EntityInstanceObject getEntityInstance(final DataFetchingEnvironment env) {
+        return CoreSecurityUtils.getHasEntityInstanceAccess(env) ? new EntityInstanceObject(entityIntegerAttribute.getEntityInstance()) : null;
     }
 
     @GraphQLField
@@ -47,18 +59,6 @@ public class EntityIntegerAttributeObject
     @GraphQLNonNull
     public String getIntegerAttribute() {
         return entityIntegerAttribute.getIntegerAttribute().toString(); // TODO
-    }
-    
-    @GraphQLField
-    @GraphQLDescription("entity attribute")
-    public EntityAttributeObject getEntityAttribute(final DataFetchingEnvironment env) {
-        return CoreSecurityUtils.getInstance().getHasEntityAttributeAccess(env) ? new EntityAttributeObject(entityIntegerAttribute.getEntityAttribute(), entityIntegerAttribute.getEntityInstance()) : null;
-    }
-    
-    @GraphQLField
-    @GraphQLDescription("entity instance")
-    public EntityInstanceObject getEntityInstance(final DataFetchingEnvironment env) {
-        return CoreSecurityUtils.getInstance().getHasEntityInstanceAccess(env) ? new EntityInstanceObject(entityIntegerAttribute.getEntityInstance()) : null;
     }
     
 }

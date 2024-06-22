@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class GetItemUseTypeCommand
         if(parameterCount == 1) {
             if(itemUseTypeName == null) {
                 var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(this, form,
-                        ComponentVendors.ECHOTHREE.name(), EntityTypes.ItemUseType.name());
+                        ComponentVendors.ECHO_THREE.name(), EntityTypes.ItemUseType.name());
 
                 if(!hasExecutionErrors()) {
                     itemUseType = itemControl.getItemUseTypeByEntityInstance(entityInstance);
@@ -75,7 +75,7 @@ public class GetItemUseTypeCommand
             }
 
             if(itemUseType != null) {
-                sendEventUsingNames(itemUseType.getPrimaryKey(), EventTypes.READ.name(), null, null, getPartyPK());
+                sendEvent(itemUseType.getPrimaryKey(), EventTypes.READ, null, null, getPartyPK());
             }
         } else {
             addExecutionError(ExecutionErrors.InvalidParameterCount.name());
@@ -85,7 +85,7 @@ public class GetItemUseTypeCommand
     }
 
     @Override
-    protected BaseResult getTransfer(ItemUseType itemUseType) {
+    protected BaseResult getResult(ItemUseType itemUseType) {
         var itemControl = Session.getModelController(ItemControl.class);
         var result = ItemResultFactory.getGetItemUseTypeResult();
 

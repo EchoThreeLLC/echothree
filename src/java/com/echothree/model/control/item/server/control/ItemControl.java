@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -305,6 +305,7 @@ import com.echothree.model.data.item.server.value.HarmonizedTariffScheduleCodeUn
 import com.echothree.model.data.item.server.value.HarmonizedTariffScheduleCodeUseTypeDescriptionValue;
 import com.echothree.model.data.item.server.value.HarmonizedTariffScheduleCodeUseTypeDetailValue;
 import com.echothree.model.data.item.server.value.HarmonizedTariffScheduleCodeUseValue;
+import com.echothree.model.data.item.server.value.ItemAliasChecksumTypeValue;
 import com.echothree.model.data.item.server.value.ItemAliasTypeDescriptionValue;
 import com.echothree.model.data.item.server.value.ItemAliasTypeDetailValue;
 import com.echothree.model.data.item.server.value.ItemAliasValue;
@@ -423,7 +424,7 @@ public class ItemControl
     public ItemType createItemType(String itemTypeName, Boolean isDefault, Integer sortOrder, BasePK createdBy) {
         var itemType = ItemTypeFactory.getInstance().create(itemTypeName, isDefault, sortOrder);
 
-        sendEventUsingNames(itemType.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(itemType.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return itemType;
     }
@@ -434,7 +435,7 @@ public class ItemControl
                 "FROM itemtypes");
     }
 
-    /** Assume that the entityInstance passed to this function is a ECHOTHREE.ItemType */
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.ItemType */
     public ItemType getItemTypeByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
         var pk = new ItemTypePK(entityInstance.getEntityUniqueId());
 
@@ -586,7 +587,7 @@ public class ItemControl
             BasePK createdBy) {
         var itemTypeDescription = ItemTypeDescriptionFactory.getInstance().create(itemType, language, description);
 
-        sendEventUsingNames(itemType.getPrimaryKey(), EventTypes.MODIFY.name(), itemTypeDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemType.getPrimaryKey(), EventTypes.MODIFY, itemTypeDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return itemTypeDescription;
     }
@@ -636,7 +637,7 @@ public class ItemControl
             BasePK createdBy) {
         var itemDeliveryType = ItemDeliveryTypeFactory.getInstance().create(itemDeliveryTypeName, isDefault, sortOrder);
 
-        sendEventUsingNames(itemDeliveryType.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(itemDeliveryType.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return itemDeliveryType;
     }
@@ -647,7 +648,7 @@ public class ItemControl
                 "FROM itemdeliverytypes");
     }
 
-    /** Assume that the entityInstance passed to this function is a ECHOTHREE.ItemDeliveryType */
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.ItemDeliveryType */
     public ItemDeliveryType getItemDeliveryTypeByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
         var pk = new ItemDeliveryTypePK(entityInstance.getEntityUniqueId());
 
@@ -799,7 +800,7 @@ public class ItemControl
             String description, BasePK createdBy) {
         var itemDeliveryTypeDescription = ItemDeliveryTypeDescriptionFactory.getInstance().create(itemDeliveryType, language, description);
 
-        sendEventUsingNames(itemDeliveryType.getPrimaryKey(), EventTypes.MODIFY.name(), itemDeliveryTypeDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemDeliveryType.getPrimaryKey(), EventTypes.MODIFY, itemDeliveryTypeDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return itemDeliveryTypeDescription;
     }
@@ -849,7 +850,7 @@ public class ItemControl
             BasePK createdBy) {
         var itemInventoryType = ItemInventoryTypeFactory.getInstance().create(itemInventoryTypeName, isDefault, sortOrder);
 
-        sendEventUsingNames(itemInventoryType.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(itemInventoryType.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return itemInventoryType;
     }
@@ -860,7 +861,7 @@ public class ItemControl
                 "FROM iteminventorytypes");
     }
 
-    /** Assume that the entityInstance passed to this function is a ECHOTHREE.ItemInventoryType */
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.ItemInventoryType */
     public ItemInventoryType getItemInventoryTypeByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
         var pk = new ItemInventoryTypePK(entityInstance.getEntityUniqueId());
 
@@ -1012,7 +1013,7 @@ public class ItemControl
             String description, BasePK createdBy) {
         var itemInventoryTypeDescription = ItemInventoryTypeDescriptionFactory.getInstance().create(itemInventoryType, language, description);
 
-        sendEventUsingNames(itemInventoryType.getPrimaryKey(), EventTypes.MODIFY.name(), itemInventoryTypeDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemInventoryType.getPrimaryKey(), EventTypes.MODIFY, itemInventoryTypeDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return itemInventoryTypeDescription;
     }
@@ -1062,7 +1063,7 @@ public class ItemControl
             BasePK createdBy) {
         var itemUseType = ItemUseTypeFactory.getInstance().create(itemUseTypeName, isDefault, sortOrder);
 
-        sendEventUsingNames(itemUseType.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(itemUseType.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return itemUseType;
     }
@@ -1073,7 +1074,7 @@ public class ItemControl
                 "FROM itemusetypes");
     }
 
-    /** Assume that the entityInstance passed to this function is a ECHOTHREE.ItemUseType */
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.ItemUseType */
     public ItemUseType getItemUseTypeByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
         var pk = new ItemUseTypePK(entityInstance.getEntityUniqueId());
 
@@ -1225,7 +1226,7 @@ public class ItemControl
             String description, BasePK createdBy) {
         var itemUseTypeDescription = ItemUseTypeDescriptionFactory.getInstance().create(itemUseType, language, description);
 
-        sendEventUsingNames(itemUseType.getPrimaryKey(), EventTypes.MODIFY.name(), itemUseTypeDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemUseType.getPrimaryKey(), EventTypes.MODIFY, itemUseTypeDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return itemUseTypeDescription;
     }
@@ -1297,7 +1298,7 @@ public class ItemControl
         itemCategory.setLastDetail(itemCategoryDetail);
         itemCategory.store();
         
-        sendEventUsingNames(itemCategory.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(itemCategory.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
         
         return itemCategory;
     }
@@ -1469,7 +1470,7 @@ public class ItemControl
         return getItemCategoryTransfers(userVisit, getItemCategoriesByParentItemCategory(parentItemCategory));
     }
 
-    /** Assume that the entityInstance passed to this function is a ECHOTHREE.ItemCategory */
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.ItemCategory */
     public ItemCategory getItemCategoryByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
         var pk = new ItemCategoryPK(entityInstance.getEntityUniqueId());
 
@@ -1580,7 +1581,7 @@ public class ItemControl
             itemCategory.setActiveDetail(itemCategoryDetail);
             itemCategory.setLastDetail(itemCategoryDetail);
             
-            sendEventUsingNames(itemCategoryPK, EventTypes.MODIFY.name(), null, null, updatedBy);
+            sendEvent(itemCategoryPK, EventTypes.MODIFY, null, null, updatedBy);
         }
     }
     
@@ -1617,7 +1618,7 @@ public class ItemControl
             }
         }
 
-        sendEventUsingNames(itemCategory.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(itemCategory.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
     
     public void deleteItemCategory(ItemCategory itemCategory, BasePK deletedBy) {
@@ -1644,7 +1645,7 @@ public class ItemControl
         ItemCategoryDescription itemCategoryDescription = ItemCategoryDescriptionFactory.getInstance().create(itemCategory, language, description, session.START_TIME_LONG,
                 Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(itemCategory.getPrimaryKey(), EventTypes.MODIFY.name(), itemCategoryDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemCategory.getPrimaryKey(), EventTypes.MODIFY, itemCategoryDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemCategoryDescription;
     }
@@ -1783,14 +1784,14 @@ public class ItemControl
             itemCategoryDescription = ItemCategoryDescriptionFactory.getInstance().create(itemCategory, language, description,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemCategory.getPrimaryKey(), EventTypes.MODIFY.name(), itemCategoryDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemCategory.getPrimaryKey(), EventTypes.MODIFY, itemCategoryDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
     public void deleteItemCategoryDescription(ItemCategoryDescription itemCategoryDescription, BasePK deletedBy) {
         itemCategoryDescription.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemCategoryDescription.getItemCategoryPK(), EventTypes.MODIFY.name(), itemCategoryDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemCategoryDescription.getItemCategoryPK(), EventTypes.MODIFY, itemCategoryDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
         
     }
     
@@ -1826,7 +1827,7 @@ public class ItemControl
         item.setLastDetail(itemDetail);
         item.store();
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
         
         return item;
     }
@@ -1910,7 +1911,7 @@ public class ItemControl
                 stylePath);
     }
 
-    /** Assume that the entityInstance passed to this function is a ECHOTHREE.Item */
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.Item */
     public Item getItemByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
         var pk = new ItemPK(entityInstance.getEntityUniqueId());
 
@@ -1995,6 +1996,85 @@ public class ItemControl
         return getItemsByItemCategory(EntityPermission.READ_WRITE, itemCategory);
     }
 
+    private List<Item> getItemsByItemAccountingCategory(EntityPermission entityPermission, ItemAccountingCategory itemAccountingCategory) {
+        List<Item> items;
+
+        try {
+            String query = null;
+
+            if(entityPermission.equals(EntityPermission.READ_ONLY)) {
+                query = "SELECT _ALL_ " +
+                        "FROM items, itemdetails " +
+                        "WHERE itm_activedetailid = itmdt_itemdetailid AND itmdt_iactgc_itemaccountingcategoryid = ? " +
+                        "ORDER BY itmdt_itemname " +
+                        "_LIMIT_";
+            } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
+                query = "SELECT _ALL_ " +
+                        "FROM items, itemdetails " +
+                        "WHERE itm_activedetailid = itmdt_itemdetailid AND itmdt_iactgc_itemaccountingcategoryid = ? " +
+                        "FOR UPDATE";
+            }
+
+            PreparedStatement ps = ItemFactory.getInstance().prepareStatement(query);
+
+            ps.setLong(1, itemAccountingCategory.getPrimaryKey().getEntityId());
+
+            items = ItemFactory.getInstance().getEntitiesFromQuery(entityPermission, ps);
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return items;
+    }
+
+    public List<Item> getItemsByItemAccountingCategory(ItemAccountingCategory itemAccountingCategory) {
+        return getItemsByItemAccountingCategory(EntityPermission.READ_ONLY, itemAccountingCategory);
+    }
+
+    public List<Item> getItemsByItemAccountingCategoryForUpdate(ItemAccountingCategory itemAccountingCategory) {
+        return getItemsByItemAccountingCategory(EntityPermission.READ_WRITE, itemAccountingCategory);
+    }
+
+    private List<Item> getItemsByItemPurchasingCategory(EntityPermission entityPermission, ItemPurchasingCategory itemPurchasingCategory) {
+        List<Item> items;
+
+        try {
+            String query = null;
+
+            if(entityPermission.equals(EntityPermission.READ_ONLY)) {
+                query = "SELECT _ALL_ " +
+                        "FROM items, itemdetails " +
+                        "WHERE itm_activedetailid = itmdt_itemdetailid AND itmdt_iprchc_itempurchasingcategoryid = ? " +
+                        "ORDER BY itmdt_itemname " +
+                        "_LIMIT_";
+            } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
+                query = "SELECT _ALL_ " +
+                        "FROM items, itemdetails " +
+                        "WHERE itm_activedetailid = itmdt_itemdetailid AND itmdt_iprchc_itempurchasingcategoryid = ? " +
+                        "FOR UPDATE";
+            }
+
+            PreparedStatement ps = ItemFactory.getInstance().prepareStatement(query);
+
+            ps.setLong(1, itemPurchasingCategory.getPrimaryKey().getEntityId());
+
+            items = ItemFactory.getInstance().getEntitiesFromQuery(entityPermission, ps);
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return items;
+    }
+
+
+    public List<Item> getItemsByItemPurchasingCategory(ItemPurchasingCategory itemPurchasingCategory) {
+        return getItemsByItemPurchasingCategory(EntityPermission.READ_ONLY, itemPurchasingCategory);
+    }
+
+    public List<Item> getItemsByItemPurchasingCategoryForUpdate(ItemPurchasingCategory itemPurchasingCategory) {
+        return getItemsByItemPurchasingCategory(EntityPermission.READ_WRITE, itemPurchasingCategory);
+    }
+
     private List<Item> getItemsByCompanyParty(EntityPermission entityPermission, Party companyParty) {
         List<Item> items;
 
@@ -2033,6 +2113,45 @@ public class ItemControl
 
     public List<Item> getItemsByCompanyPartyForUpdate(Party companyParty) {
         return getItemsByCompanyParty(EntityPermission.READ_WRITE, companyParty);
+    }
+
+    private List<Item> getItemsByUnitOfMeasureKind(EntityPermission entityPermission, UnitOfMeasureKind unitOfMeasureKind) {
+        List<Item> items;
+
+        try {
+            String query = null;
+
+            if(entityPermission.equals(EntityPermission.READ_ONLY)) {
+                query = "SELECT _ALL_ " +
+                        "FROM items, itemdetails " +
+                        "WHERE itm_activedetailid = itmdt_itemdetailid AND itmdt_uomk_unitofmeasurekindid = ? " +
+                        "ORDER BY itmdt_itemname " +
+                        "_LIMIT_";
+            } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
+                query = "SELECT _ALL_ " +
+                        "FROM items, itemdetails " +
+                        "WHERE itm_activedetailid = itmdt_itemdetailid AND itmdt_uomk_unitofmeasurekindid = ? " +
+                        "FOR UPDATE";
+            }
+
+            PreparedStatement ps = ItemFactory.getInstance().prepareStatement(query);
+
+            ps.setLong(1, unitOfMeasureKind.getPrimaryKey().getEntityId());
+
+            items = ItemFactory.getInstance().getEntitiesFromQuery(entityPermission, ps);
+        } catch (SQLException se) {
+            throw new PersistenceDatabaseException(se);
+        }
+
+        return items;
+    }
+
+    public List<Item> getItemsByUnitOfMeasureKind(UnitOfMeasureKind unitOfMeasureKind) {
+        return getItemsByUnitOfMeasureKind(EntityPermission.READ_ONLY, unitOfMeasureKind);
+    }
+
+    public List<Item> getItemsByUnitOfMeasureKindForUpdate(UnitOfMeasureKind unitOfMeasureKind) {
+        return getItemsByUnitOfMeasureKind(EntityPermission.READ_WRITE, unitOfMeasureKind);
     }
 
     private Item getItemByName(String itemName, EntityPermission entityPermission) {
@@ -2202,7 +2321,7 @@ public class ItemControl
             item.setActiveDetail(itemDetail);
             item.setLastDetail(itemDetail);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), null, null, updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, null, null, updatedBy);
         }
     }
 
@@ -2231,11 +2350,27 @@ public class ItemControl
         ItemUnitOfMeasureType itemUnitOfMeasureType = ItemUnitOfMeasureTypeFactory.getInstance().create(item, unitOfMeasureType,
                 isDefault, sortOrder, session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemUnitOfMeasureType.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemUnitOfMeasureType.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemUnitOfMeasureType;
     }
-    
+
+    public long countItemUnitOfMeasureTypesByItem(Item item) {
+        return session.queryForLong("""
+                SELECT COUNT(*)
+                FROM itemunitofmeasuretypes
+                WHERE iuomt_itm_itemid = ? AND iuomt_thrutime = ?""",
+                item, Session.MAX_TIME);
+    }
+
+    public long countItemUnitOfMeasureTypesByUnitOfMeasureType(UnitOfMeasureType unitOfMeasureType) {
+        return session.queryForLong("""
+                SELECT COUNT(*)
+                FROM itemunitofmeasuretypes
+                WHERE iuomt_uomt_unitofmeasuretypeid = ? AND iuomt_thrutime = ?""",
+                unitOfMeasureType, Session.MAX_TIME);
+    }
+
     private ItemUnitOfMeasureType getItemUnitOfMeasureType(Item item, UnitOfMeasureType unitOfMeasureType, EntityPermission entityPermission) {
         ItemUnitOfMeasureType itemUnitOfMeasureType;
         
@@ -2341,7 +2476,8 @@ public class ItemControl
                         "WHERE iuomt_itm_itemid = ? AND iuomt_thrutime = ? " +
                         "AND iuomt_uomt_unitofmeasuretypeid = uomt_unitofmeasuretypeid AND uomt_lastdetailid = uomtdt_unitofmeasuretypedetailid " +
                         "AND uomtdt_uomk_unitofmeasurekindid = uomk_unitofmeasurekindid AND uomk_lastdetailid = uomkdt_unitofmeasurekinddetailid " +
-                        "ORDER BY uomtdt_sortorder, uomtdt_unitofmeasuretypename, uomkdt_sortorder, uomkdt_unitofmeasurekindname";
+                        "ORDER BY uomtdt_sortorder, uomtdt_unitofmeasuretypename, uomkdt_sortorder, uomkdt_unitofmeasurekindname " +
+                        "_LIMIT_";
             } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
                 query = "SELECT _ALL_ " +
                         "FROM itemunitofmeasuretypes " +
@@ -2381,7 +2517,8 @@ public class ItemControl
                         "FROM itemunitofmeasuretypes, items, itemdetails " +
                         "WHERE iuomt_uomt_unitofmeasuretypeid = ? AND iuomt_thrutime = ? " +
                         "AND iuomt_itm_itemid = itm_itemid AND itm_lastdetailid = itmdt_itemdetailid " +
-                        "ORDER BY itmdt_itemname";
+                        "ORDER BY itmdt_itemname " +
+                        "_LIMIT_";
             } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
                 query = "SELECT _ALL_ " +
                         "FROM itemunitofmeasuretypes " +
@@ -2410,7 +2547,7 @@ public class ItemControl
         return getItemUnitOfMeasureTypesByUnitOfMeasureType(unitOfMeasureType, EntityPermission.READ_WRITE);
     }
     
-    public List<ItemUnitOfMeasureTypeTransfer> getItemUnitOfMeasureTypeTransfers(UserVisit userVisit, List<ItemUnitOfMeasureType> itemUnitOfMeasureTypes) {
+    public List<ItemUnitOfMeasureTypeTransfer> getItemUnitOfMeasureTypeTransfers(UserVisit userVisit, Collection<ItemUnitOfMeasureType> itemUnitOfMeasureTypes) {
         List<ItemUnitOfMeasureTypeTransfer> itemUnitOfMeasureTypeTransfers = new ArrayList<>(itemUnitOfMeasureTypes.size());
         ItemUnitOfMeasureTypeTransferCache itemUnitOfMeasureTypeTransferCache = getItemTransferCaches(userVisit).getItemUnitOfMeasureTypeTransferCache();
         
@@ -2466,7 +2603,7 @@ public class ItemControl
             itemUnitOfMeasureType = ItemUnitOfMeasureTypeFactory.getInstance().create(itemPK, unitOfMeasureTypePK,
                     isDefault, sortOrder, session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemUnitOfMeasureType.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemUnitOfMeasureType.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -2511,7 +2648,7 @@ public class ItemControl
             }
         }
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemUnitOfMeasureType.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemUnitOfMeasureType.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemUnitOfMeasureTypes(List<ItemUnitOfMeasureType> itemUnitOfMeasureTypes, BasePK deletedBy) {
@@ -2537,7 +2674,7 @@ public class ItemControl
         ItemShippingTime itemShippingTime = ItemShippingTimeFactory.getInstance().create(item, customerType,
                 shippingStartTime, shippingEndTime, session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemShippingTime.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemShippingTime.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemShippingTime;
     }
@@ -2687,7 +2824,7 @@ public class ItemControl
             itemShippingTime = ItemShippingTimeFactory.getInstance().create(itemPK, customerTypePK, shippingStartTime, shippingEndTime,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemShippingTime.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemShippingTime.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -2713,7 +2850,7 @@ public class ItemControl
     public void deleteItemShippingTime(ItemShippingTime itemShippingTime, BasePK deletedBy) {
         itemShippingTime.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemShippingTime.getItemPK(), EventTypes.MODIFY.name(), itemShippingTime.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemShippingTime.getItemPK(), EventTypes.MODIFY, itemShippingTime.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemShippingTimesByItem(Item item, BasePK deletedBy) {
@@ -2736,31 +2873,58 @@ public class ItemControl
     //   Item Alias Checksum Types
     // --------------------------------------------------------------------------------
 
-    public ItemAliasChecksumType createItemAliasChecksumType(String itemAliasChecksumTypeName, Boolean isDefault, Integer sortOrder) {
-        return ItemAliasChecksumTypeFactory.getInstance().create(itemAliasChecksumTypeName, isDefault, sortOrder);
+    public ItemAliasChecksumType createItemAliasChecksumType(String itemAliasChecksumTypeName, Boolean isDefault, Integer sortOrder,
+            BasePK createdBy) {
+        var itemAliasChecksumType = ItemAliasChecksumTypeFactory.getInstance().create(itemAliasChecksumTypeName, isDefault, sortOrder);
+
+        sendEvent(itemAliasChecksumType.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
+
+        return itemAliasChecksumType;
     }
 
-    public List<ItemAliasChecksumType> getItemAliasChecksumTypes() {
-        PreparedStatement ps = ItemAliasChecksumTypeFactory.getInstance().prepareStatement(
-                "SELECT _ALL_ " +
-                "FROM itemaliaschecksumtypes " +
-                "ORDER BY iact_sortorder, iact_itemaliaschecksumtypename");
-
-        return ItemAliasChecksumTypeFactory.getInstance().getEntitiesFromQuery(EntityPermission.READ_ONLY, ps);
+    public long countItemAliasChecksumTypes() {
+        return session.queryForLong(
+                "SELECT COUNT(*) " +
+                "FROM itemaliaschecksumtypes");
     }
 
-    public ItemAliasChecksumType getItemAliasChecksumTypeByName(String itemAliasChecksumTypeName) {
-        ItemAliasChecksumType itemAliasChecksumType = null;
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.ItemAliasChecksumType */
+    public ItemAliasChecksumType getItemAliasChecksumTypeByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
+        var pk = new ItemAliasChecksumTypePK(entityInstance.getEntityUniqueId());
+
+        return ItemAliasChecksumTypeFactory.getInstance().getEntityFromPK(entityPermission, pk);
+    }
+
+    public ItemAliasChecksumType getItemAliasChecksumTypeByEntityInstance(EntityInstance entityInstance) {
+        return getItemAliasChecksumTypeByEntityInstance(entityInstance, EntityPermission.READ_ONLY);
+    }
+
+    public ItemAliasChecksumType getItemAliasChecksumTypeByEntityInstanceForUpdate(EntityInstance entityInstance) {
+        return getItemAliasChecksumTypeByEntityInstance(entityInstance, EntityPermission.READ_WRITE);
+    }
+
+    public ItemAliasChecksumType getItemAliasChecksumTypeByName(String itemAliasChecksumTypeName, EntityPermission entityPermission) {
+        ItemAliasChecksumType itemAliasChecksumType;
 
         try {
-            PreparedStatement ps = ItemAliasChecksumTypeFactory.getInstance().prepareStatement(
-                    "SELECT _ALL_ " +
-                    "FROM itemaliaschecksumtypes " +
-                    "WHERE iact_itemaliaschecksumtypename = ?");
+            String query = null;
+
+            if(entityPermission.equals(EntityPermission.READ_ONLY)) {
+                query = "SELECT _ALL_ " +
+                        "FROM itemaliaschecksumtypes " +
+                        "WHERE iact_itemaliaschecksumtypename = ?";
+            } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
+                query = "SELECT _ALL_ " +
+                        "FROM itemaliaschecksumtypes " +
+                        "WHERE iact_itemaliaschecksumtypename = ? " +
+                        "FOR UPDATE";
+            }
+
+            var ps = ItemAliasChecksumTypeFactory.getInstance().prepareStatement(query);
 
             ps.setString(1, itemAliasChecksumTypeName);
 
-            itemAliasChecksumType = ItemAliasChecksumTypeFactory.getInstance().getEntityFromQuery(EntityPermission.READ_ONLY, ps);
+            itemAliasChecksumType = ItemAliasChecksumTypeFactory.getInstance().getEntityFromQuery(entityPermission, ps);
         } catch (SQLException se) {
             throw new PersistenceDatabaseException(se);
         }
@@ -2768,8 +2932,56 @@ public class ItemControl
         return itemAliasChecksumType;
     }
 
-    public ItemAliasChecksumTypeChoicesBean getItemAliasChecksumTypeChoices(String defaultItemAliasChecksumTypeChoice,
-            Language language, boolean allowNullChoice) {
+    public ItemAliasChecksumType getItemAliasChecksumTypeByName(String itemAliasChecksumTypeName) {
+        return getItemAliasChecksumTypeByName(itemAliasChecksumTypeName, EntityPermission.READ_ONLY);
+    }
+
+    public ItemAliasChecksumType getItemAliasChecksumTypeByNameForUpdate(String itemAliasChecksumTypeName) {
+        return getItemAliasChecksumTypeByName(itemAliasChecksumTypeName, EntityPermission.READ_WRITE);
+    }
+
+    public ItemAliasChecksumType getDefaultItemAliasChecksumType(EntityPermission entityPermission) {
+        String query = null;
+
+        if(entityPermission.equals(EntityPermission.READ_ONLY)) {
+            query = "SELECT _ALL_ " +
+                    "FROM itemaliaschecksumtypes " +
+                    "WHERE iact_isdefault = 1";
+        } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
+            query = "SELECT _ALL_ " +
+                    "FROM itemaliaschecksumtypes " +
+                    "WHERE iact_isdefault = 1 " +
+                    "FOR UPDATE";
+        }
+
+        PreparedStatement ps = ItemAliasChecksumTypeFactory.getInstance().prepareStatement(query);
+
+        return ItemAliasChecksumTypeFactory.getInstance().getEntityFromQuery(entityPermission, ps);
+    }
+
+    public ItemAliasChecksumType getDefaultItemAliasChecksumType() {
+        return getDefaultItemAliasChecksumType(EntityPermission.READ_ONLY);
+    }
+
+    public ItemAliasChecksumType getDefaultItemAliasChecksumTypeForUpdate() {
+        return getDefaultItemAliasChecksumType(EntityPermission.READ_WRITE);
+    }
+
+    public ItemAliasChecksumTypeValue getDefaultItemAliasChecksumTypeValueForUpdate() {
+        return getDefaultItemAliasChecksumTypeForUpdate().getItemAliasChecksumTypeValue().clone();
+    }
+
+    public List<ItemAliasChecksumType> getItemAliasChecksumTypes() {
+        PreparedStatement ps = ItemAliasChecksumTypeFactory.getInstance().prepareStatement(
+                "SELECT _ALL_ " +
+                "FROM itemaliaschecksumtypes " +
+                "ORDER BY iact_sortorder, iact_itemaliaschecksumtypename " +
+                "_LIMIT_");
+
+        return ItemAliasChecksumTypeFactory.getInstance().getEntitiesFromQuery(EntityPermission.READ_ONLY, ps);
+    }
+
+    public ItemAliasChecksumTypeChoicesBean getItemAliasChecksumTypeChoices(String defaultItemAliasChecksumTypeChoice, Language language, boolean allowNullChoice) {
         List<ItemAliasChecksumType> itemAliasChecksumTypes = getItemAliasChecksumTypes();
         var size = itemAliasChecksumTypes.size();
         var labels = new ArrayList<String>(size);
@@ -2805,12 +3017,32 @@ public class ItemControl
         return getItemTransferCaches(userVisit).getItemAliasChecksumTypeTransferCache().getTransfer(itemAliasChecksumType);
     }
 
+    public List<ItemAliasChecksumTypeTransfer> getItemAliasChecksumTypeTransfers(UserVisit userVisit, Collection<ItemAliasChecksumType> entities) {
+        var itemAliasChecksumTypeTransfers = new ArrayList<ItemAliasChecksumTypeTransfer>(entities.size());
+        var itemAliasChecksumTypeTransferCache = getItemTransferCaches(userVisit).getItemAliasChecksumTypeTransferCache();
+
+        entities.forEach((entity) ->
+                itemAliasChecksumTypeTransfers.add(itemAliasChecksumTypeTransferCache.getTransfer(entity))
+        );
+
+        return itemAliasChecksumTypeTransfers;
+    }
+
+    public List<ItemAliasChecksumTypeTransfer> getItemAliasChecksumTypeTransfers(UserVisit userVisit) {
+        return getItemAliasChecksumTypeTransfers(userVisit, getItemAliasChecksumTypes());
+    }
+    
     // --------------------------------------------------------------------------------
     //   Item Alias Checksum Type Descriptions
     // --------------------------------------------------------------------------------
 
-    public ItemAliasChecksumTypeDescription createItemAliasChecksumTypeDescription(ItemAliasChecksumType itemAliasChecksumType, Language language, String description) {
-        return ItemAliasChecksumTypeDescriptionFactory.getInstance().create(itemAliasChecksumType, language, description);
+    public ItemAliasChecksumTypeDescription createItemAliasChecksumTypeDescription(ItemAliasChecksumType itemAliasChecksumType,
+            Language language, String description, BasePK createdBy) {
+        var itemAliasChecksumTypeDescription = ItemAliasChecksumTypeDescriptionFactory.getInstance().create(itemAliasChecksumType, language, description);
+
+        sendEvent(itemAliasChecksumType.getPrimaryKey(), EventTypes.MODIFY, itemAliasChecksumTypeDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
+
+        return itemAliasChecksumTypeDescription;
     }
 
     public ItemAliasChecksumTypeDescription getItemAliasChecksumTypeDescription(ItemAliasChecksumType itemAliasChecksumType, Language language) {
@@ -2878,12 +3110,39 @@ public class ItemControl
         itemAliasType.setLastDetail(itemAliasTypeDetail);
         itemAliasType.store();
         
-        sendEventUsingNames(itemAliasType.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(itemAliasType.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
         
         return itemAliasType;
     }
-    
-    private ItemAliasType getItemAliasTypeByName(String itemAliasTypeName, EntityPermission entityPermission) {
+
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.ItemAliasType */
+    public ItemAliasType getItemAliasTypeByEntityInstance(final EntityInstance entityInstance,
+            final EntityPermission entityPermission) {
+        var pk = new ItemAliasTypePK(entityInstance.getEntityUniqueId());
+
+        return ItemAliasTypeFactory.getInstance().getEntityFromPK(entityPermission, pk);
+    }
+
+    public ItemAliasType getItemAliasTypeByEntityInstance(final EntityInstance entityInstance) {
+        return getItemAliasTypeByEntityInstance(entityInstance, EntityPermission.READ_ONLY);
+    }
+
+    public ItemAliasType getItemAliasTypeByEntityInstanceForUpdate(final EntityInstance entityInstance) {
+        return getItemAliasTypeByEntityInstance(entityInstance, EntityPermission.READ_WRITE);
+    }
+
+    public ItemAliasType getItemAliasTypeByPK(ItemAliasTypePK pk) {
+        return ItemAliasTypeFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, pk);
+    }
+
+    public long countItemAliasTypes() {
+        return session.queryForLong(
+                "SELECT COUNT(*) " +
+                "FROM itemaliastypes, itemaliastypedetails " +
+                "WHERE iat_activedetailid = iatdt_itemaliastypedetailid");
+    }
+
+    public ItemAliasType getItemAliasTypeByName(String itemAliasTypeName, EntityPermission entityPermission) {
         ItemAliasType itemAliasType;
         
         try {
@@ -2928,7 +3187,7 @@ public class ItemControl
         return getItemAliasTypeDetailValueForUpdate(getItemAliasTypeByNameForUpdate(itemAliasTypeName));
     }
     
-    private ItemAliasType getDefaultItemAliasType(EntityPermission entityPermission) {
+    public ItemAliasType getDefaultItemAliasType(EntityPermission entityPermission) {
         String query = null;
         
         if(entityPermission.equals(EntityPermission.READ_ONLY)) {
@@ -2990,19 +3249,22 @@ public class ItemControl
     public ItemAliasTypeTransfer getItemAliasTypeTransfer(UserVisit userVisit, ItemAliasType itemAliasType) {
         return getItemTransferCaches(userVisit).getItemAliasTypeTransferCache().getTransfer(itemAliasType);
     }
-    
-    public List<ItemAliasTypeTransfer> getItemAliasTypeTransfers(UserVisit userVisit) {
-        List<ItemAliasType> itemAliasTypes = getItemAliasTypes();
+
+    public List<ItemAliasTypeTransfer> getItemAliasTypeTransfers(UserVisit userVisit, Collection<ItemAliasType> itemAliasTypes) {
         List<ItemAliasTypeTransfer> itemAliasTypeTransfers = new ArrayList<>(itemAliasTypes.size());
         ItemAliasTypeTransferCache itemAliasTypeTransferCache = getItemTransferCaches(userVisit).getItemAliasTypeTransferCache();
-        
+
         itemAliasTypes.forEach((itemAliasType) ->
                 itemAliasTypeTransfers.add(itemAliasTypeTransferCache.getTransfer(itemAliasType))
         );
-        
+
         return itemAliasTypeTransfers;
     }
-    
+
+    public List<ItemAliasTypeTransfer> getItemAliasTypeTransfers(UserVisit userVisit) {
+        return getItemAliasTypeTransfers(userVisit, getItemAliasTypes());
+    }
+
     public ItemAliasTypeChoicesBean getItemAliasTypeChoices(String defaultItemAliasTypeChoice, Language language,
             boolean allowNullChoice) {
         List<ItemAliasType> itemAliasTypes = getItemAliasTypes();
@@ -3038,31 +3300,31 @@ public class ItemControl
         return new ItemAliasTypeChoicesBean(labels, values, defaultValue);
     }
     
-    private void updateItemAliasTypeFromValue(ItemAliasTypeDetailValue itemAliasTypeDetailValue, boolean checkDefault,
-            BasePK updatedBy) {
+    private void updateItemAliasTypeFromValue(final ItemAliasTypeDetailValue itemAliasTypeDetailValue, final boolean checkDefault,
+            final BasePK updatedBy) {
         if(itemAliasTypeDetailValue.hasBeenModified()) {
-            ItemAliasType itemAliasType = ItemAliasTypeFactory.getInstance().getEntityFromPK(EntityPermission.READ_WRITE,
+            final var itemAliasType = ItemAliasTypeFactory.getInstance().getEntityFromPK(EntityPermission.READ_WRITE,
                      itemAliasTypeDetailValue.getItemAliasTypePK());
-            ItemAliasTypeDetail itemAliasTypeDetail = itemAliasType.getActiveDetailForUpdate();
+            var itemAliasTypeDetail = itemAliasType.getActiveDetailForUpdate();
             
             itemAliasTypeDetail.setThruTime(session.START_TIME_LONG);
             itemAliasTypeDetail.store();
-            
-            ItemAliasTypePK itemAliasTypePK = itemAliasTypeDetail.getItemAliasTypePK();
-            String itemAliasTypeName = itemAliasTypeDetailValue.getItemAliasTypeName();
-            String validationPattern = itemAliasTypeDetailValue.getValidationPattern();
-            ItemAliasChecksumTypePK itemAliasChecksumTypePK = itemAliasTypeDetailValue.getItemAliasChecksumTypePK();
-            Boolean allowMultiple = itemAliasTypeDetailValue.getAllowMultiple();
-            Boolean isDefault = itemAliasTypeDetailValue.getIsDefault();
-            Integer sortOrder = itemAliasTypeDetailValue.getSortOrder();
+
+            final var itemAliasTypePK = itemAliasTypeDetail.getItemAliasTypePK();
+            final var itemAliasTypeName = itemAliasTypeDetailValue.getItemAliasTypeName();
+            final var validationPattern = itemAliasTypeDetailValue.getValidationPattern();
+            final var itemAliasChecksumTypePK = itemAliasTypeDetailValue.getItemAliasChecksumTypePK();
+            final var allowMultiple = itemAliasTypeDetailValue.getAllowMultiple();
+            var isDefault = itemAliasTypeDetailValue.getIsDefault();
+            final var sortOrder = itemAliasTypeDetailValue.getSortOrder();
             
             if(checkDefault) {
-                ItemAliasType defaultItemAliasType = getDefaultItemAliasType();
-                boolean defaultFound = defaultItemAliasType != null && !defaultItemAliasType.equals(itemAliasType);
+                final var defaultItemAliasType = getDefaultItemAliasType();
+                final var defaultFound = defaultItemAliasType != null && !defaultItemAliasType.equals(itemAliasType);
                 
                 if(isDefault && defaultFound) {
                     // If I'm the default, and a default already existed...
-                    ItemAliasTypeDetailValue defaultItemAliasTypeDetailValue = getDefaultItemAliasTypeDetailValueForUpdate();
+                    final var defaultItemAliasTypeDetailValue = getDefaultItemAliasTypeDetailValueForUpdate();
                     
                     defaultItemAliasTypeDetailValue.setIsDefault(Boolean.FALSE);
                     updateItemAliasTypeFromValue(defaultItemAliasTypeDetailValue, false, updatedBy);
@@ -3072,17 +3334,18 @@ public class ItemControl
                 }
             }
             
-            itemAliasTypeDetail = ItemAliasTypeDetailFactory.getInstance().create(itemAliasTypePK, itemAliasTypeName, validationPattern, itemAliasChecksumTypePK,
-                    allowMultiple, isDefault, sortOrder, session.START_TIME_LONG, Session.MAX_TIME_LONG);
+            itemAliasTypeDetail = ItemAliasTypeDetailFactory.getInstance().create(itemAliasTypePK, itemAliasTypeName,
+                    validationPattern, itemAliasChecksumTypePK, allowMultiple, isDefault, sortOrder, session.START_TIME_LONG,
+                    Session.MAX_TIME_LONG);
             
             itemAliasType.setActiveDetail(itemAliasTypeDetail);
             itemAliasType.setLastDetail(itemAliasTypeDetail);
             
-            sendEventUsingNames(itemAliasTypePK, EventTypes.MODIFY.name(), null, null, updatedBy);
+            sendEvent(itemAliasTypePK, EventTypes.MODIFY, null, null, updatedBy);
         }
     }
     
-    public void updateItemAliasTypeFromValue(ItemAliasTypeDetailValue itemAliasTypeDetailValue, BasePK updatedBy) {
+    public void updateItemAliasTypeFromValue(final ItemAliasTypeDetailValue itemAliasTypeDetailValue, final BasePK updatedBy) {
         updateItemAliasTypeFromValue(itemAliasTypeDetailValue, true, updatedBy);
     }
     
@@ -3122,7 +3385,7 @@ public class ItemControl
             }
         }
         
-        sendEventUsingNames(itemAliasType.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(itemAliasType.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
     
     // --------------------------------------------------------------------------------
@@ -3134,7 +3397,7 @@ public class ItemControl
         ItemAliasTypeDescription itemAliasTypeDescription = ItemAliasTypeDescriptionFactory.getInstance().create(session,
                 itemAliasType, language, description, session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(itemAliasType.getPrimaryKey(), EventTypes.MODIFY.name(), itemAliasTypeDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemAliasType.getPrimaryKey(), EventTypes.MODIFY, itemAliasTypeDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemAliasTypeDescription;
     }
@@ -3274,14 +3537,14 @@ public class ItemControl
             itemAliasTypeDescription = ItemAliasTypeDescriptionFactory.getInstance().create(itemAliasType, language, description,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemAliasType.getPrimaryKey(), EventTypes.MODIFY.name(), itemAliasTypeDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemAliasType.getPrimaryKey(), EventTypes.MODIFY, itemAliasTypeDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
     public void deleteItemAliasTypeDescription(ItemAliasTypeDescription itemAliasTypeDescription, BasePK deletedBy) {
         itemAliasTypeDescription.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemAliasTypeDescription.getItemAliasTypePK(), EventTypes.MODIFY.name(), itemAliasTypeDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemAliasTypeDescription.getItemAliasTypePK(), EventTypes.MODIFY, itemAliasTypeDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
         
     }
     
@@ -3302,11 +3565,35 @@ public class ItemControl
         ItemAlias itemAlias = ItemAliasFactory.getInstance().create(item, unitOfMeasureType, itemAliasType, alias,
                 session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemAlias.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemAlias.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemAlias;
     }
-    
+
+    public long countItemAliasesByItem(Item item) {
+        return session.queryForLong("""
+                SELECT COUNT(*)
+                FROM itemaliases
+                WHERE itmal_itm_itemid = ? AND itmal_thrutime = ?""",
+                item, Session.MAX_TIME);
+    }
+
+    public long countItemAliasesByUnitOfMeasureType(UnitOfMeasureType unitOfMeasureType) {
+        return session.queryForLong("""
+                SELECT COUNT(*)
+                FROM itemaliases
+                WHERE itmal_uomt_unitofmeasuretypeid = ? AND itmal_thrutime = ?""",
+                unitOfMeasureType, Session.MAX_TIME);
+    }
+
+    public long countItemAliasesByItemAliasType(ItemAliasType itemAliasType) {
+        return session.queryForLong("""
+                SELECT COUNT(*)
+                FROM itemaliases
+                WHERE itmal_iat_itemaliastypeid = ? AND itmal_thrutime = ?""",
+                itemAliasType, Session.MAX_TIME);
+    }
+
     public long countItemAliases(Item item, UnitOfMeasureType unitOfMeasureType, ItemAliasType itemAliasType) {
         return session.queryForLong(
                 "SELECT COUNT(*) " +
@@ -3372,7 +3659,8 @@ public class ItemControl
                 query = "SELECT _ALL_ " +
                         "FROM itemaliases " +
                         "WHERE itmal_itm_itemid = ? AND itmal_uomt_unitofmeasuretypeid = ? AND itmal_iat_itemaliastypeid = ? AND itmal_thrutime = ? " +
-                        "ORDER BY itmal_alias";
+                        "ORDER BY itmal_alias " +
+                        "_LIMIT_";
             } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
                 query = "SELECT _ALL_ " +
                         "FROM itemaliases " +
@@ -3414,7 +3702,8 @@ public class ItemControl
                         "FROM itemaliases, itemaliastypes, itemaliastypedetails " +
                         "WHERE itmal_itm_itemid = ? AND itmal_thrutime = ? " +
                         "AND itmal_iat_itemaliastypeid = iat_itemaliastypeid AND iat_lastdetailid = iatdt_itemaliastypedetailid " +
-                        "ORDER BY iatdt_sortorder, iatdt_itemaliastypename";
+                        "ORDER BY iatdt_sortorder, iatdt_itemaliastypename " +
+                        "_LIMIT_";
             } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
                 query = "SELECT _ALL_ " +
                         "FROM itemaliases " +
@@ -3454,7 +3743,8 @@ public class ItemControl
                         "FROM itemaliases, items, itemdetails " +
                         "WHERE itmal_uomt_unitofmeasuretypeid = ? AND itmal_thrutime = ? " +
                         "AND itmal_itm_itemid = itm_itemid AND itm_lastdetailid = itmdt_itemdetailid " +
-                        "ORDER BY itmdt_itemname";
+                        "ORDER BY itmdt_itemname " +
+                        "_LIMIT_";
             } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
                 query = "SELECT _ALL_ " +
                         "FROM itemaliases " +
@@ -3494,7 +3784,8 @@ public class ItemControl
                         "FROM itemaliases, items, itemdetails " +
                         "WHERE itmal_iat_itemaliastypeid = ? AND itmal_thrutime = ? " +
                         "AND itmal_itm_itemid = itm_itemid AND itm_lastdetailid = itmdt_itemdetailid " +
-                        "ORDER BY itmdt_itemname";
+                        "ORDER BY itmdt_itemname " +
+                        "_LIMIT_";
             } else if(entityPermission.equals(EntityPermission.READ_WRITE)) {
                 query = "SELECT _ALL_ " +
                         "FROM itemaliases " +
@@ -3531,7 +3822,8 @@ public class ItemControl
                     "SELECT _ALL_ " +
                     "FROM itemaliases " +
                     "WHERE itmal_itm_itemid = ? AND itmal_uomt_unitofmeasuretypeid = ? AND itmal_thrutime = ? " +
-                    "FOR UPDATE");
+                    "FOR UPDATE " +
+                    "_LIMIT_");
             
             ps.setLong(1, item.getPrimaryKey().getEntityId());
             ps.setLong(2, unitOfMeasureType.getPrimaryKey().getEntityId());
@@ -3561,29 +3853,32 @@ public class ItemControl
             itemAlias = ItemAliasFactory.getInstance().create(itemPK, unitOfMeasureTypePK, itemAliasTypePK, alias,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemAlias.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemAlias.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
     public ItemAliasTransfer getItemAliasTransfer(UserVisit userVisit, ItemAlias itemAlias) {
         return getItemTransferCaches(userVisit).getItemAliasTransferCache().getTransfer(itemAlias);
     }
-    
-    public List<ItemAliasTransfer> getItemAliasTransfersByItem(UserVisit userVisit, Item item) {
-        List<ItemAlias> itemAliases = getItemAliasesByItem(item);
+
+    public List<ItemAliasTransfer> getItemAliasTransfers(UserVisit userVisit, Collection<ItemAlias> itemAliases) {
         List<ItemAliasTransfer> itemAliasTransfers = new ArrayList<>(itemAliases.size());
-        
+
         itemAliases.forEach((itemAlias) -> {
             itemAliasTransfers.add(getItemTransferCaches(userVisit).getItemAliasTransferCache().getTransfer(itemAlias));
         });
-        
+
         return itemAliasTransfers;
     }
-    
+
+    public List<ItemAliasTransfer> getItemAliasTransfersByItem(UserVisit userVisit, Item item) {
+        return getItemAliasTransfers(userVisit, getItemAliasesByItem(item));
+    }
+
     public void deleteItemAlias(ItemAlias itemAlias, BasePK deletedBy) {
         itemAlias.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemAlias.getItem().getPrimaryKey(), EventTypes.MODIFY.name(), itemAlias.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemAlias.getItem().getPrimaryKey(), EventTypes.MODIFY, itemAlias.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemAliases(List<ItemAlias> itemAliases, BasePK deletedBy) {
@@ -3616,7 +3911,7 @@ public class ItemControl
         ItemKitOption itemKitOption = ItemKitOptionFactory.getInstance().create(item, allowPartialShipments,
                 session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemKitOption.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemKitOption.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemKitOption;
     }
@@ -3677,14 +3972,14 @@ public class ItemControl
             itemKitOption = ItemKitOptionFactory.getInstance().create(itemPK, allowPartialShipments,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemKitOption.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemKitOption.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
     public void deleteItemKitOption(ItemKitOption itemKitOption, BasePK deletedBy) {
         itemKitOption.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemKitOption.getItemPK(), EventTypes.MODIFY.name(), itemKitOption.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemKitOption.getItemPK(), EventTypes.MODIFY, itemKitOption.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     // --------------------------------------------------------------------------------
@@ -3695,7 +3990,7 @@ public class ItemControl
         ItemCountryOfOrigin itemCountryOfOrigin = ItemCountryOfOriginFactory.getInstance().create(item, countryGeoCode, percent,
                 session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemCountryOfOrigin.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemCountryOfOrigin.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemCountryOfOrigin;
     }
@@ -3850,7 +4145,7 @@ public class ItemControl
             itemCountryOfOrigin = ItemCountryOfOriginFactory.getInstance().create(itemPK, countryGeoCodePK, percent, session.START_TIME_LONG,
                     Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemCountryOfOrigin.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemCountryOfOrigin.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -3877,7 +4172,7 @@ public class ItemControl
     public void deleteItemCountryOfOrigin(ItemCountryOfOrigin itemCountryOfOrigin, BasePK deletedBy) {
         itemCountryOfOrigin.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemCountryOfOrigin.getItemPK(), EventTypes.MODIFY.name(), itemCountryOfOrigin.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemCountryOfOrigin.getItemPK(), EventTypes.MODIFY, itemCountryOfOrigin.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemCountryOfOrigins(List<ItemCountryOfOrigin> itemCountryOfOrigins, BasePK deletedBy) {
@@ -3905,7 +4200,7 @@ public class ItemControl
                 memberItem, memberInventoryCondition, memberUnitOfMeasureType, quantity, session.START_TIME_LONG,
                 Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemKitMember.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemKitMember.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemKitMember;
     }
@@ -4360,7 +4655,7 @@ public class ItemControl
                     memberItemPK, memberInventoryConditionPK, memberUnitOfMeasureTypePK, quantity, session.START_TIME_LONG,
                     Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemKitMember.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemKitMember.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -4390,7 +4685,7 @@ public class ItemControl
         itemKitMember.setThruTime(session.START_TIME_LONG);
         itemKitMember.store();
         
-        sendEventUsingNames(itemKitMember.getItemPK(), EventTypes.MODIFY.name(), itemKitMember.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemKitMember.getItemPK(), EventTypes.MODIFY, itemKitMember.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemKitMembers(List<ItemKitMember> itemKitMembers, BasePK deletedBy) {
@@ -4428,7 +4723,7 @@ public class ItemControl
         ItemPackCheckRequirement itemPackCheckRequirement = ItemPackCheckRequirementFactory.getInstance().create(item,
                 unitOfMeasureType, minimumQuantity, maximumQuantity, session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemPackCheckRequirement.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemPackCheckRequirement.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemPackCheckRequirement;
     }
@@ -4601,7 +4896,7 @@ public class ItemControl
             itemPackCheckRequirement = ItemPackCheckRequirementFactory.getInstance().create(itemPK, unitOfMeasureTypePK,
                     minimumQuantity, maximumQuantity, session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemPackCheckRequirement.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemPackCheckRequirement.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -4630,7 +4925,7 @@ public class ItemControl
     public void deleteItemPackCheckRequirement(ItemPackCheckRequirement itemPackCheckRequirement, BasePK deletedBy) {
         itemPackCheckRequirement.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemPackCheckRequirement.getItemPK(), EventTypes.MODIFY.name(), itemPackCheckRequirement.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemPackCheckRequirement.getItemPK(), EventTypes.MODIFY, itemPackCheckRequirement.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemPackCheckRequirements(List<ItemPackCheckRequirement> itemPackCheckRequirements, BasePK deletedBy) {
@@ -4662,7 +4957,7 @@ public class ItemControl
                 inventoryCondition, unitOfMeasureType, customerType, minimumQuantity, maximumQuantity, session.START_TIME_LONG,
                 Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemUnitCustomerTypeLimit.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemUnitCustomerTypeLimit.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemUnitCustomerTypeLimit;
     }
@@ -4933,7 +5228,7 @@ public class ItemControl
                     unitOfMeasureTypePK, customerTypePK, minimumQuantity, maximumQuantity, session.START_TIME_LONG,
                     Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemUnitCustomerTypeLimit.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemUnitCustomerTypeLimit.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -4961,7 +5256,7 @@ public class ItemControl
     public void deleteItemUnitCustomerTypeLimit(ItemUnitCustomerTypeLimit itemUnitCustomerTypeLimit, BasePK deletedBy) {
         itemUnitCustomerTypeLimit.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemUnitCustomerTypeLimit.getItemPK(), EventTypes.MODIFY.name(), itemUnitCustomerTypeLimit.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemUnitCustomerTypeLimit.getItemPK(), EventTypes.MODIFY, itemUnitCustomerTypeLimit.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemUnitCustomerTypeLimits(List<ItemUnitCustomerTypeLimit> itemUnitCustomerTypeLimits, BasePK deletedBy) {
@@ -4999,7 +5294,7 @@ public class ItemControl
         ItemUnitLimit itemUnitLimit = ItemUnitLimitFactory.getInstance().create(item, inventoryCondition, unitOfMeasureType,
                 minimumQuantity, maximumQuantity, session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemUnitLimit.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemUnitLimit.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemUnitLimit;
     }
@@ -5219,7 +5514,7 @@ public class ItemControl
             itemUnitLimit = ItemUnitLimitFactory.getInstance().create(itemPK, inventoryConditionPK, unitOfMeasureTypePK,
                     minimumQuantity, maximumQuantity, session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemUnitLimit.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemUnitLimit.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -5247,7 +5542,7 @@ public class ItemControl
     public void deleteItemUnitLimit(ItemUnitLimit itemUnitLimit, BasePK deletedBy) {
         itemUnitLimit.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemUnitLimit.getItemPK(), EventTypes.MODIFY.name(), itemUnitLimit.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemUnitLimit.getItemPK(), EventTypes.MODIFY, itemUnitLimit.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemUnitLimits(List<ItemUnitLimit> itemUnitLimits, BasePK deletedBy) {
@@ -5282,7 +5577,7 @@ public class ItemControl
         ItemUnitPriceLimit itemUnitPriceLimit = ItemUnitPriceLimitFactory.getInstance().create(item, inventoryCondition,
                 unitOfMeasureType, currency, minimumUnitPrice, maximumUnitPrice, session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemUnitPriceLimit.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemUnitPriceLimit.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemUnitPriceLimit;
     }
@@ -5509,7 +5804,7 @@ public class ItemControl
             itemUnitPriceLimit = ItemUnitPriceLimitFactory.getInstance().create(itemPK, inventoryConditionPK,
                     unitOfMeasureTypePK, currencyPK, minimumUnitPrice, maximumUnitPrice, session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemUnitPriceLimit.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemUnitPriceLimit.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -5537,7 +5832,7 @@ public class ItemControl
     public void deleteItemUnitPriceLimit(ItemUnitPriceLimit itemUnitPriceLimit, BasePK deletedBy) {
         itemUnitPriceLimit.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemUnitPriceLimit.getItemPK(), EventTypes.MODIFY.name(), itemUnitPriceLimit.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemUnitPriceLimit.getItemPK(), EventTypes.MODIFY, itemUnitPriceLimit.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemUnitPriceLimits(List<ItemUnitPriceLimit> itemUnitPriceLimits, BasePK deletedBy) {
@@ -5570,7 +5865,7 @@ public class ItemControl
             BasePK createdBy) {
         var itemPriceType = ItemPriceTypeFactory.getInstance().create(itemPriceTypeName, isDefault, sortOrder);
 
-        sendEventUsingNames(itemPriceType.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(itemPriceType.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return itemPriceType;
     }
@@ -5581,7 +5876,7 @@ public class ItemControl
                 "FROM itempricetypes");
     }
 
-    /** Assume that the entityInstance passed to this function is a ECHOTHREE.ItemPriceType */
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.ItemPriceType */
     public ItemPriceType getItemPriceTypeByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
         var pk = new ItemPriceTypePK(entityInstance.getEntityUniqueId());
 
@@ -5734,7 +6029,7 @@ public class ItemControl
             String description, BasePK createdBy) {
         var itemPriceTypeDescription = ItemPriceTypeDescriptionFactory.getInstance().create(itemPriceType, language, description);
 
-        sendEventUsingNames(itemPriceType.getPrimaryKey(), EventTypes.MODIFY.name(), itemPriceTypeDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemPriceType.getPrimaryKey(), EventTypes.MODIFY, itemPriceTypeDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return itemPriceTypeDescription;
     }
@@ -5785,7 +6080,7 @@ public class ItemControl
         ItemPrice itemPrice = ItemPriceFactory.getInstance().create(item, inventoryCondition, unitOfMeasureType, currency,
                 session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemPrice.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemPrice.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemPrice;
     }
@@ -6152,7 +6447,7 @@ public class ItemControl
         itemPrice.setThruTime(session.START_TIME_LONG);
         itemPrice.store();
         
-        sendEventUsingNames(itemPrice.getItemPK(), EventTypes.MODIFY.name(), itemPrice.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemPrice.getItemPK(), EventTypes.MODIFY, itemPrice.getPrimaryKey(), EventTypes.DELETE, deletedBy);
 
         OfferItemLogic.getInstance().deleteOfferItemPrices(offerItemControl.getOfferItemPricesForUpdate(item,
                 itemPrice.getInventoryCondition(), itemPrice.getUnitOfMeasureType(), itemPrice.getCurrency()),
@@ -6188,7 +6483,7 @@ public class ItemControl
     public ItemFixedPrice createItemFixedPrice(ItemPrice itemPrice, Long unitPrice, BasePK createdBy) {
         ItemFixedPrice itemFixedPrice = ItemFixedPriceFactory.getInstance().create(itemPrice, unitPrice, session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(itemPrice.getItemPK(), EventTypes.MODIFY.name(), itemFixedPrice.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemPrice.getItemPK(), EventTypes.MODIFY, itemFixedPrice.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemFixedPrice;
     }
@@ -6273,7 +6568,7 @@ public class ItemControl
             itemFixedPrice = ItemFixedPriceFactory.getInstance().create(itemPricePK, unitPrice,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemFixedPrice.getItemPrice().getItemPK(), EventTypes.MODIFY.name(), itemFixedPrice.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemFixedPrice.getItemPrice().getItemPK(), EventTypes.MODIFY, itemFixedPrice.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -6281,7 +6576,7 @@ public class ItemControl
         itemFixedPrice.setThruTime(session.START_TIME_LONG);
         itemFixedPrice.store();
         
-        sendEventUsingNames(itemFixedPrice.getItemPrice().getItemPK(), EventTypes.MODIFY.name(), itemFixedPrice.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemFixedPrice.getItemPrice().getItemPK(), EventTypes.MODIFY, itemFixedPrice.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     // --------------------------------------------------------------------------------
@@ -6293,7 +6588,7 @@ public class ItemControl
         ItemVariablePrice itemVariablePrice = ItemVariablePriceFactory.getInstance().create(itemPrice, minimumUnitPrice,
                 maximumUnitPrice, unitPriceIncrement, session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(itemPrice.getItemPK(), EventTypes.MODIFY.name(), itemVariablePrice.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemPrice.getItemPK(), EventTypes.MODIFY, itemVariablePrice.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemVariablePrice;
     }
@@ -6380,7 +6675,7 @@ public class ItemControl
             itemVariablePrice = ItemVariablePriceFactory.getInstance().create(itemPricePK, maximumUnitPrice,
                     minimumUnitPrice, unitPriceIncrement, session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemVariablePrice.getItemPrice().getItemPK(), EventTypes.MODIFY.name(), itemVariablePrice.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemVariablePrice.getItemPrice().getItemPK(), EventTypes.MODIFY, itemVariablePrice.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -6388,7 +6683,7 @@ public class ItemControl
         itemVariablePrice.setThruTime(session.START_TIME_LONG);
         itemVariablePrice.store();
         
-        sendEventUsingNames(itemVariablePrice.getItemPrice().getItemPK(), EventTypes.MODIFY.name(), itemVariablePrice.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemVariablePrice.getItemPrice().getItemPK(), EventTypes.MODIFY, itemVariablePrice.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     // --------------------------------------------------------------------------------
@@ -6422,12 +6717,12 @@ public class ItemControl
         itemDescriptionType.setLastDetail(itemDescriptionTypeDetail);
         itemDescriptionType.store();
 
-        sendEventUsingNames(itemDescriptionType.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(itemDescriptionType.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return itemDescriptionType;
     }
 
-    /** Assume that the entityInstance passed to this function is a ECHOTHREE.ItemDescriptionType */
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.ItemDescriptionType */
     public ItemDescriptionType getItemDescriptionTypeByEntityInstance(final EntityInstance entityInstance,
             final EntityPermission entityPermission) {
         var pk = new ItemDescriptionTypePK(entityInstance.getEntityUniqueId());
@@ -6780,7 +7075,7 @@ public class ItemControl
             itemDescriptionType.setActiveDetail(itemDescriptionTypeDetail);
             itemDescriptionType.setLastDetail(itemDescriptionTypeDetail);
 
-            sendEventUsingNames(itemDescriptionTypePK, EventTypes.MODIFY.name(), null, null, updatedBy);
+            sendEvent(itemDescriptionTypePK, EventTypes.MODIFY, null, null, updatedBy);
         }
     }
 
@@ -6829,7 +7124,7 @@ public class ItemControl
             }
         }
 
-        sendEventUsingNames(itemDescriptionType.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(itemDescriptionType.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     public void deleteItemDescriptionType(ItemDescriptionType itemDescriptionType, BasePK deletedBy) {
@@ -6856,7 +7151,7 @@ public class ItemControl
         ItemDescriptionTypeDescription itemDescriptionTypeDescription = ItemDescriptionTypeDescriptionFactory.getInstance().create(itemDescriptionType, language, description,
                 session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(itemDescriptionType.getPrimaryKey(), EventTypes.MODIFY.name(), itemDescriptionTypeDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemDescriptionType.getPrimaryKey(), EventTypes.MODIFY, itemDescriptionTypeDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return itemDescriptionTypeDescription;
     }
@@ -6979,14 +7274,14 @@ public class ItemControl
             itemDescriptionTypeDescription = ItemDescriptionTypeDescriptionFactory.getInstance().create(itemDescriptionType, language, description,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(itemDescriptionType.getPrimaryKey(), EventTypes.MODIFY.name(), itemDescriptionTypeDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemDescriptionType.getPrimaryKey(), EventTypes.MODIFY, itemDescriptionTypeDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
     public void deleteItemDescriptionTypeDescription(ItemDescriptionTypeDescription itemDescriptionTypeDescription, BasePK deletedBy) {
         itemDescriptionTypeDescription.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(itemDescriptionTypeDescription.getItemDescriptionTypePK(), EventTypes.MODIFY.name(), itemDescriptionTypeDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemDescriptionTypeDescription.getItemDescriptionTypePK(), EventTypes.MODIFY, itemDescriptionTypeDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
 
     }
 
@@ -7009,7 +7304,7 @@ public class ItemControl
                 minimumWidth, maximumHeight, maximumWidth, preferredHeight, preferredWidth, preferredMimeType, quality, scaleFromParent,
                 session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(itemDescriptionType.getPrimaryKey(), EventTypes.MODIFY.name(), itemImageDescriptionType.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemDescriptionType.getPrimaryKey(), EventTypes.MODIFY, itemImageDescriptionType.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return itemImageDescriptionType;
     }
@@ -7076,14 +7371,14 @@ public class ItemControl
                     maximumWidth, preferredHeight, preferredWidth, preferredMimeTypePK, quality, scaleFromParent, session.START_TIME_LONG,
                     Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(itemImageDescriptionType.getItemDescriptionTypePK(), EventTypes.MODIFY.name(), itemImageDescriptionType.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemImageDescriptionType.getItemDescriptionTypePK(), EventTypes.MODIFY, itemImageDescriptionType.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
     public void deleteItemImageDescriptionType(ItemImageDescriptionType itemImageDescriptionType, BasePK deletedBy) {
         itemImageDescriptionType.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(itemImageDescriptionType.getItemDescriptionTypePK(), EventTypes.MODIFY.name(), itemImageDescriptionType.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemImageDescriptionType.getItemDescriptionTypePK(), EventTypes.MODIFY, itemImageDescriptionType.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
 
     public void deleteItemImageDescriptionTypeByItemDescriptionType(ItemDescriptionType itemDescriptionType, BasePK deletedBy) {
@@ -7123,9 +7418,32 @@ public class ItemControl
         itemDescriptionTypeUseType.setLastDetail(itemDescriptionTypeUseTypeDetail);
         itemDescriptionTypeUseType.store();
 
-        sendEventUsingNames(itemDescriptionTypeUseType.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(itemDescriptionTypeUseType.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return itemDescriptionTypeUseType;
+    }
+
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.ItemDescriptionTypeUseType */
+    public ItemDescriptionTypeUseType getItemDescriptionTypeUseTypeByEntityInstance(final EntityInstance entityInstance,
+            final EntityPermission entityPermission) {
+        var pk = new ItemDescriptionTypeUseTypePK(entityInstance.getEntityUniqueId());
+
+        return ItemDescriptionTypeUseTypeFactory.getInstance().getEntityFromPK(entityPermission, pk);
+    }
+
+    public ItemDescriptionTypeUseType getItemDescriptionTypeUseTypeByEntityInstance(final EntityInstance entityInstance) {
+        return getItemDescriptionTypeUseTypeByEntityInstance(entityInstance, EntityPermission.READ_ONLY);
+    }
+
+    public ItemDescriptionTypeUseType getItemDescriptionTypeUseTypeByEntityInstanceForUpdate(final EntityInstance entityInstance) {
+        return getItemDescriptionTypeUseTypeByEntityInstance(entityInstance, EntityPermission.READ_WRITE);
+    }
+
+    public long countItemDescriptionTypeUseTypes() {
+        return session.queryForLong(
+                "SELECT COUNT(*) " +
+                "FROM itemdescriptiontypeusetypes, itemdescriptiontypeusetypedetails " +
+                "WHERE idtutyp_activedetailid = idtutypdt_itemdescriptiontypeusetypedetailid");
     }
 
     private static final Map<EntityPermission, String> getItemDescriptionTypeUseTypeByNameQueries;
@@ -7147,7 +7465,7 @@ public class ItemControl
         getItemDescriptionTypeUseTypeByNameQueries = Collections.unmodifiableMap(queryMap);
     }
 
-    private ItemDescriptionTypeUseType getItemDescriptionTypeUseTypeByName(String itemDescriptionTypeUseTypeName, EntityPermission entityPermission) {
+    public ItemDescriptionTypeUseType getItemDescriptionTypeUseTypeByName(String itemDescriptionTypeUseTypeName, EntityPermission entityPermission) {
         return ItemDescriptionTypeUseTypeFactory.getInstance().getEntityFromQuery(entityPermission, getItemDescriptionTypeUseTypeByNameQueries, itemDescriptionTypeUseTypeName);
     }
 
@@ -7186,7 +7504,7 @@ public class ItemControl
         getDefaultItemDescriptionTypeUseTypeQueries = Collections.unmodifiableMap(queryMap);
     }
 
-    private ItemDescriptionTypeUseType getDefaultItemDescriptionTypeUseType(EntityPermission entityPermission) {
+    public ItemDescriptionTypeUseType getDefaultItemDescriptionTypeUseType(EntityPermission entityPermission) {
         return ItemDescriptionTypeUseTypeFactory.getInstance().getEntityFromQuery(entityPermission, getDefaultItemDescriptionTypeUseTypeQueries);
     }
 
@@ -7276,7 +7594,7 @@ public class ItemControl
         return getItemTransferCaches(userVisit).getItemDescriptionTypeUseTypeTransferCache().getTransfer(itemDescriptionTypeUseType);
     }
 
-    public List<ItemDescriptionTypeUseTypeTransfer> getItemDescriptionTypeUseTypeTransfers(UserVisit userVisit, List<ItemDescriptionTypeUseType> itemDescriptionTypeUseTypes) {
+    public List<ItemDescriptionTypeUseTypeTransfer> getItemDescriptionTypeUseTypeTransfers(UserVisit userVisit, Collection<ItemDescriptionTypeUseType> itemDescriptionTypeUseTypes) {
         List<ItemDescriptionTypeUseTypeTransfer> itemDescriptionTypeUseTypeTransfers = new ArrayList<>(itemDescriptionTypeUseTypes.size());
         ItemDescriptionTypeUseTypeTransferCache itemDescriptionTypeUseTypeTransferCache = getItemTransferCaches(userVisit).getItemDescriptionTypeUseTypeTransferCache();
 
@@ -7367,7 +7685,7 @@ public class ItemControl
             itemDescriptionTypeUseType.setActiveDetail(itemDescriptionTypeUseTypeDetail);
             itemDescriptionTypeUseType.setLastDetail(itemDescriptionTypeUseTypeDetail);
 
-            sendEventUsingNames(itemDescriptionTypeUseTypePK, EventTypes.MODIFY.name(), null, null, updatedBy);
+            sendEvent(itemDescriptionTypeUseTypePK, EventTypes.MODIFY, null, null, updatedBy);
         }
     }
 
@@ -7401,7 +7719,7 @@ public class ItemControl
             }
         }
 
-        sendEventUsingNames(itemDescriptionTypeUseType.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(itemDescriptionTypeUseType.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     // --------------------------------------------------------------------------------
@@ -7413,7 +7731,7 @@ public class ItemControl
         ItemDescriptionTypeUseTypeDescription itemDescriptionTypeUseTypeDescription = ItemDescriptionTypeUseTypeDescriptionFactory.getInstance().create(itemDescriptionTypeUseType,
                 language, description, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(itemDescriptionTypeUseType.getPrimaryKey(), EventTypes.MODIFY.name(), itemDescriptionTypeUseTypeDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemDescriptionTypeUseType.getPrimaryKey(), EventTypes.MODIFY, itemDescriptionTypeUseTypeDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return itemDescriptionTypeUseTypeDescription;
     }
@@ -7538,14 +7856,14 @@ public class ItemControl
             itemDescriptionTypeUseTypeDescription = ItemDescriptionTypeUseTypeDescriptionFactory.getInstance().create(itemDescriptionTypeUseType, language, description,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(itemDescriptionTypeUseType.getPrimaryKey(), EventTypes.MODIFY.name(), itemDescriptionTypeUseTypeDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemDescriptionTypeUseType.getPrimaryKey(), EventTypes.MODIFY, itemDescriptionTypeUseTypeDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
     public void deleteItemDescriptionTypeUseTypeDescription(ItemDescriptionTypeUseTypeDescription itemDescriptionTypeUseTypeDescription, BasePK deletedBy) {
         itemDescriptionTypeUseTypeDescription.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(itemDescriptionTypeUseTypeDescription.getItemDescriptionTypeUseTypePK(), EventTypes.MODIFY.name(), itemDescriptionTypeUseTypeDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemDescriptionTypeUseTypeDescription.getItemDescriptionTypeUseTypePK(), EventTypes.MODIFY, itemDescriptionTypeUseTypeDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
 
     }
 
@@ -7566,9 +7884,25 @@ public class ItemControl
         ItemDescriptionTypeUse itemDescriptionTypeUse = ItemDescriptionTypeUseFactory.getInstance().create(itemDescriptionType, itemDescriptionTypeUseType,
                 session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(itemDescriptionType.getPrimaryKey(), EventTypes.MODIFY.name(), itemDescriptionTypeUse.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemDescriptionType.getPrimaryKey(), EventTypes.MODIFY, itemDescriptionTypeUse.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return itemDescriptionTypeUse;
+    }
+
+    public long countItemDescriptionTypeUsesByItemDescriptionType(ItemDescriptionType itemDescriptionType) {
+        return session.queryForLong("""
+                SELECT COUNT(*)
+                FROM itemdescriptiontypeuses
+                WHERE idtu_idt_itemdescriptiontypeid = ? AND idtu_thrutime = ?
+                """, itemDescriptionType, Session.MAX_TIME);
+    }
+
+    public long countItemDescriptionTypeUsesByItemDescriptionTypeUseType(ItemDescriptionTypeUseType itemDescriptionTypeUseType) {
+        return session.queryForLong("""
+                SELECT COUNT(*)
+                FROM itemdescriptiontypeuses
+                WHERE idtu_idtutyp_itemdescriptiontypeusetypeid = ? AND idtu_thrutime = ?
+                """, itemDescriptionTypeUseType, Session.MAX_TIME);
     }
 
     private static final Map<EntityPermission, String> getItemDescriptionTypeUseQueries;
@@ -7678,7 +8012,7 @@ public class ItemControl
         return getItemTransferCaches(userVisit).getItemDescriptionTypeUseTransferCache().getTransfer(itemDescriptionTypeUse);
     }
 
-    private List<ItemDescriptionTypeUseTransfer> getItemDescriptionTypeUseTransfers(final UserVisit userVisit, final List<ItemDescriptionTypeUse> itemDescriptionTypeUses) {
+    public List<ItemDescriptionTypeUseTransfer> getItemDescriptionTypeUseTransfers(final UserVisit userVisit, final Collection<ItemDescriptionTypeUse> itemDescriptionTypeUses) {
         List<ItemDescriptionTypeUseTransfer> itemDescriptionTypeUseTransfers = new ArrayList<>(itemDescriptionTypeUses.size());
         ItemDescriptionTypeUseTransferCache itemDescriptionTypeUseTransferCache = getItemTransferCaches(userVisit).getItemDescriptionTypeUseTransferCache();
 
@@ -7701,7 +8035,7 @@ public class ItemControl
         itemDescriptionTypeUse.setThruTime(session.START_TIME_LONG);
         itemDescriptionTypeUse.store();
 
-        sendEventUsingNames(itemDescriptionTypeUse.getItemDescriptionTypePK(), EventTypes.MODIFY.name(), itemDescriptionTypeUse.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemDescriptionTypeUse.getItemDescriptionTypePK(), EventTypes.MODIFY, itemDescriptionTypeUse.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
 
     public void deleteItemDescriptionTypeUses(List<ItemDescriptionTypeUse> itemDescriptionTypeUses, BasePK deletedBy) {
@@ -7747,12 +8081,12 @@ public class ItemControl
         itemImageType.setLastDetail(itemImageTypeDetail);
         itemImageType.store();
 
-        sendEventUsingNames(itemImageType.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(itemImageType.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return itemImageType;
     }
 
-    /** Assume that the entityInstance passed to this function is a ECHOTHREE.ItemImageType */
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.ItemImageType */
     public ItemImageType getItemImageTypeByEntityInstance(final EntityInstance entityInstance,
             final EntityPermission entityPermission) {
         var pk = new ItemImageTypePK(entityInstance.getEntityUniqueId());
@@ -7972,7 +8306,7 @@ public class ItemControl
             itemImageType.setActiveDetail(itemImageTypeDetail);
             itemImageType.setLastDetail(itemImageTypeDetail);
 
-            sendEventUsingNames(itemImageTypePK, EventTypes.MODIFY.name(), null, null, updatedBy);
+            sendEvent(itemImageTypePK, EventTypes.MODIFY, null, null, updatedBy);
         }
     }
 
@@ -8007,7 +8341,7 @@ public class ItemControl
             }
         }
 
-        sendEventUsingNames(itemImageType.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(itemImageType.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     // --------------------------------------------------------------------------------
@@ -8019,7 +8353,7 @@ public class ItemControl
         ItemImageTypeDescription itemImageTypeDescription = ItemImageTypeDescriptionFactory.getInstance().create(itemImageType,
                 language, description, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(itemImageType.getPrimaryKey(), EventTypes.MODIFY.name(), itemImageTypeDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemImageType.getPrimaryKey(), EventTypes.MODIFY, itemImageTypeDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return itemImageTypeDescription;
     }
@@ -8144,14 +8478,14 @@ public class ItemControl
             itemImageTypeDescription = ItemImageTypeDescriptionFactory.getInstance().create(itemImageType, language, description,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(itemImageType.getPrimaryKey(), EventTypes.MODIFY.name(), itemImageTypeDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemImageType.getPrimaryKey(), EventTypes.MODIFY, itemImageTypeDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
     public void deleteItemImageTypeDescription(ItemImageTypeDescription itemImageTypeDescription, BasePK deletedBy) {
         itemImageTypeDescription.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(itemImageTypeDescription.getItemImageTypePK(), EventTypes.MODIFY.name(), itemImageTypeDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemImageTypeDescription.getItemImageTypePK(), EventTypes.MODIFY, itemImageTypeDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
 
     }
 
@@ -8180,12 +8514,12 @@ public class ItemControl
         itemDescription.setLastDetail(itemDescriptionDetail);
         itemDescription.store();
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemDescription;
     }
 
-    /** Assume that the entityInstance passed to this function is a ECHOTHREE.ItemDescription */
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.ItemDescription */
     public ItemDescription getItemDescriptionByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
         var pk = new ItemDescriptionPK(entityInstance.getEntityUniqueId());
 
@@ -8498,7 +8832,7 @@ public class ItemControl
             itemDescription.setActiveDetail(itemDescriptionDetail);
             itemDescription.setLastDetail(itemDescriptionDetail);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemDescriptionPK, EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemDescriptionPK, EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -8523,7 +8857,7 @@ public class ItemControl
         itemDescription.setActiveDetail(null);
         itemDescription.store();
         
-        sendEventUsingNames(itemDescriptionDetail.getItemPK(), EventTypes.MODIFY.name(), itemDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemDescriptionDetail.getItemPK(), EventTypes.MODIFY, itemDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemDescriptions(List<ItemDescription> itemDescriptions, BasePK deletedBy) {
@@ -8557,7 +8891,7 @@ public class ItemControl
         ItemBlobDescription itemBlobDescription = ItemBlobDescriptionFactory.getInstance().create(itemDescription,
                 blobDescription, session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(itemDescription.getLastDetail().getItemPK(), EventTypes.MODIFY.name(), itemBlobDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemDescription.getLastDetail().getItemPK(), EventTypes.MODIFY, itemBlobDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemBlobDescription;
     }
@@ -8623,14 +8957,14 @@ public class ItemControl
             itemBlobDescription = ItemBlobDescriptionFactory.getInstance().create(itemDescriptionPK, blobDescription,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemBlobDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY.name(), itemBlobDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemBlobDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY, itemBlobDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
     public void deleteItemBlobDescription(ItemBlobDescription itemBlobDescription, BasePK deletedBy) {
         itemBlobDescription.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemBlobDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY.name(), itemBlobDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemBlobDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY, itemBlobDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemBlobDescriptionByItemDescription(ItemDescription itemDescription, BasePK deletedBy) {
@@ -8651,7 +8985,7 @@ public class ItemControl
         ItemImageDescription itemImageDescription = ItemImageDescriptionFactory.getInstance().create(itemDescription, itemImageType, height, width,
                 scaledFromParent, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(itemDescription.getLastDetail().getItemPK(), EventTypes.MODIFY.name(), itemImageDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemDescription.getLastDetail().getItemPK(), EventTypes.MODIFY, itemImageDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return itemImageDescription;
     }
@@ -8742,14 +9076,14 @@ public class ItemControl
             itemImageDescription = ItemImageDescriptionFactory.getInstance().create(itemDescriptionPK, itemImageTypePK, height, width, scaledFromParent,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(itemImageDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY.name(), itemImageDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemImageDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY, itemImageDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
     public void deleteItemImageDescription(ItemImageDescription itemImageDescription, BasePK deletedBy) {
         itemImageDescription.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(itemImageDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY.name(), itemImageDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemImageDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY, itemImageDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
 
     public void deleteItemImageDescriptionByItemDescription(ItemDescription itemDescription, BasePK deletedBy) {
@@ -8769,7 +9103,7 @@ public class ItemControl
         ItemClobDescription itemClobDescription = ItemClobDescriptionFactory.getInstance().create(itemDescription,
                 clobDescription, session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(itemDescription.getLastDetail().getItemPK(), EventTypes.MODIFY.name(), itemClobDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemDescription.getLastDetail().getItemPK(), EventTypes.MODIFY, itemClobDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemClobDescription;
     }
@@ -8834,14 +9168,14 @@ public class ItemControl
             itemClobDescription = ItemClobDescriptionFactory.getInstance().create(itemDescriptionPK, clobDescription,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemClobDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY.name(), itemClobDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemClobDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY, itemClobDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
     public void deleteItemClobDescription(ItemClobDescription itemClobDescription, BasePK deletedBy) {
         itemClobDescription.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemClobDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY.name(), itemClobDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemClobDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY, itemClobDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemClobDescriptionByItemDescription(ItemDescription itemDescription, BasePK deletedBy) {
@@ -8861,7 +9195,7 @@ public class ItemControl
         ItemStringDescription itemStringDescription = ItemStringDescriptionFactory.getInstance().create(itemDescription,
                 stringDescription, session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(itemDescription.getLastDetail().getItemPK(), EventTypes.MODIFY.name(), itemStringDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(itemDescription.getLastDetail().getItemPK(), EventTypes.MODIFY, itemStringDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemStringDescription;
     }
@@ -8926,14 +9260,14 @@ public class ItemControl
             itemStringDescription = ItemStringDescriptionFactory.getInstance().create(itemDescriptionPK, stringDescription,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemStringDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY.name(), itemStringDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemStringDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY, itemStringDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
     public void deleteItemStringDescription(ItemStringDescription itemStringDescription, BasePK deletedBy) {
         itemStringDescription.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemStringDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY.name(), itemStringDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemStringDescription.getItemDescription().getLastDetail().getItemPK(), EventTypes.MODIFY, itemStringDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemStringDescriptionByItemDescription(ItemDescription itemDescription, BasePK deletedBy) {
@@ -8953,7 +9287,7 @@ public class ItemControl
         ItemVolume itemVolume = ItemVolumeFactory.getInstance().create(item, unitOfMeasureType, height, width, depth,
                 session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemVolume.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemVolume.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemVolume;
     }
@@ -9063,7 +9397,7 @@ public class ItemControl
             itemVolume = ItemVolumeFactory.getInstance().create(itemPK, unitOfMeasureTypePK, height, width, depth,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemVolume.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemVolume.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -9090,7 +9424,7 @@ public class ItemControl
     public void deleteItemVolume(ItemVolume itemVolume, BasePK deletedBy) {
         itemVolume.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemVolume.getItemPK(), EventTypes.MODIFY.name(), itemVolume.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemVolume.getItemPK(), EventTypes.MODIFY, itemVolume.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemVolumesByItem(Item item, BasePK deletedBy) {
@@ -9117,7 +9451,7 @@ public class ItemControl
         ItemWeight itemWeight = ItemWeightFactory.getInstance().create(item, unitOfMeasureType, weight,
                 session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemWeight.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemWeight.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return itemWeight;
     }
@@ -9225,7 +9559,7 @@ public class ItemControl
             itemWeight = ItemWeightFactory.getInstance().create(itemPK, unitOfMeasureTypePK, weight, session.START_TIME_LONG,
                     Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemWeight.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemWeight.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -9252,7 +9586,7 @@ public class ItemControl
     public void deleteItemWeight(ItemWeight itemWeight, BasePK deletedBy) {
         itemWeight.setThruTime(session.START_TIME_LONG);
         
-        sendEventUsingNames(itemWeight.getItemPK(), EventTypes.MODIFY.name(), itemWeight.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemWeight.getItemPK(), EventTypes.MODIFY, itemWeight.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deleteItemWeightsByItem(Item item, BasePK deletedBy) {
@@ -9300,9 +9634,36 @@ public class ItemControl
         relatedItemType.setLastDetail(relatedItemTypeDetail);
         relatedItemType.store();
 
-        sendEventUsingNames(relatedItemType.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(relatedItemType.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return relatedItemType;
+    }
+
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.RelatedItemType */
+    public RelatedItemType getRelatedItemTypeByEntityInstance(final EntityInstance entityInstance,
+            final EntityPermission entityPermission) {
+        var pk = new RelatedItemTypePK(entityInstance.getEntityUniqueId());
+
+        return RelatedItemTypeFactory.getInstance().getEntityFromPK(entityPermission, pk);
+    }
+
+    public RelatedItemType getRelatedItemTypeByEntityInstance(final EntityInstance entityInstance) {
+        return getRelatedItemTypeByEntityInstance(entityInstance, EntityPermission.READ_ONLY);
+    }
+
+    public RelatedItemType getRelatedItemTypeByEntityInstanceForUpdate(final EntityInstance entityInstance) {
+        return getRelatedItemTypeByEntityInstance(entityInstance, EntityPermission.READ_WRITE);
+    }
+
+    public RelatedItemType getRelatedItemTypeByPK(RelatedItemTypePK pk) {
+        return RelatedItemTypeFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, pk);
+    }
+
+    public long countRelatedItemTypes() {
+        return session.queryForLong(
+                "SELECT COUNT(*) " +
+                "FROM relateditemtypes, relateditemtypedetails " +
+                "WHERE rltityp_activedetailid = rltitypdt_relateditemtypedetailid");
     }
 
     private static final Map<EntityPermission, String> getRelatedItemTypeByNameQueries;
@@ -9324,7 +9685,7 @@ public class ItemControl
         getRelatedItemTypeByNameQueries = Collections.unmodifiableMap(queryMap);
     }
 
-    private RelatedItemType getRelatedItemTypeByName(String relatedItemTypeName, EntityPermission entityPermission) {
+    public RelatedItemType getRelatedItemTypeByName(String relatedItemTypeName, EntityPermission entityPermission) {
         return RelatedItemTypeFactory.getInstance().getEntityFromQuery(entityPermission, getRelatedItemTypeByNameQueries, relatedItemTypeName);
     }
 
@@ -9363,7 +9724,7 @@ public class ItemControl
         getDefaultRelatedItemTypeQueries = Collections.unmodifiableMap(queryMap);
     }
 
-    private RelatedItemType getDefaultRelatedItemType(EntityPermission entityPermission) {
+    public RelatedItemType getDefaultRelatedItemType(EntityPermission entityPermission) {
         return RelatedItemTypeFactory.getInstance().getEntityFromQuery(entityPermission, getDefaultRelatedItemTypeQueries);
     }
 
@@ -9445,7 +9806,7 @@ public class ItemControl
         return getItemTransferCaches(userVisit).getRelatedItemTypeTransferCache().getTransfer(relatedItemType);
     }
 
-    public List<RelatedItemTypeTransfer> getRelatedItemTypeTransfers(UserVisit userVisit, List<RelatedItemType> relatedItemTypes) {
+    public List<RelatedItemTypeTransfer> getRelatedItemTypeTransfers(UserVisit userVisit, Collection<RelatedItemType> relatedItemTypes) {
         List<RelatedItemTypeTransfer> relatedItemTypeTransfers = new ArrayList<>(relatedItemTypes.size());
         RelatedItemTypeTransferCache relatedItemTypeTransferCache = getItemTransferCaches(userVisit).getRelatedItemTypeTransferCache();
 
@@ -9536,7 +9897,7 @@ public class ItemControl
             relatedItemType.setActiveDetail(relatedItemTypeDetail);
             relatedItemType.setLastDetail(relatedItemTypeDetail);
 
-            sendEventUsingNames(relatedItemTypePK, EventTypes.MODIFY.name(), null, null, updatedBy);
+            sendEvent(relatedItemTypePK, EventTypes.MODIFY, null, null, updatedBy);
         }
     }
 
@@ -9570,7 +9931,7 @@ public class ItemControl
             }
         }
 
-        sendEventUsingNames(relatedItemType.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(relatedItemType.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     // --------------------------------------------------------------------------------
@@ -9582,7 +9943,7 @@ public class ItemControl
         RelatedItemTypeDescription relatedItemTypeDescription = RelatedItemTypeDescriptionFactory.getInstance().create(relatedItemType,
                 language, description, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(relatedItemType.getPrimaryKey(), EventTypes.MODIFY.name(), relatedItemTypeDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(relatedItemType.getPrimaryKey(), EventTypes.MODIFY, relatedItemTypeDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return relatedItemTypeDescription;
     }
@@ -9707,14 +10068,14 @@ public class ItemControl
             relatedItemTypeDescription = RelatedItemTypeDescriptionFactory.getInstance().create(relatedItemType, language, description,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(relatedItemType.getPrimaryKey(), EventTypes.MODIFY.name(), relatedItemTypeDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(relatedItemType.getPrimaryKey(), EventTypes.MODIFY, relatedItemTypeDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
     public void deleteRelatedItemTypeDescription(RelatedItemTypeDescription relatedItemTypeDescription, BasePK deletedBy) {
         relatedItemTypeDescription.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(relatedItemTypeDescription.getRelatedItemTypePK(), EventTypes.MODIFY.name(), relatedItemTypeDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(relatedItemTypeDescription.getRelatedItemTypePK(), EventTypes.MODIFY, relatedItemTypeDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
 
     }
 
@@ -9742,7 +10103,7 @@ public class ItemControl
         relatedItem.setLastDetail(relatedItemDetail);
         relatedItem.store();
 
-        sendEventUsingNames(relatedItem.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(relatedItem.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return relatedItem;
     }
@@ -10007,7 +10368,7 @@ public class ItemControl
         return getItemTransferCaches(userVisit).getRelatedItemTransferCache().getTransfer(relatedItem);
     }
 
-    public List<RelatedItemTransfer> getRelatedItemTransfers(UserVisit userVisit, List<RelatedItem> relatedItems) {
+    public List<RelatedItemTransfer> getRelatedItemTransfers(UserVisit userVisit, Collection<RelatedItem> relatedItems) {
         List<RelatedItemTransfer> relatedItemTransfers = new ArrayList<>(relatedItems.size());
         RelatedItemTransferCache relatedItemTransferCache = getItemTransferCaches(userVisit).getRelatedItemTransferCache();
 
@@ -10055,7 +10416,7 @@ public class ItemControl
             relatedItem.setActiveDetail(relatedItemDetail);
             relatedItem.setLastDetail(relatedItemDetail);
 
-            sendEventUsingNames(relatedItemPK, EventTypes.MODIFY.name(), null, null, updatedBy);
+            sendEvent(relatedItemPK, EventTypes.MODIFY, null, null, updatedBy);
         }
     }
 
@@ -10065,7 +10426,7 @@ public class ItemControl
         relatedItem.setActiveDetail(null);
         relatedItem.store();
 
-        sendEventUsingNames(relatedItemDetail.getFromItemPK(), EventTypes.MODIFY.name(), relatedItem.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(relatedItem.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     public void deleteRelatedItems(List<RelatedItem> relatedItems, BasePK deletedBy) {
@@ -10122,7 +10483,7 @@ public class ItemControl
         harmonizedTariffScheduleCode.setLastDetail(harmonizedTariffScheduleCodeDetail);
         harmonizedTariffScheduleCode.store();
 
-        sendEventUsingNames(harmonizedTariffScheduleCode.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(harmonizedTariffScheduleCode.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return harmonizedTariffScheduleCode;
     }
@@ -10135,7 +10496,7 @@ public class ItemControl
                 countryGeoCode);
     }
 
-    /** Assume that the entityInstance passed to this function is a ECHOTHREE.HarmonizedTariffScheduleCode */
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.HarmonizedTariffScheduleCode */
     public HarmonizedTariffScheduleCode getHarmonizedTariffScheduleCodeByEntityInstance(EntityInstance entityInstance) {
         HarmonizedTariffScheduleCodePK pk = new HarmonizedTariffScheduleCodePK(entityInstance.getEntityUniqueId());
         HarmonizedTariffScheduleCode harmonizedTariffScheduleCode = HarmonizedTariffScheduleCodeFactory.getInstance().getEntityFromPK(EntityPermission.READ_ONLY, pk);
@@ -10362,7 +10723,7 @@ public class ItemControl
         return getItemTransferCaches(userVisit).getHarmonizedTariffScheduleCodeTransferCache().getTransfer(harmonizedTariffScheduleCode);
     }
 
-    public List<HarmonizedTariffScheduleCodeTransfer> getHarmonizedTariffScheduleCodeTransfers(UserVisit userVisit, List<HarmonizedTariffScheduleCode> harmonizedTariffScheduleCodes) {
+    public List<HarmonizedTariffScheduleCodeTransfer> getHarmonizedTariffScheduleCodeTransfers(UserVisit userVisit, Collection<HarmonizedTariffScheduleCode> harmonizedTariffScheduleCodes) {
         List<HarmonizedTariffScheduleCodeTransfer> harmonizedTariffScheduleCodeTransfers = new ArrayList<>(harmonizedTariffScheduleCodes.size());
         HarmonizedTariffScheduleCodeTransferCache harmonizedTariffScheduleCodeTransferCache = getItemTransferCaches(userVisit).getHarmonizedTariffScheduleCodeTransferCache();
 
@@ -10419,7 +10780,7 @@ public class ItemControl
             harmonizedTariffScheduleCode.setActiveDetail(harmonizedTariffScheduleCodeDetail);
             harmonizedTariffScheduleCode.setLastDetail(harmonizedTariffScheduleCodeDetail);
 
-            sendEventUsingNames(harmonizedTariffScheduleCodePK, EventTypes.MODIFY.name(), null, null, updatedBy);
+            sendEvent(harmonizedTariffScheduleCodePK, EventTypes.MODIFY, null, null, updatedBy);
         }
     }
 
@@ -10455,7 +10816,7 @@ public class ItemControl
             }
         }
 
-        sendEventUsingNames(harmonizedTariffScheduleCode.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(harmonizedTariffScheduleCode.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     public void deleteHarmonizedTariffScheduleCodes(List<HarmonizedTariffScheduleCode> harmonizedTariffScheduleCodes, BasePK deletedBy) {
@@ -10490,7 +10851,7 @@ public class ItemControl
         HarmonizedTariffScheduleCodeTranslation harmonizedTariffScheduleCodeTranslation = HarmonizedTariffScheduleCodeTranslationFactory.getInstance().create(harmonizedTariffScheduleCode,
                 language, description, overviewMimeType, overview, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(harmonizedTariffScheduleCode.getPrimaryKey(), EventTypes.MODIFY.name(), harmonizedTariffScheduleCodeTranslation.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(harmonizedTariffScheduleCode.getPrimaryKey(), EventTypes.MODIFY, harmonizedTariffScheduleCodeTranslation.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return harmonizedTariffScheduleCodeTranslation;
     }
@@ -10606,14 +10967,14 @@ public class ItemControl
             harmonizedTariffScheduleCodeTranslation = HarmonizedTariffScheduleCodeTranslationFactory.getInstance().create(harmonizedTariffScheduleCodePK,
                     languagePK, description, overviewMimeTypePK, overview, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(harmonizedTariffScheduleCodePK, EventTypes.MODIFY.name(), harmonizedTariffScheduleCodeTranslation.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(harmonizedTariffScheduleCodePK, EventTypes.MODIFY, harmonizedTariffScheduleCodeTranslation.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
     public void deleteHarmonizedTariffScheduleCodeTranslation(HarmonizedTariffScheduleCodeTranslation harmonizedTariffScheduleCodeTranslation, BasePK deletedBy) {
         harmonizedTariffScheduleCodeTranslation.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(harmonizedTariffScheduleCodeTranslation.getHarmonizedTariffScheduleCodePK(), EventTypes.MODIFY.name(), harmonizedTariffScheduleCodeTranslation.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(harmonizedTariffScheduleCodeTranslation.getHarmonizedTariffScheduleCodePK(), EventTypes.MODIFY, harmonizedTariffScheduleCodeTranslation.getPrimaryKey(), EventTypes.DELETE, deletedBy);
 
     }
 
@@ -10654,7 +11015,7 @@ public class ItemControl
         harmonizedTariffScheduleCodeUseType.setLastDetail(harmonizedTariffScheduleCodeUseTypeDetail);
         harmonizedTariffScheduleCodeUseType.store();
 
-        sendEventUsingNames(harmonizedTariffScheduleCodeUseType.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(harmonizedTariffScheduleCodeUseType.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return harmonizedTariffScheduleCodeUseType;
     }
@@ -10846,7 +11207,7 @@ public class ItemControl
         harmonizedTariffScheduleCodeUseType.setLastDetail(harmonizedTariffScheduleCodeUseTypeDetail);
         harmonizedTariffScheduleCodeUseType.store();
 
-        sendEventUsingNames(harmonizedTariffScheduleCodeUseTypePK, EventTypes.MODIFY.name(), null, null, updatedBy);
+        sendEvent(harmonizedTariffScheduleCodeUseTypePK, EventTypes.MODIFY, null, null, updatedBy);
     }
 
     public void updateHarmonizedTariffScheduleCodeUseTypeFromValue(HarmonizedTariffScheduleCodeUseTypeDetailValue harmonizedTariffScheduleCodeUseTypeDetailValue, BasePK updatedBy) {
@@ -10879,7 +11240,7 @@ public class ItemControl
             }
         }
 
-        sendEventUsingNames(harmonizedTariffScheduleCodeUseType.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(harmonizedTariffScheduleCodeUseType.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     // --------------------------------------------------------------------------------
@@ -10891,7 +11252,7 @@ public class ItemControl
         HarmonizedTariffScheduleCodeUseTypeDescription harmonizedTariffScheduleCodeUseTypeDescription = HarmonizedTariffScheduleCodeUseTypeDescriptionFactory.getInstance().create(harmonizedTariffScheduleCodeUseType,
                 language, description, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(harmonizedTariffScheduleCodeUseType.getPrimaryKey(), EventTypes.MODIFY.name(), harmonizedTariffScheduleCodeUseTypeDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(harmonizedTariffScheduleCodeUseType.getPrimaryKey(), EventTypes.MODIFY, harmonizedTariffScheduleCodeUseTypeDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return harmonizedTariffScheduleCodeUseTypeDescription;
     }
@@ -11012,14 +11373,14 @@ public class ItemControl
             harmonizedTariffScheduleCodeUseTypeDescription = HarmonizedTariffScheduleCodeUseTypeDescriptionFactory.getInstance().create(harmonizedTariffScheduleCodeUseType, language, description,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(harmonizedTariffScheduleCodeUseType.getPrimaryKey(), EventTypes.MODIFY.name(), harmonizedTariffScheduleCodeUseTypeDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(harmonizedTariffScheduleCodeUseType.getPrimaryKey(), EventTypes.MODIFY, harmonizedTariffScheduleCodeUseTypeDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
     public void deleteHarmonizedTariffScheduleCodeUseTypeDescription(HarmonizedTariffScheduleCodeUseTypeDescription harmonizedTariffScheduleCodeUseTypeDescription, BasePK deletedBy) {
         harmonizedTariffScheduleCodeUseTypeDescription.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(harmonizedTariffScheduleCodeUseTypeDescription.getHarmonizedTariffScheduleCodeUseTypePK(), EventTypes.MODIFY.name(), harmonizedTariffScheduleCodeUseTypeDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(harmonizedTariffScheduleCodeUseTypeDescription.getHarmonizedTariffScheduleCodeUseTypePK(), EventTypes.MODIFY, harmonizedTariffScheduleCodeUseTypeDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
 
     }
 
@@ -11060,7 +11421,7 @@ public class ItemControl
         harmonizedTariffScheduleCodeUnit.setLastDetail(harmonizedTariffScheduleCodeUnitDetail);
         harmonizedTariffScheduleCodeUnit.store();
 
-        sendEventUsingNames(harmonizedTariffScheduleCodeUnit.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(harmonizedTariffScheduleCodeUnit.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return harmonizedTariffScheduleCodeUnit;
     }
@@ -11252,7 +11613,7 @@ public class ItemControl
         harmonizedTariffScheduleCodeUnit.setLastDetail(harmonizedTariffScheduleCodeUnitDetail);
         harmonizedTariffScheduleCodeUnit.store();
 
-        sendEventUsingNames(harmonizedTariffScheduleCodeUnitPK, EventTypes.MODIFY.name(), null, null, updatedBy);
+        sendEvent(harmonizedTariffScheduleCodeUnitPK, EventTypes.MODIFY, null, null, updatedBy);
     }
 
     public void updateHarmonizedTariffScheduleCodeUnitFromValue(HarmonizedTariffScheduleCodeUnitDetailValue harmonizedTariffScheduleCodeUnitDetailValue, BasePK updatedBy) {
@@ -11285,7 +11646,7 @@ public class ItemControl
             }
         }
 
-        sendEventUsingNames(harmonizedTariffScheduleCodeUnit.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(harmonizedTariffScheduleCodeUnit.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     // --------------------------------------------------------------------------------
@@ -11297,7 +11658,7 @@ public class ItemControl
         HarmonizedTariffScheduleCodeUnitDescription harmonizedTariffScheduleCodeUnitDescription = HarmonizedTariffScheduleCodeUnitDescriptionFactory.getInstance().create(harmonizedTariffScheduleCodeUnit,
                 language, description, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(harmonizedTariffScheduleCodeUnit.getPrimaryKey(), EventTypes.MODIFY.name(), harmonizedTariffScheduleCodeUnitDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(harmonizedTariffScheduleCodeUnit.getPrimaryKey(), EventTypes.MODIFY, harmonizedTariffScheduleCodeUnitDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return harmonizedTariffScheduleCodeUnitDescription;
     }
@@ -11418,14 +11779,14 @@ public class ItemControl
             harmonizedTariffScheduleCodeUnitDescription = HarmonizedTariffScheduleCodeUnitDescriptionFactory.getInstance().create(harmonizedTariffScheduleCodeUnit, language, description,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(harmonizedTariffScheduleCodeUnit.getPrimaryKey(), EventTypes.MODIFY.name(), harmonizedTariffScheduleCodeUnitDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(harmonizedTariffScheduleCodeUnit.getPrimaryKey(), EventTypes.MODIFY, harmonizedTariffScheduleCodeUnitDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
     public void deleteHarmonizedTariffScheduleCodeUnitDescription(HarmonizedTariffScheduleCodeUnitDescription harmonizedTariffScheduleCodeUnitDescription, BasePK deletedBy) {
         harmonizedTariffScheduleCodeUnitDescription.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(harmonizedTariffScheduleCodeUnitDescription.getHarmonizedTariffScheduleCodeUnitPK(), EventTypes.MODIFY.name(), harmonizedTariffScheduleCodeUnitDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(harmonizedTariffScheduleCodeUnitDescription.getHarmonizedTariffScheduleCodeUnitPK(), EventTypes.MODIFY, harmonizedTariffScheduleCodeUnitDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
 
     }
 
@@ -11446,7 +11807,7 @@ public class ItemControl
         HarmonizedTariffScheduleCodeUse harmonizedTariffScheduleCodeUse = HarmonizedTariffScheduleCodeUseFactory.getInstance().create(harmonizedTariffScheduleCode,
                 harmonizedTariffScheduleCodeUseType, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(harmonizedTariffScheduleCode.getPrimaryKey(), EventTypes.MODIFY.name(), harmonizedTariffScheduleCodeUse.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(harmonizedTariffScheduleCode.getPrimaryKey(), EventTypes.MODIFY, harmonizedTariffScheduleCodeUse.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return harmonizedTariffScheduleCodeUse;
     }
@@ -11583,7 +11944,7 @@ public class ItemControl
     public void deleteHarmonizedTariffScheduleCodeUse(HarmonizedTariffScheduleCodeUse harmonizedTariffScheduleCodeUse, BasePK deletedBy) {
         harmonizedTariffScheduleCodeUse.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(harmonizedTariffScheduleCodeUse.getHarmonizedTariffScheduleCodePK(), EventTypes.MODIFY.name(), harmonizedTariffScheduleCodeUse.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(harmonizedTariffScheduleCodeUse.getHarmonizedTariffScheduleCodePK(), EventTypes.MODIFY, harmonizedTariffScheduleCodeUse.getPrimaryKey(), EventTypes.DELETE, deletedBy);
 
     }
 
@@ -11620,7 +11981,7 @@ public class ItemControl
         itemHarmonizedTariffScheduleCode.setLastDetail(itemHarmonizedTariffScheduleCodeDetail);
         itemHarmonizedTariffScheduleCode.store();
 
-        sendEventUsingNames(item.getPrimaryKey(), EventTypes.MODIFY.name(), itemHarmonizedTariffScheduleCode.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(item.getPrimaryKey(), EventTypes.MODIFY, itemHarmonizedTariffScheduleCode.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return itemHarmonizedTariffScheduleCode;
     }
@@ -11807,7 +12168,7 @@ public class ItemControl
         return getItemTransferCaches(userVisit).getItemHarmonizedTariffScheduleCodeTransferCache().getTransfer(itemHarmonizedTariffScheduleCode);
     }
 
-    public List<ItemHarmonizedTariffScheduleCodeTransfer> getItemHarmonizedTariffScheduleCodeTransfers(UserVisit userVisit, List<ItemHarmonizedTariffScheduleCode> itemHarmonizedTariffScheduleCodes) {
+    public List<ItemHarmonizedTariffScheduleCodeTransfer> getItemHarmonizedTariffScheduleCodeTransfers(UserVisit userVisit, Collection<ItemHarmonizedTariffScheduleCode> itemHarmonizedTariffScheduleCodes) {
         List<ItemHarmonizedTariffScheduleCodeTransfer> itemHarmonizedTariffScheduleCodeTransfers = new ArrayList<>(itemHarmonizedTariffScheduleCodes.size());
         ItemHarmonizedTariffScheduleCodeTransferCache itemHarmonizedTariffScheduleCodeTransferCache = getItemTransferCaches(userVisit).getItemHarmonizedTariffScheduleCodeTransferCache();
 
@@ -11856,7 +12217,7 @@ public class ItemControl
             itemHarmonizedTariffScheduleCode.setActiveDetail(itemHarmonizedTariffScheduleCodeDetail);
             itemHarmonizedTariffScheduleCode.setLastDetail(itemHarmonizedTariffScheduleCodeDetail);
 
-            sendEventUsingNames(itemPK, EventTypes.MODIFY.name(), itemHarmonizedTariffScheduleCodePK, EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(itemPK, EventTypes.MODIFY, itemHarmonizedTariffScheduleCodePK, EventTypes.MODIFY, updatedBy);
         }
     }
 
@@ -11866,7 +12227,7 @@ public class ItemControl
         itemHarmonizedTariffScheduleCode.setActiveDetail(null);
         itemHarmonizedTariffScheduleCode.store();
 
-        sendEventUsingNames(itemHarmonizedTariffScheduleCodeDetail.getItemPK(), EventTypes.MODIFY.name(), itemHarmonizedTariffScheduleCode.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(itemHarmonizedTariffScheduleCodeDetail.getItemPK(), EventTypes.MODIFY, itemHarmonizedTariffScheduleCode.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
 
     public void deleteItemHarmonizedTariffScheduleCodes(List<ItemHarmonizedTariffScheduleCode> itemHarmonizedTariffScheduleCodes, BasePK deletedBy) {

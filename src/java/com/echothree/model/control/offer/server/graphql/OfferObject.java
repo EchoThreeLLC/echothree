@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,11 +19,12 @@ package com.echothree.model.control.offer.server.graphql;
 import com.echothree.model.control.filter.server.graphql.FilterObject;
 import com.echothree.model.control.filter.server.graphql.FilterSecurityUtils;
 import com.echothree.model.control.graphql.server.graphql.BaseEntityInstanceObject;
-import com.echothree.model.control.graphql.server.graphql.ObjectLimiter;
 import com.echothree.model.control.graphql.server.graphql.count.Connections;
 import com.echothree.model.control.graphql.server.graphql.count.CountedObjects;
 import com.echothree.model.control.graphql.server.graphql.count.CountingDataConnectionFetcher;
 import com.echothree.model.control.graphql.server.graphql.count.CountingPaginatedData;
+import com.echothree.model.control.graphql.server.util.BaseGraphQl;
+import com.echothree.model.control.graphql.server.util.count.ObjectLimiter;
 import com.echothree.model.control.offer.server.control.OfferControl;
 import com.echothree.model.control.offer.server.control.OfferItemControl;
 import com.echothree.model.control.party.server.graphql.DepartmentObject;
@@ -32,7 +33,6 @@ import com.echothree.model.control.sequence.server.graphql.SequenceObject;
 import com.echothree.model.control.sequence.server.graphql.SequenceSecurityUtils;
 import com.echothree.model.control.user.server.control.UserControl;
 import com.echothree.model.data.offer.common.OfferItemConstants;
-import com.echothree.model.data.offer.common.OfferItemPriceConstants;
 import com.echothree.model.data.offer.server.entity.Offer;
 import com.echothree.model.data.offer.server.entity.OfferDetail;
 import com.echothree.util.server.persistence.Session;
@@ -78,7 +78,7 @@ public class OfferObject
     @GraphQLField
     @GraphQLDescription("sales order sequence")
     public SequenceObject getSalesOrderSequence(final DataFetchingEnvironment env) {
-        if(SequenceSecurityUtils.getInstance().getHasSequenceAccess(env)) {
+        if(SequenceSecurityUtils.getHasSequenceAccess(env)) {
             var salesOrderSequence = getOfferDetail().getSalesOrderSequence();
 
             return salesOrderSequence == null ? null : new SequenceObject(salesOrderSequence);
@@ -92,7 +92,7 @@ public class OfferObject
     public DepartmentObject getDepartment(final DataFetchingEnvironment env) {
         var departmentParty = getOfferDetail().getDepartmentParty();
 
-        return PartySecurityUtils.getInstance().getHasPartyAccess(env, departmentParty) ? new DepartmentObject(departmentParty) : null;
+        return PartySecurityUtils.getHasPartyAccess(env, departmentParty) ? new DepartmentObject(departmentParty) : null;
     }
 
     // TODO: OfferItemSelector
@@ -100,7 +100,7 @@ public class OfferObject
     @GraphQLField
     @GraphQLDescription("offer item price filter")
     public FilterObject getOfferItemPriceFilter(final DataFetchingEnvironment env) {
-        if(FilterSecurityUtils.getInstance().getHasFilterAccess(env)) {
+        if(FilterSecurityUtils.getHasFilterAccess(env)) {
             var offerItemPriceFilter = getOfferDetail().getOfferItemPriceFilter();
 
             return offerItemPriceFilter == null ? null : new FilterObject(offerItemPriceFilter);
@@ -130,7 +130,7 @@ public class OfferObject
         var offerControl = Session.getModelController(OfferControl.class);
         var userControl = Session.getModelController(UserControl.class);
 
-        return offerControl.getBestOfferDescription(offer, userControl.getPreferredLanguageFromUserVisit(getUserVisit(env)));
+        return offerControl.getBestOfferDescription(offer, userControl.getPreferredLanguageFromUserVisit(BaseGraphQl.getUserVisit(env)));
     }
 
     @GraphQLField
@@ -138,11 +138,11 @@ public class OfferObject
     @GraphQLNonNull
     @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
     public CountingPaginatedData<OfferItemObject> getOfferItems(final DataFetchingEnvironment env) {
-        if(OfferSecurityUtils.getInstance().getHasOfferItemsAccess(env)) {
+        if(OfferSecurityUtils.getHasOfferItemsAccess(env)) {
             var offerItemControl = Session.getModelController(OfferItemControl.class);
             var totalCount = offerItemControl.countOfferItemsByOffer(offer);
 
-            try(var objectLimiter = new ObjectLimiter(env, OfferItemConstants.ENTITY_TYPE_NAME, totalCount)) {
+            try(var objectLimiter = new ObjectLimiter(env, OfferItemConstants.COMPONENT_VENDOR_NAME, OfferItemConstants.ENTITY_TYPE_NAME, totalCount)) {
                 var entities = offerItemControl.getOfferItemsByOffer(offer);
                 var offerItems = entities.stream().map(OfferItemObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
 

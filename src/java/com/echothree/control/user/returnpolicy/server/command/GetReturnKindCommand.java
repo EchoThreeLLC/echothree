@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -69,14 +69,14 @@ public class GetReturnKindCommand
         var returnKind = ReturnKindLogic.getInstance().getReturnKindByUniversalSpec(this, form, true);
 
         if(returnKind != null) {
-            sendEventUsingNames(returnKind.getPrimaryKey(), EventTypes.READ.name(), null, null, getPartyPK());
+            sendEvent(returnKind.getPrimaryKey(), EventTypes.READ, null, null, getPartyPK());
         }
 
         return returnKind;
     }
 
     @Override
-    protected BaseResult getTransfer(ReturnKind returnKind) {
+    protected BaseResult getResult(ReturnKind returnKind) {
         var returnControl = Session.getModelController(ReturnPolicyControl.class);
         var result = ReturnPolicyResultFactory.getGetReturnKindResult();
 

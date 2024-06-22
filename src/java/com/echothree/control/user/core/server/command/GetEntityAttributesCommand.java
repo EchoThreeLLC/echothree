@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,16 +18,19 @@ package com.echothree.control.user.core.server.command;
 
 import com.echothree.control.user.core.common.form.GetEntityAttributesForm;
 import com.echothree.control.user.core.common.result.CoreResultFactory;
+import com.echothree.model.control.core.server.logic.EntityTypeLogic;
 import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.security.common.SecurityRoleGroups;
 import com.echothree.model.control.security.common.SecurityRoles;
 import com.echothree.model.data.core.server.entity.EntityAttribute;
+import com.echothree.model.data.core.server.entity.EntityAttributeType;
+import com.echothree.model.data.core.server.entity.EntityType;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
 import com.echothree.util.common.command.BaseResult;
 import com.echothree.util.common.message.ExecutionErrors;
 import com.echothree.util.common.validation.FieldDefinition;
 import com.echothree.util.common.validation.FieldType;
-import com.echothree.util.server.control.BaseMultipleEntitiesCommand;
+import com.echothree.util.server.control.BasePaginatedMultipleEntitiesCommand;
 import com.echothree.util.server.control.CommandSecurityDefinition;
 import com.echothree.util.server.control.PartyTypeDefinition;
 import com.echothree.util.server.control.SecurityRoleDefinition;
@@ -37,7 +40,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class GetEntityAttributesCommand
-        extends BaseMultipleEntitiesCommand<EntityAttribute, GetEntityAttributesForm> {
+        extends BasePaginatedMultipleEntitiesCommand<EntityAttribute, GetEntityAttributesForm> {
 
     private final static CommandSecurityDefinition COMMAND_SECURITY_DEFINITION;
     private final static List<FieldDefinition> FORM_FIELD_DEFINITIONS;
@@ -51,8 +54,12 @@ public class GetEntityAttributesCommand
         ));
 
         FORM_FIELD_DEFINITIONS = List.of(
-                new FieldDefinition("ComponentVendorName", FieldType.ENTITY_NAME, true, null, null),
-                new FieldDefinition("EntityTypeName", FieldType.ENTITY_TYPE_NAME, true, null, null),
+                new FieldDefinition("ComponentVendorName", FieldType.ENTITY_NAME, false, null, null),
+                new FieldDefinition("EntityTypeName", FieldType.ENTITY_TYPE_NAME, false, null, null),
+                new FieldDefinition("EntityRef", FieldType.ENTITY_REF, false, null, null),
+                new FieldDefinition("Key", FieldType.KEY, false, null, null),
+                new FieldDefinition("Guid", FieldType.GUID, false, null, null),
+                new FieldDefinition("Ulid", FieldType.ULID, false, null, null),
                 new FieldDefinition("EntityAttributeTypeNames", FieldType.STRING, false, null, null)
         );
     }
@@ -62,59 +69,83 @@ public class GetEntityAttributesCommand
         super(userVisitPK, form, COMMAND_SECURITY_DEFINITION, FORM_FIELD_DEFINITIONS, true);
     }
 
+    EntityType entityType;
+    Collection<EntityAttributeType> entityAttributeTypes;
+
+    @Override
+    protected void handleForm() {
+        var entityAttributeTypeNames = form.getEntityAttributeTypeNames();
+
+        entityType = EntityTypeLogic.getInstance().getEntityTypeByUniversalSpec(this, form);
+
+        if(!hasExecutionErrors() && entityAttributeTypeNames != null) {
+            var coreControl = getCoreControl();
+            var entityAttributeTypeNamesToCheck = Splitter.on(':').trimResults().omitEmptyStrings().splitToList(entityAttributeTypeNames).toArray(new String[0]);
+            var entityAttributeTypeNamesToCheckLength = entityAttributeTypeNamesToCheck.length;
+
+            entityAttributeTypes = new ArrayList<>();
+
+            for(int i = 0; i < entityAttributeTypeNamesToCheckLength && !hasExecutionErrors(); i++) {
+                var entityAttributeTypeName = entityAttributeTypeNamesToCheck[i];
+                var entityAttributeType = coreControl.getEntityAttributeTypeByName(entityAttributeTypeName);
+
+                if(entityAttributeType != null) {
+                    entityAttributeTypes.add(entityAttributeType);
+                } else {
+                    addExecutionError(ExecutionErrors.UnknownEntityAttributeTypeName.name(), entityAttributeTypeName);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected Long getTotalEntities() {
+        Long totalEntities = null;
+
+        if(!hasExecutionErrors()) {
+            if(entityAttributeTypes == null) {
+                totalEntities = getCoreControl().countEntityAttributesByEntityType(entityType);
+            } else {
+                var coreControl = getCoreControl();
+                var totalEntitiesTally = 0L;
+
+                for(var entityAttributeType : entityAttributeTypes) {
+                    totalEntitiesTally += coreControl.countEntityAttributesByEntityTypeAndEntityAttributeType(
+                            entityType, entityAttributeType);
+                }
+
+                totalEntities = totalEntitiesTally;
+            }
+        }
+
+        return totalEntities;
+    }
+
     @Override
     protected Collection<EntityAttribute> getEntities() {
-        var coreControl = getCoreControl();
-        var componentVendorName = form.getComponentVendorName();
-        var componentVendor = coreControl.getComponentVendorByName(componentVendorName);
         Collection<EntityAttribute> entityAttributes = null;
 
-        if(componentVendor != null) {
-            var entityTypeName = form.getEntityTypeName();
-            var entityType = coreControl.getEntityTypeByName(componentVendor, entityTypeName);
-
-            if(entityType != null) {
-                var entityAttributeTypeNames = form.getEntityAttributeTypeNames();
-
-                if(entityAttributeTypeNames == null) {
-                    entityAttributes = coreControl.getEntityAttributesByEntityType(entityType);
-                } else {
-                    var entityAttributeTypeNamesToCheck = Splitter.on(':').trimResults().omitEmptyStrings().splitToList(entityAttributeTypeNames).toArray(new String[0]);
-                    var entityAttributeTypeNamesToCheckLength = entityAttributeTypeNamesToCheck.length;
-
-                    entityAttributes = new ArrayList<>();
-
-                    for(int i = 0; i < entityAttributeTypeNamesToCheckLength && !hasExecutionErrors(); i++) {
-                        var entityAttributeTypeName = entityAttributeTypeNamesToCheck[i];
-                        var entityAttributeType = coreControl.getEntityAttributeTypeByName(entityAttributeTypeName);
-
-                        if(entityAttributeType != null) {
-                            entityAttributes.addAll(coreControl.getEntityAttributesByEntityTypeAndEntityAttributeType(
-                                    entityType, entityAttributeType));
-                        } else {
-                            addExecutionError(ExecutionErrors.UnknownEntityAttributeTypeName.name(), entityAttributeTypeName);
-                        }
-                    }
-
-                    if(hasExecutionErrors()) {
-                        // If we encounter an UnknownEntityAttributeTypeName error, this will end up true and
-                        // we will nuke the results and return nothing.
-                        entityAttributes = null;
-                    }
-                }
+        if(!hasExecutionErrors()) {
+            if(entityAttributeTypes == null) {
+                entityAttributes = getCoreControl().getEntityAttributesByEntityType(entityType);
             } else {
-                addExecutionError(ExecutionErrors.UnknownEntityTypeName.name(), componentVendor.getLastDetail().getComponentVendorName(),
-                        entityTypeName);
+                var coreControl = getCoreControl();
+
+                entityAttributes = new ArrayList<>();
+
+                for(var entityAttributeType : entityAttributeTypes) {
+                    entityAttributes.addAll(coreControl.getEntityAttributesByEntityTypeAndEntityAttributeType(
+                            entityType, entityAttributeType));
+
+                }
             }
-        } else {
-            addExecutionError(ExecutionErrors.UnknownComponentVendorName.name(), componentVendorName);
         }
 
         return entityAttributes;
     }
 
     @Override
-    protected BaseResult getTransfers(Collection<EntityAttribute> entities) {
+    protected BaseResult getResult(Collection<EntityAttribute> entities) {
         var result = CoreResultFactory.getGetEntityAttributesResult();
 
         if(entities != null) {

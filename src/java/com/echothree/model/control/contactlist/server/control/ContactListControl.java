@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -133,6 +133,7 @@ import com.echothree.util.server.message.ExecutionErrorAccumulator;
 import com.echothree.util.server.persistence.EntityPermission;
 import com.echothree.util.server.persistence.Session;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -192,7 +193,7 @@ public class ContactListControl
         contactListType.setLastDetail(contactListTypeDetail);
         contactListType.store();
 
-        sendEventUsingNames(contactListType.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(contactListType.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return contactListType;
     }
@@ -481,7 +482,7 @@ public class ContactListControl
         contactListType.setLastDetail(contactListTypeDetail);
         contactListType.store();
 
-        sendEventUsingNames(contactListTypePK, EventTypes.MODIFY.name(), null, null, updatedBy);
+        sendEvent(contactListTypePK, EventTypes.MODIFY, null, null, updatedBy);
     }
 
     public void updateContactListTypeFromValue(ContactListTypeDetailValue contactListTypeDetailValue, BasePK updatedBy) {
@@ -514,7 +515,7 @@ public class ContactListControl
             }
         }
 
-        sendEventUsingNames(contactListType.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(contactListType.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     public void deleteContactListTypes(List<ContactListType> contactListTypes, BasePK deletedBy) {
@@ -550,7 +551,7 @@ public class ContactListControl
         ContactListTypeDescription contactListTypeDescription = ContactListTypeDescriptionFactory.getInstance().create(contactListType,
                 language, description, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(contactListType.getPrimaryKey(), EventTypes.MODIFY.name(), contactListTypeDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(contactListType.getPrimaryKey(), EventTypes.MODIFY, contactListTypeDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return contactListTypeDescription;
     }
@@ -671,14 +672,14 @@ public class ContactListControl
             contactListTypeDescription = ContactListTypeDescriptionFactory.getInstance().create(contactListType, language, description,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(contactListType.getPrimaryKey(), EventTypes.MODIFY.name(), contactListTypeDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(contactListType.getPrimaryKey(), EventTypes.MODIFY, contactListTypeDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
     public void deleteContactListTypeDescription(ContactListTypeDescription contactListTypeDescription, BasePK deletedBy) {
         contactListTypeDescription.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(contactListTypeDescription.getContactListTypePK(), EventTypes.MODIFY.name(), contactListTypeDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(contactListTypeDescription.getContactListTypePK(), EventTypes.MODIFY, contactListTypeDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
 
     }
 
@@ -718,7 +719,7 @@ public class ContactListControl
         contactListGroup.setLastDetail(contactListGroupDetail);
         contactListGroup.store();
 
-        sendEventUsingNames(contactListGroup.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(contactListGroup.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return contactListGroup;
     }
@@ -929,7 +930,7 @@ public class ContactListControl
         contactListGroup.setLastDetail(contactListGroupDetail);
         contactListGroup.store();
 
-        sendEventUsingNames(contactListGroupPK, EventTypes.MODIFY.name(), null, null, updatedBy);
+        sendEvent(contactListGroupPK, EventTypes.MODIFY, null, null, updatedBy);
     }
 
     public void updateContactListGroupFromValue(ContactListGroupDetailValue contactListGroupDetailValue, BasePK updatedBy) {
@@ -965,7 +966,7 @@ public class ContactListControl
             }
         }
 
-        sendEventUsingNames(contactListGroup.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(contactListGroup.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     // --------------------------------------------------------------------------------
@@ -977,7 +978,7 @@ public class ContactListControl
         ContactListGroupDescription contactListGroupDescription = ContactListGroupDescriptionFactory.getInstance().create(contactListGroup,
                 language, description, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(contactListGroup.getPrimaryKey(), EventTypes.MODIFY.name(), contactListGroupDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(contactListGroup.getPrimaryKey(), EventTypes.MODIFY, contactListGroupDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return contactListGroupDescription;
     }
@@ -1098,14 +1099,14 @@ public class ContactListControl
             contactListGroupDescription = ContactListGroupDescriptionFactory.getInstance().create(contactListGroup, language, description,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(contactListGroup.getPrimaryKey(), EventTypes.MODIFY.name(), contactListGroupDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(contactListGroup.getPrimaryKey(), EventTypes.MODIFY, contactListGroupDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
     public void deleteContactListGroupDescription(ContactListGroupDescription contactListGroupDescription, BasePK deletedBy) {
         contactListGroupDescription.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(contactListGroupDescription.getContactListGroupPK(), EventTypes.MODIFY.name(), contactListGroupDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(contactListGroupDescription.getContactListGroupPK(), EventTypes.MODIFY, contactListGroupDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
 
     }
 
@@ -1145,7 +1146,7 @@ public class ContactListControl
         contactListFrequency.setLastDetail(contactListFrequencyDetail);
         contactListFrequency.store();
 
-        sendEventUsingNames(contactListFrequency.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(contactListFrequency.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return contactListFrequency;
     }
@@ -1337,7 +1338,7 @@ public class ContactListControl
         contactListFrequency.setLastDetail(contactListFrequencyDetail);
         contactListFrequency.store();
 
-        sendEventUsingNames(contactListFrequencyPK, EventTypes.MODIFY.name(), null, null, updatedBy);
+        sendEvent(contactListFrequencyPK, EventTypes.MODIFY, null, null, updatedBy);
     }
 
     public void updateContactListFrequencyFromValue(ContactListFrequencyDetailValue contactListFrequencyDetailValue, BasePK updatedBy) {
@@ -1370,7 +1371,7 @@ public class ContactListControl
             }
         }
 
-        sendEventUsingNames(contactListFrequency.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(contactListFrequency.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     // --------------------------------------------------------------------------------
@@ -1382,7 +1383,7 @@ public class ContactListControl
         ContactListFrequencyDescription contactListFrequencyDescription = ContactListFrequencyDescriptionFactory.getInstance().create(contactListFrequency,
                 language, description, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(contactListFrequency.getPrimaryKey(), EventTypes.MODIFY.name(), contactListFrequencyDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(contactListFrequency.getPrimaryKey(), EventTypes.MODIFY, contactListFrequencyDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return contactListFrequencyDescription;
     }
@@ -1503,14 +1504,14 @@ public class ContactListControl
             contactListFrequencyDescription = ContactListFrequencyDescriptionFactory.getInstance().create(contactListFrequency, language, description,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(contactListFrequency.getPrimaryKey(), EventTypes.MODIFY.name(), contactListFrequencyDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(contactListFrequency.getPrimaryKey(), EventTypes.MODIFY, contactListFrequencyDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
     public void deleteContactListFrequencyDescription(ContactListFrequencyDescription contactListFrequencyDescription, BasePK deletedBy) {
         contactListFrequencyDescription.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(contactListFrequencyDescription.getContactListFrequencyPK(), EventTypes.MODIFY.name(), contactListFrequencyDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(contactListFrequencyDescription.getContactListFrequencyPK(), EventTypes.MODIFY, contactListFrequencyDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
 
     }
 
@@ -1551,7 +1552,7 @@ public class ContactListControl
         contactList.setLastDetail(contactListDetail);
         contactList.store();
 
-        sendEventUsingNames(contactList.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(contactList.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return contactList;
     }
@@ -1898,7 +1899,7 @@ public class ContactListControl
         contactList.setLastDetail(contactListDetail);
         contactList.store();
 
-        sendEventUsingNames(contactListPK, EventTypes.MODIFY.name(), null, null, updatedBy);
+        sendEvent(contactListPK, EventTypes.MODIFY, null, null, updatedBy);
     }
 
     public void updateContactListFromValue(ContactListDetailValue contactListDetailValue, BasePK updatedBy) {
@@ -1937,7 +1938,7 @@ public class ContactListControl
             }
         }
 
-        sendEventUsingNames(contactList.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(contactList.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     public void deleteContactLists(List<ContactList> contactLists, BasePK deletedBy) {
@@ -1971,7 +1972,7 @@ public class ContactListControl
         ContactListDescription contactListDescription = ContactListDescriptionFactory.getInstance().create(contactList,
                 language, description, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(contactList.getPrimaryKey(), EventTypes.MODIFY.name(), contactListDescription.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(contactList.getPrimaryKey(), EventTypes.MODIFY, contactListDescription.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return contactListDescription;
     }
@@ -2092,14 +2093,14 @@ public class ContactListControl
             contactListDescription = ContactListDescriptionFactory.getInstance().create(contactList, language, description,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(contactList.getPrimaryKey(), EventTypes.MODIFY.name(), contactListDescription.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(contactList.getPrimaryKey(), EventTypes.MODIFY, contactListDescription.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
     public void deleteContactListDescription(ContactListDescription contactListDescription, BasePK deletedBy) {
         contactListDescription.setThruTime(session.START_TIME_LONG);
 
-        sendEventUsingNames(contactListDescription.getContactListPK(), EventTypes.MODIFY.name(), contactListDescription.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(contactListDescription.getContactListPK(), EventTypes.MODIFY, contactListDescription.getPrimaryKey(), EventTypes.DELETE, deletedBy);
 
     }
 
@@ -2127,7 +2128,7 @@ public class ContactListControl
         partyContactList.setLastDetail(partyContactListDetail);
         partyContactList.store();
         
-        sendEventUsingNames(partyContactList.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(partyContactList.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
         
         return partyContactList;
     }
@@ -2267,7 +2268,7 @@ public class ContactListControl
         return getPartyContactListsByPreferredContactListContactMechanismPurpose(preferredContactListContactMechanismPurpose, EntityPermission.READ_WRITE);
     }
     
-    public List<PartyContactListTransfer> getPartyContactListTransfers(UserVisit userVisit, List<PartyContactList> partyContactLists) {
+    public List<PartyContactListTransfer> getPartyContactListTransfers(UserVisit userVisit, Collection<PartyContactList> partyContactLists) {
         List<PartyContactListTransfer> partyContactListTransfers = new ArrayList<>(partyContactLists.size());
         PartyContactListTransferCache partyContactListTransferCache = getContactListTransferCaches(userVisit).getPartyContactListTransferCache();
         
@@ -2346,7 +2347,7 @@ public class ContactListControl
             partyContactList.setActiveDetail(partyContactListDetail);
             partyContactList.setLastDetail(partyContactListDetail);
             
-            sendEventUsingNames(partyContactList.getPrimaryKey(), EventTypes.MODIFY.name(), null, null, updatedBy);
+            sendEvent(partyContactList.getPrimaryKey(), EventTypes.MODIFY, null, null, updatedBy);
         }
     }
     
@@ -2365,7 +2366,7 @@ public class ContactListControl
         partyContactList.setActiveDetail(null);
         partyContactList.store();
         
-        sendEventUsingNames(partyContactList.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(partyContactList.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
     
     public void deletePartyContactListsByParty(Party party, BasePK deletedBy) {
@@ -2393,7 +2394,7 @@ public class ContactListControl
         PartyTypeContactListGroup partyTypeContactListGroup = PartyTypeContactListGroupFactory.getInstance().create(session,
                 partyType, contactListGroup, addWhenCreated, session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(contactListGroup.getPrimaryKey(), EventTypes.MODIFY.name(), partyTypeContactListGroup.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(contactListGroup.getPrimaryKey(), EventTypes.MODIFY, partyTypeContactListGroup.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return partyTypeContactListGroup;
     }
@@ -2516,7 +2517,7 @@ public class ContactListControl
         return getPartyTypeContactListGroupsByContactListGroup(contactListGroup, EntityPermission.READ_WRITE);
     }
     
-    public List<PartyTypeContactListGroupTransfer> getPartyTypeContactListGroupTransfers(UserVisit userVisit, List<PartyTypeContactListGroup> partyTypeContactListGroups) {
+    public List<PartyTypeContactListGroupTransfer> getPartyTypeContactListGroupTransfers(UserVisit userVisit, Collection<PartyTypeContactListGroup> partyTypeContactListGroups) {
         List<PartyTypeContactListGroupTransfer> partyTypeContactListGroupTransfers = new ArrayList<>(partyTypeContactListGroups.size());
         PartyTypeContactListGroupTransferCache partyTypeContactListGroupTransferCache = getContactListTransferCaches(userVisit).getPartyTypeContactListGroupTransferCache();
         
@@ -2554,7 +2555,7 @@ public class ContactListControl
             partyTypeContactListGroup = PartyTypeContactListGroupFactory.getInstance().create(partyTypePK, contactListGroupPK, addWhenCreated,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(contactListGroupPK, EventTypes.MODIFY.name(), partyTypeContactListGroup.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(contactListGroupPK, EventTypes.MODIFY, partyTypeContactListGroup.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -2562,7 +2563,7 @@ public class ContactListControl
         partyTypeContactListGroup.setThruTime(session.START_TIME_LONG);
         partyTypeContactListGroup.store();
         
-        sendEventUsingNames(partyTypeContactListGroup.getContactListGroupPK(), EventTypes.MODIFY.name(), partyTypeContactListGroup.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(partyTypeContactListGroup.getContactListGroupPK(), EventTypes.MODIFY, partyTypeContactListGroup.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deletePartyTypeContactListGroups(List<PartyTypeContactListGroup> partyTypeContactListGroups, BasePK deletedBy) {
@@ -2587,7 +2588,7 @@ public class ContactListControl
         PartyTypeContactList partyTypeContactList = PartyTypeContactListFactory.getInstance().create(session, partyType, contactList, addWhenCreated,
                 session.START_TIME_LONG, Session.MAX_TIME_LONG);
         
-        sendEventUsingNames(contactList.getPrimaryKey(), EventTypes.MODIFY.name(), partyTypeContactList.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(contactList.getPrimaryKey(), EventTypes.MODIFY, partyTypeContactList.getPrimaryKey(), EventTypes.CREATE, createdBy);
         
         return partyTypeContactList;
     }
@@ -2710,7 +2711,7 @@ public class ContactListControl
         return getPartyTypeContactListsByContactList(contactList, EntityPermission.READ_WRITE);
     }
     
-    public List<PartyTypeContactListTransfer> getPartyTypeContactListTransfers(UserVisit userVisit, List<PartyTypeContactList> partyTypeContactLists) {
+    public List<PartyTypeContactListTransfer> getPartyTypeContactListTransfers(UserVisit userVisit, Collection<PartyTypeContactList> partyTypeContactLists) {
         List<PartyTypeContactListTransfer> partyTypeContactListTransfers = new ArrayList<>(partyTypeContactLists.size());
         PartyTypeContactListTransferCache partyTypeContactListTransferCache = getContactListTransferCaches(userVisit).getPartyTypeContactListTransferCache();
         
@@ -2748,7 +2749,7 @@ public class ContactListControl
             partyTypeContactList = PartyTypeContactListFactory.getInstance().create(partyTypePK, contactListPK, addWhenCreated, session.START_TIME_LONG,
                     Session.MAX_TIME_LONG);
             
-            sendEventUsingNames(contactListPK, EventTypes.MODIFY.name(), partyTypeContactList.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(contactListPK, EventTypes.MODIFY, partyTypeContactList.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
     
@@ -2756,7 +2757,7 @@ public class ContactListControl
         partyTypeContactList.setThruTime(session.START_TIME_LONG);
         partyTypeContactList.store();
         
-        sendEventUsingNames(partyTypeContactList.getContactListPK(), EventTypes.MODIFY.name(), partyTypeContactList.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(partyTypeContactList.getContactListPK(), EventTypes.MODIFY, partyTypeContactList.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
     
     public void deletePartyTypeContactLists(List<PartyTypeContactList> partyTypeContactLists, BasePK deletedBy) {
@@ -2782,7 +2783,7 @@ public class ContactListControl
         CustomerTypeContactListGroup customerTypeContactListGroup = CustomerTypeContactListGroupFactory.getInstance().create(session,
                 customerType, contactListGroup, addWhenCreated, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(contactListGroup.getPrimaryKey(), EventTypes.MODIFY.name(), customerTypeContactListGroup.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(contactListGroup.getPrimaryKey(), EventTypes.MODIFY, customerTypeContactListGroup.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return customerTypeContactListGroup;
     }
@@ -2905,7 +2906,7 @@ public class ContactListControl
         return getCustomerTypeContactListGroupsByContactListGroup(contactListGroup, EntityPermission.READ_WRITE);
     }
 
-    public List<CustomerTypeContactListGroupTransfer> getCustomerTypeContactListGroupTransfers(UserVisit userVisit, List<CustomerTypeContactListGroup> customerTypeContactListGroups) {
+    public List<CustomerTypeContactListGroupTransfer> getCustomerTypeContactListGroupTransfers(UserVisit userVisit, Collection<CustomerTypeContactListGroup> customerTypeContactListGroups) {
         List<CustomerTypeContactListGroupTransfer> customerTypeContactListGroupTransfers = new ArrayList<>(customerTypeContactListGroups.size());
         CustomerTypeContactListGroupTransferCache customerTypeContactListGroupTransferCache = getContactListTransferCaches(userVisit).getCustomerTypeContactListGroupTransferCache();
 
@@ -2943,7 +2944,7 @@ public class ContactListControl
             customerTypeContactListGroup = CustomerTypeContactListGroupFactory.getInstance().create(customerTypePK, contactListGroupPK, addWhenCreated,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(contactListGroupPK, EventTypes.MODIFY.name(), customerTypeContactListGroup.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(contactListGroupPK, EventTypes.MODIFY, customerTypeContactListGroup.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
@@ -2951,7 +2952,7 @@ public class ContactListControl
         customerTypeContactListGroup.setThruTime(session.START_TIME_LONG);
         customerTypeContactListGroup.store();
 
-        sendEventUsingNames(customerTypeContactListGroup.getContactListGroupPK(), EventTypes.MODIFY.name(), customerTypeContactListGroup.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(customerTypeContactListGroup.getContactListGroupPK(), EventTypes.MODIFY, customerTypeContactListGroup.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
 
     public void deleteCustomerTypeContactListGroups(List<CustomerTypeContactListGroup> customerTypeContactListGroups, BasePK deletedBy) {
@@ -2976,7 +2977,7 @@ public class ContactListControl
         CustomerTypeContactList customerTypeContactList = CustomerTypeContactListFactory.getInstance().create(session, customerType, contactList, addWhenCreated,
                 session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(contactList.getPrimaryKey(), EventTypes.MODIFY.name(), customerTypeContactList.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(contactList.getPrimaryKey(), EventTypes.MODIFY, customerTypeContactList.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return customerTypeContactList;
     }
@@ -3099,7 +3100,7 @@ public class ContactListControl
         return getCustomerTypeContactListsByContactList(contactList, EntityPermission.READ_WRITE);
     }
 
-    public List<CustomerTypeContactListTransfer> getCustomerTypeContactListTransfers(UserVisit userVisit, List<CustomerTypeContactList> customerTypeContactLists) {
+    public List<CustomerTypeContactListTransfer> getCustomerTypeContactListTransfers(UserVisit userVisit, Collection<CustomerTypeContactList> customerTypeContactLists) {
         List<CustomerTypeContactListTransfer> customerTypeContactListTransfers = new ArrayList<>(customerTypeContactLists.size());
         CustomerTypeContactListTransferCache customerTypeContactListTransferCache = getContactListTransferCaches(userVisit).getCustomerTypeContactListTransferCache();
 
@@ -3137,7 +3138,7 @@ public class ContactListControl
             customerTypeContactList = CustomerTypeContactListFactory.getInstance().create(customerTypePK, contactListPK, addWhenCreated, session.START_TIME_LONG,
                     Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(contactListPK, EventTypes.MODIFY.name(), customerTypeContactList.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(contactListPK, EventTypes.MODIFY, customerTypeContactList.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
     }
 
@@ -3145,7 +3146,7 @@ public class ContactListControl
         customerTypeContactList.setThruTime(session.START_TIME_LONG);
         customerTypeContactList.store();
 
-        sendEventUsingNames(customerTypeContactList.getContactListPK(), EventTypes.MODIFY.name(), customerTypeContactList.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(customerTypeContactList.getContactListPK(), EventTypes.MODIFY, customerTypeContactList.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
 
     public void deleteCustomerTypeContactLists(List<CustomerTypeContactList> customerTypeContactLists, BasePK deletedBy) {
@@ -3189,7 +3190,7 @@ public class ContactListControl
         contactListContactMechanismPurpose.setLastDetail(contactListContactMechanismPurposeDetail);
         contactListContactMechanismPurpose.store();
 
-        sendEventUsingNames(contactListContactMechanismPurpose.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(contactListContactMechanismPurpose.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return contactListContactMechanismPurpose;
     }
@@ -3434,7 +3435,7 @@ public class ContactListControl
             contactListContactMechanismPurpose.setActiveDetail(contactListContactMechanismPurposeDetail);
             contactListContactMechanismPurpose.setLastDetail(contactListContactMechanismPurposeDetail);
 
-            sendEventUsingNames(contactListContactMechanismPurposePK, EventTypes.MODIFY.name(), null, null, updatedBy);
+            sendEvent(contactListContactMechanismPurposePK, EventTypes.MODIFY, null, null, updatedBy);
         }
     }
 
@@ -3472,7 +3473,7 @@ public class ContactListControl
             }
         }
 
-        sendEventUsingNames(contactListContactMechanismPurpose.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(contactListContactMechanismPurpose.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     public void deleteContactListContactMechanismPurpose(ContactListContactMechanismPurpose contactListContactMechanismPurpose, BasePK deletedBy) {

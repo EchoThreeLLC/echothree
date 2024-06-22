@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -114,7 +114,7 @@ public class ItemDescriptionTypeLogic
             case 1:
                 if(itemDescriptionTypeName == null) {
                     var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, universalSpec,
-                            ComponentVendors.ECHOTHREE.name(), EntityTypes.ItemDescriptionType.name());
+                            ComponentVendors.ECHO_THREE.name(), EntityTypes.ItemDescriptionType.name());
 
                     if(!eea.hasExecutionErrors()) {
                         itemDescriptionType = itemControl.getItemDescriptionTypeByEntityInstance(entityInstance, entityPermission);

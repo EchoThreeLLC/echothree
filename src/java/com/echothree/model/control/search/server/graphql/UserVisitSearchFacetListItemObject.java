@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class UserVisitSearchFacetListItemObject  {
     @GraphQLDescription("entity list item")
     @GraphQLNonNull
     public EntityListItemObject getEntityListItem(final DataFetchingEnvironment env) {
-        return CoreSecurityUtils.getInstance().getHasEntityListItemAccess(env) ? new EntityListItemObject(entityListItem) : null;
+        return CoreSecurityUtils.getHasEntityListItemAccess(env) ? new EntityListItemObject(entityListItem) : null;
     }
 
     @GraphQLField

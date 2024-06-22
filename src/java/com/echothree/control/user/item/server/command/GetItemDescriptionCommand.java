@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ public class GetItemDescriptionCommand
                 }
             } else if(traditionalParameterCount == 0 && possibleEntitySpecsCount == 1) {
                 var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(this, form,
-                        ComponentVendors.ECHOTHREE.name(), EntityTypes.ItemDescription.name());
+                        ComponentVendors.ECHO_THREE.name(), EntityTypes.ItemDescription.name());
 
                 if(!hasExecutionErrors()) {
                     itemDescription = itemControl.getItemDescriptionByEntityInstance(entityInstance);
@@ -135,7 +135,7 @@ public class GetItemDescriptionCommand
     }
 
     @Override
-    protected BaseResult getTransfer(ItemDescription itemDescription) {
+    protected BaseResult getResult(ItemDescription itemDescription) {
         var itemControl = Session.getModelController(ItemControl.class);
         var result = ItemResultFactory.getGetItemDescriptionResult();
 

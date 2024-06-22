@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,6 +68,9 @@ public class MainAction
 
         Set<String> options = new HashSet<>();
         options.add(CoreOptions.EntityTypeIncludeIndexTypesCount);
+        options.add(CoreOptions.EntityInstanceIncludeEntityAppearance);
+        options.add(CoreOptions.AppearanceIncludeTextDecorations);
+        options.add(CoreOptions.AppearanceIncludeTextTransformations);
         commandForm.setOptions(options);
 
         String offsetParameter = request.getParameter(new ParamEncoder("entityType").encodeParameterName(TableTagParameters.PARAMETER_PAGE));

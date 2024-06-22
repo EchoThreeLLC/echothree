@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import graphql.schema.DataFetchingEnvironment;
 @GraphQLDescription("mime type file extension object")
 @GraphQLName("MimeTypeFileExtension")
 public class MimeTypeFileExtensionObject
-        extends BaseGraphQl {
+        implements BaseGraphQl {
     
     private final MimeTypeFileExtension mimeTypeFileExtension; // Always Present
     
@@ -39,7 +39,7 @@ public class MimeTypeFileExtensionObject
     @GraphQLDescription("mime type")
     @GraphQLNonNull
     public MimeTypeObject getMimeType(final DataFetchingEnvironment env) {
-        return CoreSecurityUtils.getInstance().getHasMimeTypeAccess(env) ? new MimeTypeObject(mimeTypeFileExtension.getMimeType()) : null;
+        return CoreSecurityUtils.getHasMimeTypeAccess(env) ? new MimeTypeObject(mimeTypeFileExtension.getMimeType()) : null;
     }
 
     @GraphQLField

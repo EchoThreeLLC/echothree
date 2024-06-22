@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import graphql.schema.DataFetchingEnvironment;
 @GraphQLDescription("entity appearance object")
 @GraphQLName("EntityAppearance")
 public class EntityAppearanceObject
-        extends BaseGraphQl {
+        implements BaseGraphQl {
     
     private final EntityAppearance entityAppearance; // Always Present
     
@@ -37,16 +37,14 @@ public class EntityAppearanceObject
 
     @GraphQLField
     @GraphQLDescription("entity instance")
-    @GraphQLNonNull
     public EntityInstanceObject getEntityInstance(final DataFetchingEnvironment env) {
-        return CoreSecurityUtils.getInstance().getHasEntityInstanceAccess(env) ? new EntityInstanceObject(entityAppearance.getEntityInstance()) : null;
+        return CoreSecurityUtils.getHasEntityInstanceAccess(env) ? new EntityInstanceObject(entityAppearance.getEntityInstance()) : null;
     }
     
     @GraphQLField
     @GraphQLDescription("appearance")
-    @GraphQLNonNull
     public AppearanceObject getAppearance(final DataFetchingEnvironment env) {
-        return CoreSecurityUtils.getInstance().getHasAppearanceAccess(env) ? new AppearanceObject(entityAppearance.getAppearance()) : null;
+        return CoreSecurityUtils.getHasAppearanceAccess(env) ? new AppearanceObject(entityAppearance.getAppearance()) : null;
     }
     
 }

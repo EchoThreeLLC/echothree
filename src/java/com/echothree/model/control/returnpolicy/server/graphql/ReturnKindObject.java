@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 package com.echothree.model.control.returnpolicy.server.graphql;
 
 import com.echothree.model.control.graphql.server.graphql.BaseEntityInstanceObject;
-import com.echothree.model.control.graphql.server.graphql.ObjectLimiter;
+import com.echothree.model.control.graphql.server.util.BaseGraphQl;
+import com.echothree.model.control.graphql.server.util.count.ObjectLimiter;
 import com.echothree.model.control.graphql.server.graphql.count.Connections;
 import com.echothree.model.control.graphql.server.graphql.count.CountedObjects;
 import com.echothree.model.control.graphql.server.graphql.count.CountingDataConnectionFetcher;
@@ -72,7 +73,7 @@ public class ReturnKindObject
     @GraphQLField
     @GraphQLDescription("return sequence type")
     public SequenceTypeObject getReturnSequenceType(final DataFetchingEnvironment env) {
-        return SequenceSecurityUtils.getInstance().getHasSequenceTypeAccess(env) ? new SequenceTypeObject(getReturnKindDetail().getReturnSequenceType()) : null;
+        return SequenceSecurityUtils.getHasSequenceTypeAccess(env) ? new SequenceTypeObject(getReturnKindDetail().getReturnSequenceType()) : null;
     }
 
     @GraphQLField
@@ -96,7 +97,7 @@ public class ReturnKindObject
         var returnPolicyControl = Session.getModelController(ReturnPolicyControl.class);
         var userControl = Session.getModelController(UserControl.class);
 
-        return returnPolicyControl.getBestReturnKindDescription(returnKind, userControl.getPreferredLanguageFromUserVisit(getUserVisit(env)));
+        return returnPolicyControl.getBestReturnKindDescription(returnKind, userControl.getPreferredLanguageFromUserVisit(BaseGraphQl.getUserVisit(env)));
     }
 
     @GraphQLField
@@ -104,11 +105,11 @@ public class ReturnKindObject
     @GraphQLNonNull
     @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
     public CountingPaginatedData<ReturnPolicyObject> getReturnPolicies(final DataFetchingEnvironment env) {
-        if(ReturnPolicySecurityUtils.getInstance().getHasReturnPoliciesAccess(env)) {
+        if(ReturnPolicySecurityUtils.getHasReturnPoliciesAccess(env)) {
             var returnPolicyControl = Session.getModelController(ReturnPolicyControl.class);
             var totalCount = returnPolicyControl.countReturnPoliciesByReturnKind(returnKind);
     
-            try(var objectLimiter = new ObjectLimiter(env, ReturnPolicyConstants.ENTITY_TYPE_NAME, totalCount)) {
+            try(var objectLimiter = new ObjectLimiter(env, ReturnPolicyConstants.COMPONENT_VENDOR_NAME, ReturnPolicyConstants.ENTITY_TYPE_NAME, totalCount)) {
                 var entities = returnPolicyControl.getReturnPolicies(returnKind);
                 var items = entities.stream().map(ReturnPolicyObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
     

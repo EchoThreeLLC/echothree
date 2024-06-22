@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package com.echothree.model.control.core.server.graphql;
 
+import com.echothree.model.control.graphql.server.graphql.TimeObject;
 import com.echothree.model.control.graphql.server.util.BaseGraphQl;
 import com.echothree.model.data.core.server.entity.EntityTimeAttribute;
-import com.echothree.util.server.string.DateUtils;
 import graphql.annotations.annotationTypes.GraphQLDescription;
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLName;
@@ -28,7 +28,7 @@ import graphql.schema.DataFetchingEnvironment;
 @GraphQLDescription("entity time attribute object")
 @GraphQLName("EntityTimeAttribute")
 public class EntityTimeAttributeObject
-        extends BaseGraphQl {
+        implements BaseGraphQl, AttributeInterface {
     
     private final EntityTimeAttribute entityTimeAttribute; // Always Present
     
@@ -37,29 +37,22 @@ public class EntityTimeAttributeObject
     }
 
     @GraphQLField
-    @GraphQLDescription("unformatted time attribute")
-    @GraphQLNonNull
-    public long getUnformattedTimeAttribute() {
-        return entityTimeAttribute.getTimeAttribute();
+    @GraphQLDescription("entity attribute")
+    public EntityAttributeObject getEntityAttribute(final DataFetchingEnvironment env) {
+        return CoreSecurityUtils.getHasEntityAttributeAccess(env) ? new EntityAttributeObject(entityTimeAttribute.getEntityAttribute(), entityTimeAttribute.getEntityInstance()) : null;
+    }
+
+    @GraphQLField
+    @GraphQLDescription("entity instance")
+    public EntityInstanceObject getEntityInstance(final DataFetchingEnvironment env) {
+        return CoreSecurityUtils.getHasEntityInstanceAccess(env) ? new EntityInstanceObject(entityTimeAttribute.getEntityInstance()) : null;
     }
 
     @GraphQLField
     @GraphQLDescription("time attribute")
     @GraphQLNonNull
-    public String getTimeAttribute(final DataFetchingEnvironment env) {
-        return DateUtils.getInstance().formatTypicalDateTime(getUserVisit(env), entityTimeAttribute.getTimeAttribute());
+    public TimeObject getTimeAttribute(final DataFetchingEnvironment env) {
+        return new TimeObject(entityTimeAttribute.getTimeAttribute());
     }
 
-    @GraphQLField
-    @GraphQLDescription("entity attribute")
-    public EntityAttributeObject getEntityAttribute(final DataFetchingEnvironment env) {
-        return CoreSecurityUtils.getInstance().getHasEntityAttributeAccess(env) ? new EntityAttributeObject(entityTimeAttribute.getEntityAttribute(), entityTimeAttribute.getEntityInstance()) : null;
-    }
-    
-    @GraphQLField
-    @GraphQLDescription("entity instance")
-    public EntityInstanceObject getEntityInstance(final DataFetchingEnvironment env) {
-        return CoreSecurityUtils.getInstance().getHasEntityInstanceAccess(env) ? new EntityInstanceObject(entityTimeAttribute.getEntityInstance()) : null;
-    }
-    
 }

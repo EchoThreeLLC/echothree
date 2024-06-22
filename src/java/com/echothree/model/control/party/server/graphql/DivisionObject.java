@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.echothree.model.control.party.server.graphql;
 
-import com.echothree.model.control.graphql.server.graphql.ObjectLimiter;
+import com.echothree.model.control.graphql.server.util.count.ObjectLimiter;
 import com.echothree.model.control.graphql.server.graphql.count.Connections;
 import com.echothree.model.control.graphql.server.graphql.count.CountedObjects;
 import com.echothree.model.control.graphql.server.graphql.count.CountingDataConnectionFetcher;
@@ -66,7 +66,7 @@ public class DivisionObject
     public CompanyObject getCompany(final DataFetchingEnvironment env) {
         var companyParty = getPartyDivision().getCompanyParty();
 
-        return PartySecurityUtils.getInstance().getHasPartyAccess(env, companyParty) ? new CompanyObject(companyParty) : null;
+        return PartySecurityUtils.getHasPartyAccess(env, companyParty) ? new CompanyObject(companyParty) : null;
     }
 
     @GraphQLField
@@ -95,11 +95,11 @@ public class DivisionObject
     @GraphQLNonNull
     @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
     public CountingPaginatedData<DepartmentObject> getDepartments(final DataFetchingEnvironment env) {
-        if(PartySecurityUtils.getInstance().getHasDepartmentsAccess(env)) {
+        if(PartySecurityUtils.getHasDepartmentsAccess(env)) {
             var partyControl = Session.getModelController(PartyControl.class);
             var totalCount = partyControl.countPartyDepartments(party);
 
-            try(var objectLimiter = new ObjectLimiter(env, ItemConstants.ENTITY_TYPE_NAME, totalCount)) {
+            try(var objectLimiter = new ObjectLimiter(env, ItemConstants.COMPONENT_VENDOR_NAME, ItemConstants.ENTITY_TYPE_NAME, totalCount)) {
                 var entities = partyControl.getDepartmentsByDivision(party);
                 var departments = entities.stream().map(DepartmentObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
 

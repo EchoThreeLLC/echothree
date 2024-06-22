@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -110,10 +110,6 @@ public class GetItemDescriptionsCommand
                         addExecutionError(ExecutionErrors.UnknownLanguageIsoName.name(), languageIsoName);
                     }
                 }
-
-                if(!hasExecutionErrors()) {
-                    sendEventUsingNames(item.getPrimaryKey(), EventTypes.READ.name(), null, null, getPartyPK());
-                }
             } else {
                 addExecutionError(ExecutionErrors.UnknownItemDescriptionTypeUseTypeName.name(), itemDescriptionTypeUseTypeName);
             }
@@ -123,7 +119,7 @@ public class GetItemDescriptionsCommand
     }
 
     @Override
-    protected BaseResult getTransfers(Collection<ItemDescription> entities) {
+    protected BaseResult getResult(Collection<ItemDescription> entities) {
         var result = ItemResultFactory.getGetItemDescriptionsResult();
 
         if(entities != null) {

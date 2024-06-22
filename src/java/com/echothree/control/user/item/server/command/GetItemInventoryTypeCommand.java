@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class GetItemInventoryTypeCommand
         if(parameterCount == 1) {
             if(itemInventoryTypeName == null) {
                 var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(this, form,
-                        ComponentVendors.ECHOTHREE.name(), EntityTypes.ItemInventoryType.name());
+                        ComponentVendors.ECHO_THREE.name(), EntityTypes.ItemInventoryType.name());
 
                 if(!hasExecutionErrors()) {
                     itemInventoryType = itemControl.getItemInventoryTypeByEntityInstance(entityInstance);
@@ -75,7 +75,7 @@ public class GetItemInventoryTypeCommand
             }
 
             if(itemInventoryType != null) {
-                sendEventUsingNames(itemInventoryType.getPrimaryKey(), EventTypes.READ.name(), null, null, getPartyPK());
+                sendEvent(itemInventoryType.getPrimaryKey(), EventTypes.READ, null, null, getPartyPK());
             }
         } else {
             addExecutionError(ExecutionErrors.InvalidParameterCount.name());
@@ -85,7 +85,7 @@ public class GetItemInventoryTypeCommand
     }
 
     @Override
-    protected BaseResult getTransfer(ItemInventoryType itemInventoryType) {
+    protected BaseResult getResult(ItemInventoryType itemInventoryType) {
         var itemControl = Session.getModelController(ItemControl.class);
         var result = ItemResultFactory.getGetItemInventoryTypeResult();
 

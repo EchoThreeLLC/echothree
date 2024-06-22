@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -92,12 +92,11 @@ public class GetItemPriceCommand
     }
 
     @Override
-    protected BaseResult getTransfer(ItemPrice entity) {
+    protected BaseResult getResult(ItemPrice entity) {
         var result = ItemResultFactory.getGetItemPriceResult();
 
         if(entity != null) {
             var itemControl = Session.getModelController(ItemControl.class);
-
             var userVisit = getUserVisit();
 
             result.setItemPrice(itemControl.getItemPriceTransfer(userVisit, entity));

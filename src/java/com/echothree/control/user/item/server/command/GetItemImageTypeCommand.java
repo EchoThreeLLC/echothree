@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,14 +70,14 @@ public class GetItemImageTypeCommand
         var itemImageType = ItemImageTypeLogic.getInstance().getItemImageTypeByUniversalSpec(this, form, true);
 
         if(itemImageType != null) {
-            sendEventUsingNames(itemImageType.getPrimaryKey(), EventTypes.READ.name(), null, null, getPartyPK());
+            sendEvent(itemImageType.getPrimaryKey(), EventTypes.READ, null, null, getPartyPK());
         }
 
         return itemImageType;
     }
 
     @Override
-    protected BaseResult getTransfer(ItemImageType itemImageType) {
+    protected BaseResult getResult(ItemImageType itemImageType) {
         var itemImageTypeControl = Session.getModelController(ItemControl.class);
         var result = ItemResultFactory.getGetItemImageTypeResult();
 

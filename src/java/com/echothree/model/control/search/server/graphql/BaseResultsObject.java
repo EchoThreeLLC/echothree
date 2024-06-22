@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public abstract class BaseResultsObject<F extends BaseGetResultsForm>
-        extends BaseGraphQl {
+        implements BaseGraphQl {
 
     final private String componentVendorName;
     final private String entityTypeName;
@@ -55,7 +55,7 @@ public abstract class BaseResultsObject<F extends BaseGetResultsForm>
     protected UserVisitSearch getUserVisitSearch(final DataFetchingEnvironment env) {
         if(form != null && userVisitSearch == null) {
             try {
-                var userVisit = getUserVisit(env);
+                var userVisit = BaseGraphQl.getUserVisit(env);
                 
                 userVisitSearch = SearchLogic.getInstance().getUserVisitSearchByName(null, userVisit,
                         searchKindName, form.getSearchTypeName());

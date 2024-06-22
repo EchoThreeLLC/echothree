@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,12 +27,24 @@ import graphql.schema.DataFetchingEnvironment;
 @GraphQLDescription("entity name attribute object")
 @GraphQLName("EntityNameAttribute")
 public class EntityNameAttributeObject
-        extends BaseGraphQl {
+        implements BaseGraphQl, AttributeInterface {
     
     private final EntityNameAttribute entityNameAttribute; // Always Present
     
     public EntityNameAttributeObject(EntityNameAttribute entityNameAttribute) {
         this.entityNameAttribute = entityNameAttribute;
+    }
+
+    @GraphQLField
+    @GraphQLDescription("entity attribute")
+    public EntityAttributeObject getEntityAttribute(final DataFetchingEnvironment env) {
+        return CoreSecurityUtils.getHasEntityAttributeAccess(env) ? new EntityAttributeObject(entityNameAttribute.getEntityAttribute(), entityNameAttribute.getEntityInstance()) : null;
+    }
+
+    @GraphQLField
+    @GraphQLDescription("entity instance")
+    public EntityInstanceObject getEntityInstance(final DataFetchingEnvironment env) {
+        return CoreSecurityUtils.getHasEntityInstanceAccess(env) ? new EntityInstanceObject(entityNameAttribute.getEntityInstance()) : null;
     }
 
     @GraphQLField
@@ -42,16 +54,4 @@ public class EntityNameAttributeObject
         return entityNameAttribute.getNameAttribute();
     }
 
-    @GraphQLField
-    @GraphQLDescription("entity attribute")
-    public EntityAttributeObject getEntityAttribute(final DataFetchingEnvironment env) {
-        return CoreSecurityUtils.getInstance().getHasEntityAttributeAccess(env) ? new EntityAttributeObject(entityNameAttribute.getEntityAttribute(), entityNameAttribute.getEntityInstance()) : null;
-    }
-    
-    @GraphQLField
-    @GraphQLDescription("entity instance")
-    public EntityInstanceObject getEntityInstance(final DataFetchingEnvironment env) {
-        return CoreSecurityUtils.getInstance().getHasEntityInstanceAccess(env) ? new EntityInstanceObject(entityNameAttribute.getEntityInstance()) : null;
-    }
-    
 }

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,15 @@ import com.echothree.model.control.core.server.graphql.CoreSecurityUtils;
 import com.echothree.model.control.core.server.graphql.MimeTypeObject;
 import com.echothree.model.control.core.server.graphql.MimeTypeUsageTypeObject;
 import com.echothree.model.control.graphql.server.graphql.BaseEntityInstanceObject;
+import com.echothree.model.control.graphql.server.graphql.count.Connections;
+import com.echothree.model.control.graphql.server.graphql.count.CountedObjects;
+import com.echothree.model.control.graphql.server.graphql.count.CountingDataConnectionFetcher;
+import com.echothree.model.control.graphql.server.graphql.count.CountingPaginatedData;
+import com.echothree.model.control.graphql.server.util.BaseGraphQl;
+import com.echothree.model.control.graphql.server.util.count.ObjectLimiter;
 import com.echothree.model.control.item.server.control.ItemControl;
 import com.echothree.model.control.user.server.control.UserControl;
+import com.echothree.model.data.item.common.ItemDescriptionTypeUseConstants;
 import com.echothree.model.data.item.server.entity.ItemDescriptionType;
 import com.echothree.model.data.item.server.entity.ItemDescriptionTypeDetail;
 import com.echothree.model.data.item.server.entity.ItemImageDescriptionType;
@@ -30,7 +37,10 @@ import graphql.annotations.annotationTypes.GraphQLDescription;
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLName;
 import graphql.annotations.annotationTypes.GraphQLNonNull;
+import graphql.annotations.connection.GraphQLConnection;
 import graphql.schema.DataFetchingEnvironment;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @GraphQLDescription("item description type object")
 @GraphQLName("ItemDescriptionType")
@@ -95,7 +105,7 @@ public class ItemDescriptionTypeObject
     public MimeTypeUsageTypeObject getMimeTypeUsageType(final DataFetchingEnvironment env) {
         var mimeTypeUsageType = getItemDescriptionTypeDetail().getMimeTypeUsageType();
 
-        return mimeTypeUsageType == null ? null : (CoreSecurityUtils.getInstance().getHasMimeTypeUsageTypeAccess(env) ? new MimeTypeUsageTypeObject(mimeTypeUsageType) : null);
+        return mimeTypeUsageType == null ? null : (CoreSecurityUtils.getHasMimeTypeUsageTypeAccess(env) ? new MimeTypeUsageTypeObject(mimeTypeUsageType) : null);
     }
 
     @GraphQLField
@@ -140,7 +150,7 @@ public class ItemDescriptionTypeObject
         var itemControl = Session.getModelController(ItemControl.class);
         var userControl = Session.getModelController(UserControl.class);
 
-        return itemControl.getBestItemDescriptionTypeDescription(itemDescriptionType, userControl.getPreferredLanguageFromUserVisit(getUserVisit(env)));
+        return itemControl.getBestItemDescriptionTypeDescription(itemDescriptionType, userControl.getPreferredLanguageFromUserVisit(BaseGraphQl.getUserVisit(env)));
     }
 
     @GraphQLField
@@ -197,7 +207,7 @@ public class ItemDescriptionTypeObject
         var itemImageDescriptionType = getItemImageDescriptionType();
         MimeTypeObject mimeTypeObject = null;
 
-        if(itemImageDescriptionType != null && CoreSecurityUtils.getInstance().getHasMimeTypeAccess(env)) {
+        if(itemImageDescriptionType != null && CoreSecurityUtils.getHasMimeTypeAccess(env)) {
             var preferredMimeType = itemImageDescriptionType.getPreferredMimeType();
 
             mimeTypeObject = preferredMimeType == null ? null : new MimeTypeObject(preferredMimeType);
@@ -220,6 +230,26 @@ public class ItemDescriptionTypeObject
         var itemImageDescriptionType = getItemImageDescriptionType();
 
         return itemImageDescriptionType == null ? null : itemImageDescriptionType.getScaleFromParent();
+    }
+
+    @GraphQLField
+    @GraphQLDescription("item description type uses")
+    @GraphQLNonNull
+    @GraphQLConnection(connectionFetcher = CountingDataConnectionFetcher.class)
+    public CountingPaginatedData<ItemDescriptionTypeUseObject> getItemDescriptionTypeUses(final DataFetchingEnvironment env) {
+        if(ItemSecurityUtils.getHasItemDescriptionTypeUsesAccess(env)) {
+            var itemControl = Session.getModelController(ItemControl.class);
+            var totalCount = itemControl.countItemDescriptionTypeUsesByItemDescriptionType(itemDescriptionType);
+
+            try(var objectLimiter = new ObjectLimiter(env, ItemDescriptionTypeUseConstants.COMPONENT_VENDOR_NAME, ItemDescriptionTypeUseConstants.ENTITY_TYPE_NAME, totalCount)) {
+                var entities = itemControl.getItemDescriptionTypeUsesByItemDescriptionType(itemDescriptionType);
+                var itemDescriptionTypeUses = entities.stream().map(ItemDescriptionTypeUseObject::new).collect(Collectors.toCollection(() -> new ArrayList<>(entities.size())));
+
+                return new CountedObjects<>(objectLimiter, itemDescriptionTypeUses);
+            }
+        } else {
+            return Connections.emptyConnection();
+        }
     }
 
 }

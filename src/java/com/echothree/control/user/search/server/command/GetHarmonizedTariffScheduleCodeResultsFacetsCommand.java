@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import com.echothree.control.user.search.common.result.GetHarmonizedTariffSchedu
 import com.echothree.control.user.search.common.result.SearchResultFactory;
 import com.echothree.model.control.core.common.ComponentVendors;
 import com.echothree.model.control.core.common.EntityTypes;
-import com.echothree.model.control.search.common.SearchConstants;
+import com.echothree.model.control.search.common.SearchKinds;
 import com.echothree.model.data.user.common.pk.UserVisitPK;
 import com.echothree.util.common.command.BaseResult;
 
@@ -35,7 +35,7 @@ public class GetHarmonizedTariffScheduleCodeResultsFacetsCommand
 
     @Override
     protected BaseResult execute() {
-        return execute(ComponentVendors.ECHOTHREE.name(), EntityTypes.HarmonizedTariffScheduleCode.name(), SearchConstants.SearchKind_HARMONIZED_TARIFF_SCHEDULE_CODE,
+        return execute(ComponentVendors.ECHO_THREE.name(), EntityTypes.HarmonizedTariffScheduleCode.name(), SearchKinds.HARMONIZED_TARIFF_SCHEDULE_CODE.name(),
                 SearchResultFactory.getGetHarmonizedTariffScheduleCodeResultsFacetsResult());
     }
 

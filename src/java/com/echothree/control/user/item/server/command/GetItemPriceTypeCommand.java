@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class GetItemPriceTypeCommand
         if(parameterCount == 1) {
             if(itemPriceTypeName == null) {
                 var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(this, form,
-                        ComponentVendors.ECHOTHREE.name(), EntityTypes.ItemPriceType.name());
+                        ComponentVendors.ECHO_THREE.name(), EntityTypes.ItemPriceType.name());
 
                 if(!hasExecutionErrors()) {
                     itemPriceType = itemControl.getItemPriceTypeByEntityInstance(entityInstance);
@@ -75,7 +75,7 @@ public class GetItemPriceTypeCommand
             }
 
             if(itemPriceType != null) {
-                sendEventUsingNames(itemPriceType.getPrimaryKey(), EventTypes.READ.name(), null, null, getPartyPK());
+                sendEvent(itemPriceType.getPrimaryKey(), EventTypes.READ, null, null, getPartyPK());
             }
         } else {
             addExecutionError(ExecutionErrors.InvalidParameterCount.name());
@@ -85,7 +85,7 @@ public class GetItemPriceTypeCommand
     }
 
     @Override
-    protected BaseResult getTransfer(ItemPriceType itemPriceType) {
+    protected BaseResult getResult(ItemPriceType itemPriceType) {
         var itemControl = Session.getModelController(ItemControl.class);
         var result = ItemResultFactory.getGetItemPriceTypeResult();
 

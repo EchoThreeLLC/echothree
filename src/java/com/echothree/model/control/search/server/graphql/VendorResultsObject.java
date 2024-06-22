@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ package com.echothree.model.control.search.server.graphql;
 import com.echothree.control.user.search.common.form.GetVendorResultsForm;
 import com.echothree.model.control.core.common.ComponentVendors;
 import com.echothree.model.control.core.common.EntityTypes;
-import com.echothree.model.control.graphql.server.graphql.ObjectLimiter;
+import com.echothree.model.control.graphql.server.util.count.ObjectLimiter;
 import com.echothree.model.control.graphql.server.graphql.count.Connections;
 import com.echothree.model.control.graphql.server.graphql.count.CountedObjects;
 import com.echothree.model.control.graphql.server.graphql.count.CountingDataConnectionFetcher;
 import com.echothree.model.control.graphql.server.graphql.count.CountingPaginatedData;
-import com.echothree.model.control.search.common.SearchConstants;
+import com.echothree.model.control.search.common.SearchKinds;
 import com.echothree.model.control.vendor.server.control.VendorControl;
 import com.echothree.model.control.vendor.server.graphql.VendorObject;
 import com.echothree.model.data.search.common.SearchResultConstants;
@@ -42,7 +42,7 @@ public class VendorResultsObject
         extends BaseResultsObject<GetVendorResultsForm> {
 
     public VendorResultsObject(GetVendorResultsForm form) {
-        super(ComponentVendors.ECHOTHREE.name(), EntityTypes.Party.name(), SearchConstants.SearchKind_VENDOR, form);
+        super(ComponentVendors.ECHO_THREE.name(), EntityTypes.Party.name(), SearchKinds.VENDOR.name(), form);
     }
 
     @GraphQLField
@@ -57,7 +57,7 @@ public class VendorResultsObject
         } else {
             var totalCount = getTotalCount(env);
 
-            try(var objectLimiter = new ObjectLimiter(env, SearchResultConstants.ENTITY_TYPE_NAME, totalCount)) {
+            try(var objectLimiter = new ObjectLimiter(env, SearchResultConstants.COMPONENT_VENDOR_NAME, SearchResultConstants.ENTITY_TYPE_NAME, totalCount)) {
                 var vendorControl = Session.getModelController(VendorControl.class);
                 var vendors = vendorControl.getVendorObjectsFromUserVisitSearch(userVisitSearch);
 

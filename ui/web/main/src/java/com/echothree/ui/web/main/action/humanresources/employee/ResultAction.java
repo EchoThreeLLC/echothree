@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,12 +16,15 @@
 
 package com.echothree.ui.web.main.action.humanresources.employee;
 
+import com.echothree.control.user.party.common.PartyUtil;
+import com.echothree.control.user.party.common.result.GetPartyTypeResult;
 import com.echothree.control.user.search.common.SearchUtil;
 import com.echothree.control.user.search.common.form.GetEmployeeResultsForm;
 import com.echothree.control.user.search.common.result.GetEmployeeResultsResult;
 import com.echothree.model.control.party.common.PartyOptions;
-import com.echothree.model.control.search.common.SearchConstants;
+import com.echothree.model.control.party.common.PartyTypes;
 import com.echothree.model.control.search.common.SearchOptions;
+import com.echothree.model.control.search.common.SearchTypes;
 import com.echothree.model.data.search.common.SearchResultConstants;
 import com.echothree.ui.web.main.framework.AttributeConstants;
 import com.echothree.ui.web.main.framework.ForwardConstants;
@@ -40,6 +43,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.ActionForm;
@@ -60,14 +64,31 @@ import org.displaytag.util.ParamEncoder;
 )
 public class ResultAction
         extends MainBaseAction<ActionForm> {
-    
+
+    public void setupPartyType(HttpServletRequest request)
+            throws NamingException {
+        var commandForm = PartyUtil.getHome().getGetPartyTypeForm();
+
+        commandForm.setPartyTypeName(PartyTypes.EMPLOYEE.name());
+
+        Set<String> options = new HashSet<>();
+        options.add(PartyOptions.PartyTypeIncludeLockoutPolicy);
+        commandForm.setOptions(options);
+
+        var commandResult = PartyUtil.getHome().getPartyType(getUserVisitPK(request), commandForm);
+        var executionResult = commandResult.getExecutionResult();
+        var result = (GetPartyTypeResult)executionResult.getResult();
+
+        request.setAttribute(AttributeConstants.PARTY_TYPE, result.getPartyType());
+    }
+
     @Override
     public ActionForward executeAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         GetEmployeeResultsForm commandForm = SearchUtil.getHome().getGetEmployeeResultsForm();
         String results = request.getParameter(ParameterConstants.RESULTS);
 
-        commandForm.setSearchTypeName(SearchConstants.SearchType_HUMAN_RESOURCES);
+        commandForm.setSearchTypeName(SearchTypes.HUMAN_RESOURCES.name());
 
         Set<String> options = new HashSet<>();
         options.add(SearchOptions.EmployeeResultIncludeEmployee);
@@ -95,6 +116,8 @@ public class ResultAction
 
             request.setAttribute(AttributeConstants.EMPLOYEE_RESULTS, new ListWrapper<>(result.getEmployeeResults()));
         }
+
+        setupPartyType(request);
 
         return mapping.findForward(ForwardConstants.DISPLAY);
     }

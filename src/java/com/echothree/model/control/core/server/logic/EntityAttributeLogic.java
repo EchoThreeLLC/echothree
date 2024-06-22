@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import com.echothree.model.control.core.common.exception.DuplicateEntityMultiple
 import com.echothree.model.control.core.common.exception.DuplicateEntityNameAttributeException;
 import com.echothree.model.control.core.common.exception.DuplicateEntityStringAttributeException;
 import com.echothree.model.control.core.common.exception.DuplicateEntityTimeAttributeException;
+import com.echothree.model.control.core.common.exception.EntityTypeIsNotExtensibleException;
 import com.echothree.model.control.core.common.exception.InvalidEntityAttributeTypeException;
 import com.echothree.model.control.core.common.exception.InvalidParameterCountException;
 import com.echothree.model.control.core.common.exception.InvalidStringAttributeException;
@@ -66,7 +67,7 @@ import com.echothree.model.control.core.server.database.EntityInstancesByNameEnt
 import com.echothree.model.control.core.server.database.EntityInstancesByStringEntityAttributeQuery;
 import com.echothree.model.control.core.server.database.EntityInstancesByTimeEntityAttributeQuery;
 import com.echothree.model.control.index.server.control.IndexControl;
-import com.echothree.model.control.queue.common.QueueConstants;
+import com.echothree.model.control.queue.common.QueueTypes;
 import com.echothree.model.control.queue.server.control.QueueControl;
 import com.echothree.model.control.queue.server.logic.QueueTypeLogic;
 import com.echothree.model.control.sequence.common.SequenceTypes;
@@ -146,7 +147,7 @@ public class EntityAttributeLogic
         EntityAttributeType entityAttributeType = null;
         
         var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, (String)null, null, null, ulid,
-                ComponentVendors.ECHOTHREE.name(), EntityTypes.EntityAttributeType.name());
+                ComponentVendors.ECHO_THREE.name(), EntityTypes.EntityAttributeType.name());
 
         if(eea == null || !eea.hasExecutionErrors()) {
             var coreControl = Session.getModelController(CoreControl.class);
@@ -181,7 +182,7 @@ public class EntityAttributeLogic
         EntityAttributeGroup entityAttributeGroup = null;
         
         var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, (String)null, null, null, ulid,
-                ComponentVendors.ECHOTHREE.name(), EntityTypes.EntityAttributeGroup.name());
+                ComponentVendors.ECHO_THREE.name(), EntityTypes.EntityAttributeGroup.name());
 
         if(eea == null || !eea.hasExecutionErrors()) {
             var coreControl = Session.getModelController(CoreControl.class);
@@ -206,67 +207,72 @@ public class EntityAttributeLogic
             final Integer upperLimitIntegerValue, final Integer lowerLimitIntegerValue, final Integer lowerRangeIntegerValue,
             final Long upperRangeLongValue, final Long upperLimitLongValue, final Long lowerLimitLongValue,
             final Long lowerRangeLongValue, final Sequence entityListItemSequence, final UnitOfMeasureType unitOfMeasureType,
-            final Integer sortOrder, final PartyPK createdByPK, final Language language, final String description) {
-        var coreControl = Session.getModelController(CoreControl.class);
-        
-        if(entityAttributeName == null) {
-            var sequenceControl = Session.getModelController(SequenceControl.class);
-            Sequence sequence = sequenceControl.getDefaultSequenceUsingNames(SequenceTypes.ENTITY_ATTRIBUTE.name());
+            final Integer sortOrder, final BasePK createdBy, final Language language, final String description) {
+        EntityAttribute entityAttribute = null;
+        var entityTypeDetail = entityType.getLastDetail();
 
-            entityAttributeName = SequenceGeneratorLogic.getInstance().getNextSequenceValue(sequence);
-        }
+        if(entityTypeDetail.getIsExtensible()) {
+            var coreControl = Session.getModelController(CoreControl.class);
 
-        EntityAttribute entityAttribute = coreControl.getEntityAttributeByName(entityType, entityAttributeName);
+            if(entityAttributeName == null) {
+                var sequenceControl = Session.getModelController(SequenceControl.class);
+                var sequence = sequenceControl.getDefaultSequenceUsingNames(SequenceTypes.ENTITY_ATTRIBUTE.name());
 
-        if(entityAttribute == null) {
-            entityAttribute = coreControl.createEntityAttribute(entityType, entityAttributeName, entityAttributeType,
-                    trackRevisions, sortOrder, createdByPK);
-
-            if(description != null) {
-                coreControl.createEntityAttributeDescription(entityAttribute, language, description, createdByPK);
+                entityAttributeName = SequenceGeneratorLogic.getInstance().getNextSequenceValue(sequence);
             }
-            
-            switch(EntityAttributeTypes.valueOf(entityAttributeType.getEntityAttributeTypeName())) {
-                case BLOB:
-                    coreControl.createEntityAttributeBlob(entityAttribute, checkContentWebAddress, createdByPK);
-                    break;
-                case STRING:
-                    if(validationPattern != null) {
-                        coreControl.createEntityAttributeString(entityAttribute, validationPattern, createdByPK);
+
+            entityAttribute = coreControl.getEntityAttributeByName(entityType, entityAttributeName);
+
+            if(entityAttribute == null) {
+                entityAttribute = coreControl.createEntityAttribute(entityType, entityAttributeName, entityAttributeType,
+                        trackRevisions, sortOrder, createdBy);
+
+                if(description != null) {
+                    coreControl.createEntityAttributeDescription(entityAttribute, language, description, createdBy);
+                }
+
+                switch(EntityAttributeTypes.valueOf(entityAttributeType.getEntityAttributeTypeName())) {
+                    case BLOB ->
+                            coreControl.createEntityAttributeBlob(entityAttribute, checkContentWebAddress, createdBy);
+                    case STRING -> {
+                        if(validationPattern != null) {
+                            coreControl.createEntityAttributeString(entityAttribute, validationPattern, createdBy);
+                        }
                     }
-                    break;
-                case INTEGER:
-                    if(upperRangeIntegerValue != null || upperLimitIntegerValue != null || lowerLimitIntegerValue != null || lowerRangeIntegerValue != null) {
-                        coreControl.createEntityAttributeInteger(entityAttribute, upperRangeIntegerValue, upperLimitIntegerValue,
-                                lowerLimitIntegerValue, lowerRangeIntegerValue, createdByPK);
+                    case INTEGER -> {
+                        if(upperRangeIntegerValue != null || upperLimitIntegerValue != null || lowerLimitIntegerValue != null || lowerRangeIntegerValue != null) {
+                            coreControl.createEntityAttributeInteger(entityAttribute, upperRangeIntegerValue, upperLimitIntegerValue,
+                                    lowerLimitIntegerValue, lowerRangeIntegerValue, createdBy);
+                        }
+                        if(unitOfMeasureType != null) {
+                            coreControl.createEntityAttributeNumeric(entityAttribute, unitOfMeasureType, createdBy);
+                        }
                     }
-                    if(unitOfMeasureType != null) {
-                        coreControl.createEntityAttributeNumeric(entityAttribute, unitOfMeasureType, createdByPK);
+                    case LONG -> {
+                        if(upperRangeLongValue != null || upperLimitLongValue != null || lowerLimitLongValue != null || lowerRangeLongValue != null) {
+                            coreControl.createEntityAttributeLong(entityAttribute, upperRangeLongValue, upperLimitLongValue,
+                                    lowerLimitLongValue, lowerRangeLongValue, createdBy);
+                        }
+                        if(unitOfMeasureType != null) {
+                            coreControl.createEntityAttributeNumeric(entityAttribute, unitOfMeasureType, createdBy);
+                        }
                     }
-                    break;
-                case LONG:
-                    if(upperRangeLongValue != null || upperLimitLongValue != null || lowerLimitLongValue != null || lowerRangeLongValue != null) {
-                        coreControl.createEntityAttributeLong(entityAttribute, upperRangeLongValue, upperLimitLongValue,
-                                lowerLimitLongValue, lowerRangeLongValue, createdByPK);
+                    case LISTITEM, MULTIPLELISTITEM -> {
+                        if(entityListItemSequence != null) {
+                            coreControl.createEntityAttributeListItem(entityAttribute, entityListItemSequence, createdBy);
+                        }
                     }
-                    if(unitOfMeasureType != null) {
-                        coreControl.createEntityAttributeNumeric(entityAttribute, unitOfMeasureType, createdByPK);
+                    default -> {
+                        // Nothing required for other EntityAttributeTypes
                     }
-                    break;
-                case LISTITEM:
-                case MULTIPLELISTITEM:
-                    if(entityListItemSequence != null) {
-                        coreControl.createEntityAttributeListItem(entityAttribute, entityListItemSequence, createdByPK);
-                    }
-                    break;
-                default:
-                    break;
+                }
+            } else {
+                handleExecutionError(DuplicateEntityAttributeNameException.class, eea, ExecutionErrors.DuplicateEntityAttributeName.name(),
+                        entityTypeDetail.getComponentVendor().getLastDetail().getComponentVendorName(), entityTypeDetail.getEntityTypeName(), entityAttributeName);
             }
         } else {
-            EntityTypeDetail entityTypeDetail = entityType.getLastDetail();
-            
-            handleExecutionError(DuplicateEntityAttributeNameException.class, eea, ExecutionErrors.DuplicateEntityAttributeName.name(),
-                    entityTypeDetail.getComponentVendor().getLastDetail().getComponentVendorName(), entityTypeDetail.getEntityTypeName(), entityAttributeName);
+            handleExecutionError(EntityTypeIsNotExtensibleException.class, eea, ExecutionErrors.EntityTypeIsNotExtensible.name(),
+                    entityTypeDetail.getComponentVendor().getLastDetail().getComponentVendorName(), entityTypeDetail.getEntityTypeName());
         }
         
         return entityAttribute;
@@ -346,7 +352,7 @@ public class EntityAttributeLogic
         EntityAttribute entityAttribute = null;
         
         var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, (String)null, null, null, ulid,
-                ComponentVendors.ECHOTHREE.name(), EntityTypes.EntityAttribute.name());
+                ComponentVendors.ECHO_THREE.name(), EntityTypes.EntityAttribute.name());
 
         if(eea == null || !eea.hasExecutionErrors()) {
             var coreControl = Session.getModelController(CoreControl.class);
@@ -380,7 +386,7 @@ public class EntityAttributeLogic
             case 1 -> {
                 if(universalSpecCount == 1) {
                     var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, universalSpec,
-                            ComponentVendors.ECHOTHREE.name(), EntityTypes.EntityAttribute.name());
+                            ComponentVendors.ECHO_THREE.name(), EntityTypes.EntityAttribute.name());
 
                     if(!eea.hasExecutionErrors()) {
                         var coreControl = Session.getModelController(CoreControl.class);
@@ -507,20 +513,21 @@ public class EntityAttributeLogic
         return entityInstanceResults;
     }
     
-    public void updateEntityAttributeFromValue(final Session session, EntityAttributeDetailValue entityAttributeDetailValue, BasePK updatedBy) {
-        var coreControl = Session.getModelController(CoreControl.class);
+    public void updateEntityAttributeFromValue(final Session session, final EntityAttributeDetailValue entityAttributeDetailValue,
+            final BasePK updatedBy) {
+        final var coreControl = Session.getModelController(CoreControl.class);
 
         if(entityAttributeDetailValue.getEntityAttributeNameHasBeenModified()) {
-            var indexControl = Session.getModelController(IndexControl.class);
-            EntityAttribute entityAttribute = coreControl.getEntityAttributeByPK(entityAttributeDetailValue.getEntityAttributePK());
+            final var indexControl = Session.getModelController(IndexControl.class);
+            final var entityAttribute = coreControl.getEntityAttributeByPK(entityAttributeDetailValue.getEntityAttributePK());
             
             if(indexControl.countIndexTypesByEntityType(entityAttribute.getLastDetail().getEntityType()) > 0) {
-                var queueControl = Session.getModelController(QueueControl.class);
-                QueueTypePK queueTypePK = QueueTypeLogic.getInstance().getQueueTypeByName(null, QueueConstants.QueueType_INDEXING).getPrimaryKey();
-                List<EntityInstanceResult> entityInstanceResults = getEntityInstanceResultsByEntityAttributeTypeName(entityAttribute);
-                List<QueuedEntityValue> queuedEntities = new ArrayList<>(entityInstanceResults.size());
+                final var queueControl = Session.getModelController(QueueControl.class);
+                final var queueTypePK = QueueTypeLogic.getInstance().getQueueTypeByName(null, QueueTypes.INDEXING.name()).getPrimaryKey();
+                final var entityInstanceResults = getEntityInstanceResultsByEntityAttributeTypeName(entityAttribute);
+                final var queuedEntities = new ArrayList<QueuedEntityValue>(entityInstanceResults.size());
 
-                for(var entityInstanceResult : entityInstanceResults) {
+                for(final var entityInstanceResult : entityInstanceResults) {
                     queuedEntities.add(new QueuedEntityValue(queueTypePK, entityInstanceResult.getEntityInstancePK(), session.START_TIME_LONG));
                 }
 
@@ -654,7 +661,7 @@ public class EntityAttributeLogic
         EntityListItem entityListItem = null;
         
         var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, (String)null, null, null, ulid,
-                ComponentVendors.ECHOTHREE.name(), EntityTypes.EntityListItem.name());
+                ComponentVendors.ECHO_THREE.name(), EntityTypes.EntityListItem.name());
 
         if(eea == null || !eea.hasExecutionErrors()) {
             var coreControl = Session.getModelController(CoreControl.class);
@@ -688,7 +695,7 @@ public class EntityAttributeLogic
             case 1 -> {
                 if(universalSpecCount == 1) {
                     var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, universalSpec,
-                            ComponentVendors.ECHOTHREE.name(), EntityTypes.EntityListItem.name());
+                            ComponentVendors.ECHO_THREE.name(), EntityTypes.EntityListItem.name());
 
                     if(!eea.hasExecutionErrors()) {
                         var coreControl = Session.getModelController(CoreControl.class);
@@ -769,7 +776,7 @@ public class EntityAttributeLogic
             
             if(indexControl.countIndexTypesByEntityType(entityAttributeDetail.getEntityType()) > 0) {
                 var queueControl = Session.getModelController(QueueControl.class);
-                QueueTypePK queueTypePK = QueueTypeLogic.getInstance().getQueueTypeByName(null, QueueConstants.QueueType_INDEXING).getPrimaryKey();
+                QueueTypePK queueTypePK = QueueTypeLogic.getInstance().getQueueTypeByName(null, QueueTypes.INDEXING.name()).getPrimaryKey();
                 String entityAttributeTypeName = entityAttributeDetail.getEntityAttributeType().getEntityAttributeTypeName();
 
                 if(entityAttributeTypeName.equals(EntityAttributeTypes.LISTITEM.name())) {

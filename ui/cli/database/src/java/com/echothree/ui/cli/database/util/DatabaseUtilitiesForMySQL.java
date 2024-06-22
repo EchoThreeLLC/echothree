@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.Locale;
 
 public class DatabaseUtilitiesForMySQL
         extends DatabaseUtilities {
@@ -300,7 +301,7 @@ public class DatabaseUtilitiesForMySQL
     String getForeignKeyDefinition(Column theFK, Table sourceTable, String sourceColumnName, Table destinationTable, String destinationColumnName)
             throws Exception {
         String result = "CONSTRAINT " + sourceColumnName + "_fk FOREIGN KEY (" + sourceColumnName + ") REFERENCES "
-                + destinationTable.getNamePlural().toLowerCase() + "("
+                + destinationTable.getNamePlural().toLowerCase(Locale.getDefault()) + "("
                 + destinationColumnName + ") ON DELETE ";
         switch(theFK.getOnParentDelete()) {
             case Column.parentDelete:

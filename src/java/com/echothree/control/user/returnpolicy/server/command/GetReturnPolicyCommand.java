@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,14 +57,14 @@ public class GetReturnPolicyCommand
         var returnPolicy = ReturnPolicyLogic.getInstance().getReturnPolicyByUniversalSpec(this, form, true);
 
         if(returnPolicy != null) {
-            sendEventUsingNames(returnPolicy.getPrimaryKey(), EventTypes.READ.name(), null, null, getPartyPK());
+            sendEvent(returnPolicy.getPrimaryKey(), EventTypes.READ, null, null, getPartyPK());
         }
 
         return returnPolicy;
     }
 
     @Override
-    protected BaseResult getTransfer(ReturnPolicy returnPolicy) {
+    protected BaseResult getResult(ReturnPolicy returnPolicy) {
         var result = ReturnPolicyResultFactory.getGetReturnPolicyResult();
 
         if(returnPolicy != null) {

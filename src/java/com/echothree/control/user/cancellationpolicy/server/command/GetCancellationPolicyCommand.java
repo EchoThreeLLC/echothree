@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,14 +57,14 @@ public class GetCancellationPolicyCommand
         var cancellationPolicy = CancellationPolicyLogic.getInstance().getCancellationPolicyByUniversalSpec(this, form, true);
 
         if(cancellationPolicy != null) {
-            sendEventUsingNames(cancellationPolicy.getPrimaryKey(), EventTypes.READ.name(), null, null, getPartyPK());
+            sendEvent(cancellationPolicy.getPrimaryKey(), EventTypes.READ, null, null, getPartyPK());
         }
 
         return cancellationPolicy;
     }
 
     @Override
-    protected BaseResult getTransfer(CancellationPolicy cancellationPolicy) {
+    protected BaseResult getResult(CancellationPolicy cancellationPolicy) {
         var result = CancellationPolicyResultFactory.getGetCancellationPolicyResult();
 
         if(cancellationPolicy != null) {

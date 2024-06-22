@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public class GetItemCommand
         if(parameterCount == 1) {
             if(itemName == null && itemNameOrAlias == null) {
                 var entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(this, form,
-                        ComponentVendors.ECHOTHREE.name(), EntityTypes.Item.name());
+                        ComponentVendors.ECHO_THREE.name(), EntityTypes.Item.name());
 
                 if(!hasExecutionErrors()) {
                     item = itemControl.getItemByEntityInstance(entityInstance);
@@ -78,7 +78,7 @@ public class GetItemCommand
             }
 
             if(item != null) {
-                sendEventUsingNames(item.getPrimaryKey(), EventTypes.READ.name(), null, null, getPartyPK());
+                sendEvent(item.getPrimaryKey(), EventTypes.READ, null, null, getPartyPK());
             }
         } else {
             addExecutionError(ExecutionErrors.InvalidParameterCount.name());
@@ -88,7 +88,7 @@ public class GetItemCommand
     }
     
     @Override
-    protected BaseResult getTransfer(Item item) {
+    protected BaseResult getResult(Item item) {
         var itemControl = Session.getModelController(ItemControl.class);
         GetItemResult result = ItemResultFactory.getGetItemResult();
 

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,31 +23,22 @@ import com.echothree.control.user.cancellationpolicy.server.command.GetCancellat
 import com.echothree.model.control.graphql.server.util.BaseGraphQl;
 import graphql.schema.DataFetchingEnvironment;
 
-public final class CancellationPolicySecurityUtils
-        extends BaseGraphQl {
+public interface CancellationPolicySecurityUtils {
 
-    private static class CancellationPolicySecurityUtilsHolder {
-        static CancellationPolicySecurityUtils instance = new CancellationPolicySecurityUtils();
-    }
-    
-    public static CancellationPolicySecurityUtils getInstance() {
-        return CancellationPolicySecurityUtilsHolder.instance;
-    }
-    
-    public boolean getHasCancellationKindAccess(final DataFetchingEnvironment env) {
-        return getGraphQlExecutionContext(env).hasAccess(GetCancellationKindCommand.class);
+    static boolean getHasCancellationKindAccess(final DataFetchingEnvironment env) {
+        return BaseGraphQl.getGraphQlExecutionContext(env).hasAccess(GetCancellationKindCommand.class);
     }
 
-    public boolean getHasCancellationKindsAccess(final DataFetchingEnvironment env) {
-        return getGraphQlExecutionContext(env).hasAccess(GetCancellationKindsCommand.class);
+    static boolean getHasCancellationKindsAccess(final DataFetchingEnvironment env) {
+        return BaseGraphQl.getGraphQlExecutionContext(env).hasAccess(GetCancellationKindsCommand.class);
     }
 
-    public boolean getHasCancellationPolicyAccess(final DataFetchingEnvironment env) {
-        return getGraphQlExecutionContext(env).hasAccess(GetCancellationPolicyCommand.class);
+    static boolean getHasCancellationPolicyAccess(final DataFetchingEnvironment env) {
+        return BaseGraphQl.getGraphQlExecutionContext(env).hasAccess(GetCancellationPolicyCommand.class);
     }
 
-    public boolean getHasCancellationPoliciesAccess(final DataFetchingEnvironment env) {
-        return getGraphQlExecutionContext(env).hasAccess(GetCancellationPoliciesCommand.class);
+    static boolean getHasCancellationPoliciesAccess(final DataFetchingEnvironment env) {
+        return BaseGraphQl.getGraphQlExecutionContext(env).hasAccess(GetCancellationPoliciesCommand.class);
     }
 
 }

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------
-// Copyright 2002-2022 Echo Three, LLC
+// Copyright 2002-2024 Echo Three, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@ import com.echothree.model.control.item.common.ItemPriceTypes;
 import com.echothree.model.control.offer.common.transfer.OfferItemPriceTransfer;
 import com.echothree.model.control.offer.common.transfer.OfferItemTransfer;
 import com.echothree.model.control.offer.server.logic.OfferItemLogic;
-import com.echothree.model.control.offer.server.logic.OfferLogic;
 import com.echothree.model.control.offer.server.transfer.OfferItemPriceTransferCache;
 import com.echothree.model.control.offer.server.transfer.OfferItemTransferCache;
 import com.echothree.model.data.accounting.server.entity.Currency;
+import com.echothree.model.data.core.server.entity.EntityInstance;
 import com.echothree.model.data.inventory.server.entity.InventoryCondition;
 import com.echothree.model.data.item.server.entity.Item;
-import com.echothree.model.data.item.server.entity.ItemPriceType;
+import com.echothree.model.data.offer.common.pk.OfferItemPK;
 import com.echothree.model.data.offer.common.pk.OfferItemPricePK;
 import com.echothree.model.data.offer.server.entity.Offer;
 import com.echothree.model.data.offer.server.entity.OfferItem;
@@ -70,7 +70,7 @@ public class OfferItemControl
     public OfferItem createOfferItem(Offer offer, Item item, BasePK createdBy) {
         OfferItem offerItem = OfferItemFactory.getInstance().create(offer, item, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(offerItem.getPrimaryKey(), EventTypes.CREATE.name(), null, null, createdBy);
+        sendEvent(offerItem.getPrimaryKey(), EventTypes.CREATE, null, null, createdBy);
 
         return offerItem;
     }
@@ -91,6 +91,22 @@ public class OfferItemControl
                 item, Session.MAX_TIME);
     }
 
+    /** Assume that the entityInstance passed to this function is a ECHO_THREE.OfferItem */
+    public OfferItem getOfferItemByEntityInstance(EntityInstance entityInstance, EntityPermission entityPermission) {
+        var pk = new OfferItemPK(entityInstance.getEntityUniqueId());
+        var offerItem = OfferItemFactory.getInstance().getEntityFromPK(entityPermission, pk);
+
+        return offerItem;
+    }
+
+    public OfferItem getOfferItemByEntityInstance(EntityInstance entityInstance) {
+        return getOfferItemByEntityInstance(entityInstance, EntityPermission.READ_ONLY);
+    }
+
+    public OfferItem getOfferItemByEntityInstanceForUpdate(EntityInstance entityInstance) {
+        return getOfferItemByEntityInstance(entityInstance, EntityPermission.READ_WRITE);
+    }
+
     private static final Map<EntityPermission, String> getOfferItemQueries;
 
     static {
@@ -108,7 +124,7 @@ public class OfferItemControl
         getOfferItemQueries = Collections.unmodifiableMap(queryMap);
     }
 
-    private OfferItem getOfferItem(Offer offer, Item item, EntityPermission entityPermission) {
+    public OfferItem getOfferItem(Offer offer, Item item, EntityPermission entityPermission) {
         return OfferItemFactory.getInstance().getEntityFromQuery(entityPermission, getOfferItemQueries,
                 offer, item, Session.MAX_TIME);
     }
@@ -217,7 +233,7 @@ public class OfferItemControl
         offerItem.setThruTime(session.START_TIME_LONG);
         offerItem.store();
 
-        sendEventUsingNames(offerItem.getPrimaryKey(), EventTypes.DELETE.name(), null, null, deletedBy);
+        sendEvent(offerItem.getPrimaryKey(), EventTypes.DELETE, null, null, deletedBy);
     }
 
     // --------------------------------------------------------------------------------
@@ -230,7 +246,7 @@ public class OfferItemControl
         OfferItemPrice offerItemPrice = OfferItemPriceFactory.getInstance().create(offerItem, inventoryCondition, unitOfMeasureType, currency,
                 session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(offerItem.getPrimaryKey(), EventTypes.MODIFY.name(), offerItemPrice.getPrimaryKey(), EventTypes.CREATE.name(), createdBy);
+        sendEvent(offerItem.getPrimaryKey(), EventTypes.MODIFY, offerItemPrice.getPrimaryKey(), EventTypes.CREATE, createdBy);
 
         return offerItemPrice;
     }
@@ -490,7 +506,7 @@ public class OfferItemControl
             deleteOfferItemVariablePrice(offerItemVariablePrice, deletedBy);
         }
 
-        sendEventUsingNames(offerItem.getPrimaryKey(), EventTypes.MODIFY.name(), offerItemPrice.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(offerItem.getPrimaryKey(), EventTypes.MODIFY, offerItemPrice.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
 
     // --------------------------------------------------------------------------------
@@ -502,8 +518,8 @@ public class OfferItemControl
         OfferItemFixedPrice offerItemFixedPrice = OfferItemFixedPriceFactory.getInstance().create(offerItemPrice,
                 unitPrice, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(offerItemPrice.getOfferItemPK(), EventTypes.MODIFY.name(), offerItemFixedPrice.getPrimaryKey(),
-                EventTypes.CREATE.name(), createdBy);
+        sendEvent(offerItemPrice.getOfferItemPK(), EventTypes.MODIFY, offerItemFixedPrice.getPrimaryKey(),
+                EventTypes.CREATE, createdBy);
 
         return offerItemFixedPrice;
     }
@@ -579,8 +595,8 @@ public class OfferItemControl
             offerItemFixedPrice = OfferItemFixedPriceFactory.getInstance().create(offerItemPricePK, unitPrice,
                     session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(offerItemFixedPrice.getOfferItemPrice().getOfferItemPK(), EventTypes.MODIFY.name(),
-                    offerItemFixedPrice.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(offerItemFixedPrice.getOfferItemPrice().getOfferItemPK(), EventTypes.MODIFY,
+                    offerItemFixedPrice.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
 
         return offerItemFixedPrice;
@@ -590,8 +606,8 @@ public class OfferItemControl
         offerItemFixedPrice.setThruTime(session.START_TIME_LONG);
         offerItemFixedPrice.store();
 
-        sendEventUsingNames(offerItemFixedPrice.getOfferItemPrice().getOfferItemPK(), EventTypes.MODIFY.name(),
-                offerItemFixedPrice.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(offerItemFixedPrice.getOfferItemPrice().getOfferItemPK(), EventTypes.MODIFY,
+                offerItemFixedPrice.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
 
     // --------------------------------------------------------------------------------
@@ -604,8 +620,8 @@ public class OfferItemControl
         OfferItemVariablePrice offerItemVariablePrice = OfferItemVariablePriceFactory.getInstance().create(offerItemPrice, minimumUnitPrice, maximumUnitPrice,
                 unitPriceIncrement, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-        sendEventUsingNames(offerItemPrice.getOfferItemPK(), EventTypes.MODIFY.name(), offerItemVariablePrice.getPrimaryKey(),
-                EventTypes.CREATE.name(), createdBy);
+        sendEvent(offerItemPrice.getOfferItemPK(), EventTypes.MODIFY, offerItemVariablePrice.getPrimaryKey(),
+                EventTypes.CREATE, createdBy);
 
         return offerItemVariablePrice;
     }
@@ -683,8 +699,8 @@ public class OfferItemControl
             offerItemVariablePrice = OfferItemVariablePriceFactory.getInstance().create(offerItemPricePK, maximumUnitPrice,
                     minimumUnitPrice, unitPriceIncrement, session.START_TIME_LONG, Session.MAX_TIME_LONG);
 
-            sendEventUsingNames(offerItemVariablePrice.getOfferItemPrice().getOfferItemPK(), EventTypes.MODIFY.name(),
-                    offerItemVariablePrice.getPrimaryKey(), EventTypes.MODIFY.name(), updatedBy);
+            sendEvent(offerItemVariablePrice.getOfferItemPrice().getOfferItemPK(), EventTypes.MODIFY,
+                    offerItemVariablePrice.getPrimaryKey(), EventTypes.MODIFY, updatedBy);
         }
 
         return offerItemVariablePrice;
@@ -694,8 +710,8 @@ public class OfferItemControl
         offerItemVariablePrice.setThruTime(session.START_TIME_LONG);
         offerItemVariablePrice.store();
 
-        sendEventUsingNames(offerItemVariablePrice.getOfferItemPrice().getOfferItemPK(), EventTypes.MODIFY.name(),
-                offerItemVariablePrice.getPrimaryKey(), EventTypes.DELETE.name(), deletedBy);
+        sendEvent(offerItemVariablePrice.getOfferItemPrice().getOfferItemPK(), EventTypes.MODIFY,
+                offerItemVariablePrice.getPrimaryKey(), EventTypes.DELETE, deletedBy);
     }
 
 }
