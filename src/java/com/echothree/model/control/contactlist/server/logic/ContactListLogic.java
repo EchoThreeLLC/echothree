@@ -109,7 +109,7 @@ public class ContactListLogic
             case 1:
                 if(contactListName == null) {
                     EntityInstance entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, universalSpec,
-                            ComponentVendors.ECHOTHREE.name(), EntityTypes.ContactList.name());
+                            ComponentVendors.ECHO_THREE.name(), EntityTypes.ContactList.name());
 
                     if(!eea.hasExecutionErrors()) {
                         contactList = contactListControl.getContactListByEntityInstance(entityInstance, entityPermission);

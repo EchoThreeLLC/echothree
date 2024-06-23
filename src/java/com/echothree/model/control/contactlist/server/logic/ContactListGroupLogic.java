@@ -95,7 +95,7 @@ public class ContactListGroupLogic
             case 1:
                 if(contactListGroupName == null) {
                     EntityInstance entityInstance = EntityInstanceLogic.getInstance().getEntityInstance(eea, universalSpec,
-                            ComponentVendors.ECHOTHREE.name(), EntityTypes.ContactListGroup.name());
+                            ComponentVendors.ECHO_THREE.name(), EntityTypes.ContactListGroup.name());
 
                     if(!eea.hasExecutionErrors()) {
                         contactListGroup = contactListControl.getContactListGroupByEntityInstance(entityInstance, entityPermission);
