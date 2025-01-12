@@ -23,15 +23,11 @@ import com.echothree.model.data.index.server.entity.Index;
 import com.echothree.util.server.message.ExecutionErrorAccumulator;
 import java.io.IOException;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.PositiveScoresOnlyCollector;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.TopDocsCollector;
-import org.apache.lucene.search.TopScoreDocCollector;
-import org.apache.lucene.search.TotalHitCountCollector;
+import org.apache.lucene.search.TopScoreDocCollectorManager;
 
 public class IndexQuery
         extends BaseIndex<EntityInstancePKHolder> {
@@ -51,15 +47,6 @@ public class IndexQuery
     
     protected static final ScoreDoc[] NO_HITS = {};
     
-    protected int getNumHits(IndexSearcher is)
-            throws IOException {
-        var collector = new TotalHitCountCollector();
-        
-        is.search(query, collector);
-        
-        return collector.getTotalHits();
-    }
-    
     @Override
     protected EntityInstancePKHolder useIndex(IndexReader ir)
             throws IOException {
@@ -67,19 +54,19 @@ public class IndexQuery
         EntityInstancePKHolder entityInstancePKHolder = null;
 
         if(!eea.hasExecutionErrors()) {
-            final var numHits = getNumHits(is);
+            final var numHits = is.count(query);
             ScoreDoc[] hits;
 
             if(numHits == 0) {
                 hits = NO_HITS;
             } else {
                 if(sort == null) {
-                    final TopDocsCollector topDocsCollector = TopScoreDocCollector.create(numHits, Integer.MAX_VALUE );
-                    final Collector collector = new PositiveScoresOnlyCollector(topDocsCollector);
+                    var topScoreDocCollectorManager = new TopScoreDocCollectorManager(numHits, Integer.MAX_VALUE);
+                    var topScoreDocCollector = topScoreDocCollectorManager.newCollector();
 
-                    is.search(query, collector);
+                    is.search(query, topScoreDocCollectorManager);
 
-                    hits = topDocsCollector.topDocs().scoreDocs;
+                    hits = topScoreDocCollector.topDocs().scoreDocs;
                 } else {
                     final var topFieldDocs = is.search(query, numHits, sort);
 
@@ -89,10 +76,12 @@ public class IndexQuery
 
             final var hitCount = hits.length;
             if(hitCount > 0) {
+                var storedFields = is.storedFields();
+
                 entityInstancePKHolder = new EntityInstancePKHolder(hitCount);
 
                 for(var i = 0; i < hitCount ; i++) {
-                    entityInstancePKHolder.add(new EntityInstancePK(is.doc(hits[i].doc).get(IndexFields.entityInstanceId.name())), i);
+                    entityInstancePKHolder.add(new EntityInstancePK(storedFields.document(hits[i].doc).get(IndexFields.entityInstanceId.name())), i);
                 }
             }
         }
